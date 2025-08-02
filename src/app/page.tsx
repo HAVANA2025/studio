@@ -1,3 +1,100 @@
+import { SplineViewer } from '@/components/spline-viewer';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowRight, Users, Code, Zap, Cpu } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+
+const stats = [
+  { value: '50+', label: 'Members', icon: <Users className="w-8 h-8" /> },
+  { value: '10+', label: 'Domains', icon: <Code className="w-8 h-8" /> },
+  { value: '20+', label: 'Workshops', icon: <Zap className="w-8 h-8" /> },
+  { value: '15+', label: 'Projects', icon: <Cpu className="w-8 h-8" /> },
+];
+
+const domains = [
+  { name: 'AI/ML', description: 'Exploring the frontiers of artificial intelligence.', icon: '🧠', href: '/domains' },
+  { name: 'IoT & Embedded', description: 'Building the future of connected devices.', icon: '🤖', href: '/domains' },
+  { name: 'Web & App Dev', description: 'Crafting modern digital experiences.', icon: '💻', href: '/domains' },
+  { name: 'Cybersecurity', description: 'Defending the digital frontier.', icon: '🛡️', href: '/domains' },
+];
+
 export default function Home() {
-  return <></>;
+  return (
+    <div className="flex flex-col items-center overflow-x-hidden">
+      {/* Hero Section */}
+      <section className="relative w-full h-[90vh] min-h-[700px] flex items-center justify-center text-center overflow-hidden">
+        <div className="absolute inset-0 bg-black opacity-60 z-10"></div>
+        <Image 
+          src="https://placehold.co/1920x1080.png"
+          alt="Futuristic cyberpunk background"
+          fill
+          className="object-cover z-0"
+          data-ai-hint="futuristic cyberpunk city"
+          priority
+        />
+        <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tighter mb-4 glow-effect">
+              G-ELECTRA HUB
+            </h1>
+            <p className="max-w-xl text-lg md:text-xl text-muted-foreground mb-8">
+              Welcome to the nexus of innovation. We are the architects of the future, building smart systems for a connected world.
+            </p>
+            <div className="flex gap-4">
+              <Button asChild size="lg">
+                <Link href="/signup">Join The Club</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/domains">Explore Domains</Link>
+              </Button>
+            </div>
+          </div>
+          <div className="relative w-full h-[400px] md:h-[600px]">
+            <SplineViewer />
+          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-background to-transparent z-10"></div>
+      </section>
+
+      {/* Stats Section */}
+      <section id="stats" className="w-full py-16 sm:py-24 bg-background">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <Card key={index} className="bg-card/50 border-primary/20 text-center p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+                <div className="text-primary mx-auto mb-4">{stat.icon}</div>
+                <p className="text-4xl font-bold font-headline">{stat.value}</p>
+                <p className="text-muted-foreground">{stat.label}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Domains Preview */}
+      <section id="domains" className="w-full py-16 sm:py-24 bg-secondary/20">
+        <div className="container mx-auto text-center">
+          <h2 className="font-headline text-4xl font-bold mb-4">Our Domains</h2>
+          <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">We are active in various cutting-edge fields. Dive into the one that excites you most.</p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {domains.map((domain) => (
+               <Card key={domain.name} className="bg-card p-6 text-center transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-accent/20">
+                <CardHeader>
+                  <div className="text-5xl mb-4">{domain.icon}</div>
+                  <CardTitle className="font-headline">{domain.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">{domain.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+           <Button asChild variant="link" className="mt-8 text-accent text-lg">
+            <Link href="/domains">View All Domains <ArrowRight className="ml-2 h-4 w-4" /></Link>
+          </Button>
+        </div>
+      </section>
+    </div>
+  );
 }
