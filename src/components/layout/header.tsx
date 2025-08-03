@@ -79,9 +79,9 @@ export function Header() {
           })}
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-               <Button variant="ghost" className={cn('transition-all duration-300 relative flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium', dropdownNavLinks.some(l => pathname === l.href) ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'text-muted-foreground hover:text-foreground')}>
+               <div className={cn('transition-all duration-300 relative flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium cursor-pointer', dropdownNavLinks.some(l => pathname === l.href) ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'text-muted-foreground hover:text-foreground')}>
                 <Shapes className="w-4 h-4"/> More <ChevronDown className="w-4 h-4" />
-               </Button>
+               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-secondary/80 backdrop-blur-md border-primary/20">
               {dropdownNavLinks.map(link => (
