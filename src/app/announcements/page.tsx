@@ -54,6 +54,9 @@ export default function AnnouncementsPage() {
       const announcementsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Announcement));
       setAnnouncements(announcementsData);
       setIsLoading(false);
+    }, (error) => {
+        console.error("Error fetching announcements: ", error);
+        setIsLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -90,32 +93,6 @@ export default function AnnouncementsPage() {
     await auth.signOut();
   };
   
-  if (loading) {
-    return (
-      <div className="container mx-auto py-16 sm:py-24">
-        <Skeleton className="h-12 w-1/2 mb-4" />
-        <Skeleton className="h-6 w-3/4 mb-12" />
-        <div className="space-y-8">
-          <Skeleton className="h-40 w-full" />
-          <Skeleton className="h-40 w-full" />
-          <Skeleton className="h-40 w-full" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="container mx-auto py-16 sm:py-24 text-center">
-        <h1 className="font-headline text-4xl mb-4">Access Denied</h1>
-        <p className="text-muted-foreground mb-8">You must be logged in to view announcements.</p>
-        <Button asChild>
-          <Link href="/login">Login</Link>
-        </Button>
-      </div>
-    )
-  }
-
   return (
     <div className="container mx-auto py-16 sm:py-24">
        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
@@ -125,16 +102,18 @@ export default function AnnouncementsPage() {
               Stay updated with the latest news and events.
             </p>
         </div>
-        <Card className="p-4 bg-secondary/30 w-full sm:w-auto">
-          <div className="flex items-center gap-4">
-            {isAdmin ? <Shield className="text-primary"/> : <UserCircle/>}
-            <div>
-              <p className="font-bold">{user.email}</p>
-              <p className="text-sm text-primary font-semibold">{isAdmin ? 'Admin' : 'Student'}</p>
-            </div>
-             <Button variant="ghost" size="icon" onClick={handleSignOut}><LogOut /></Button>
-          </div>
-        </Card>
+        { user && (
+            <Card className="p-4 bg-secondary/30 w-full sm:w-auto">
+              <div className="flex items-center gap-4">
+                {isAdmin ? <Shield className="text-primary"/> : <UserCircle/>}
+                <div>
+                  <p className="font-bold">{user.email}</p>
+                  <p className="text-sm text-primary font-semibold">{isAdmin ? 'Admin' : 'Student'}</p>
+                </div>
+                 <Button variant="ghost" size="icon" onClick={handleSignOut}><LogOut /></Button>
+              </div>
+            </Card>
+        )}
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
@@ -154,7 +133,7 @@ export default function AnnouncementsPage() {
         </DialogContent>
       </Dialog>
       
-      {isLoading ? (
+      {isLoading || loading ? (
          <div className="space-y-8">
           <Skeleton className="h-40 w-full" />
           <Skeleton className="h-40 w-full" />
