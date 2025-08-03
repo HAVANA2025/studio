@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
+  { href: '/about', label: 'About Us' },
   { href: '/domains', label: 'Domains' },
   { href: '/achievements', label: 'Achievements' },
   { href: '/community', label: 'Community' },
@@ -15,6 +16,7 @@ const navLinks = [
   { href: '/registrations', label: 'Events' },
   { href: '/playground', label: 'Playground' },
   { href: '/announcements', label: 'Announcements' },
+  { href: '/contact', label: 'Contact Us' },
 ];
 
 export function Header() {

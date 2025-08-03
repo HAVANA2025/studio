@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Zap, Twitter, Github, Linkedin } from 'lucide-react';
 
 const quickLinks = [
+    { href: '/about', label: 'About Us' },
     { href: '/domains', label: 'Domains' },
     { href: '/achievements', label: 'Achievements' },
     { href: '/community', label: 'Community' },
@@ -69,6 +70,18 @@ export function Footer() {
                   </Link>
                 </li>
               ))}
+            </ul>
+          </div>
+          
+          {/* Column 4: Contact */}
+          <div>
+            <h3 className="font-headline text-lg font-semibold mb-4">Contact Us</h3>
+            <ul className="space-y-3">
+               <li>
+                  <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                    Contact Page
+                  </Link>
+                </li>
             </ul>
           </div>
 
