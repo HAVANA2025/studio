@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { 
   Menu, 
   X, 
-  Zap, 
   Home, 
   Info, 
   Award, 
@@ -28,6 +27,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { Logo } from '../logo';
 
 const mainNavLinks = [
   { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
@@ -54,7 +54,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Zap className="h-6 w-6 text-primary" />
+          <Logo className="h-8 w-8" />
           <span className="font-headline text-lg font-bold">G-ELECTRA</span>
         </Link>
 
@@ -79,7 +79,7 @@ export function Header() {
           })}
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-               <div className={cn('transition-all duration-300 relative flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium cursor-pointer', dropdownNavLinks.some(l => pathname === l.href) ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'text-muted-foreground hover:text-foreground')}>
+               <div className={cn('transition-all duration-300 relative flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium cursor-pointer text-muted-foreground hover:text-foreground', dropdownNavLinks.some(l => pathname === l.href) ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'text-muted-foreground hover:text-foreground')}>
                 <Shapes className="w-4 h-4"/> More <ChevronDown className="w-4 h-4" />
                </div>
             </DropdownMenuTrigger>

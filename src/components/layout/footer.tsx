@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Zap, Twitter, Github, Linkedin } from 'lucide-react';
+import { Twitter, Github, Linkedin } from 'lucide-react';
+import { Logo } from '../logo';
 
 const quickLinks = [
     { href: '/about', label: 'About Us' },
@@ -26,7 +27,7 @@ export function Footer() {
           {/* Column 1: Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <Zap className="h-7 w-7 text-primary" />
+              <Logo className="h-8 w-8" />
               <span className="font-headline text-2xl font-bold">G-ELECTRA</span>
             </Link>
             <p className="text-muted-foreground text-base max-w-xs">
