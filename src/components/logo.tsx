@@ -31,11 +31,11 @@ export function Logo({ className }: { className?: string }) {
                 <path
                     d="m120.73 63.85-6.83 11.83-6.83-11.83-6.83 11.83-5.417-9.382-12.246 21.21 5.418 9.383 13.66-23.659 6.83 11.83 6.83-11.83 13.66 23.66 5.417-9.383-12.246-21.21-5.417 9.382Z"
                     fill="#ecf0f1"
-                    font-family="Arial"
-                    font-size="40"
-                    font-weight="bold"
-                    letter-spacing="0"
-                    word-spacing="0"
+                    fontFamily="Arial"
+                    fontSize="40"
+                    fontWeight="bold"
+                    letterSpacing="0"
+                    wordSpacing="0"
                 ></path>
                 <path
                     d="m63.921 70.68-12.246 21.21 5.418 9.383L70.753 77.6a68.45 68.45 0 0 1-6.832-6.92Z"
@@ -69,11 +69,11 @@ export function Logo({ className }: { className?: string }) {
                     x="56.5"
                     y="157.5"
                     fill="#ecf0f1"
-                    font-family="Arial"
-                    font-size="16"
-                    font-weight="bold"
-                    letter-spacing="0"
-                    word-spacing="0"
+                    fontFamily="Arial"
+                    fontSize="16"
+                    fontWeight="bold"
+                    letterSpacing="0"
+                    wordSpacing="0"
                 >
                     <tspan x="30" y="162">GITAM-Hyderabad</tspan>
                 </text>
@@ -81,11 +81,11 @@ export function Logo({ className }: { className?: string }) {
                     x="68.25"
                     y="120"
                     fill="#ecf0f1"
-                    font-family="Arial"
-                    font-size="8"
-                    font-weight="bold"
-                    letter-spacing="0"
-                    word-spacing="0"
+                    fontFamily="Arial"
+                    fontSize="8"
+                    fontWeight="bold"
+                    letterSpacing="0"
+                    wordSpacing="0"
                 >
                     <tspan x="62" y="122">SMART SYSTEMS CLUB</tspan>
                 </text>
