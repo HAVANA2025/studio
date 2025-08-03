@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Users, Code, Zap, Cpu } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 const stats = [
   { value: 50, label: 'Members', icon: <Users className="w-8 h-8" /> },
@@ -25,6 +24,10 @@ export default function Home() {
     <div className="flex flex-col items-center overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative w-full h-screen min-h-[800px] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+         <SplineViewer url="https://prod.spline.design/fXAFIhXMv6YadalH/scene.splinecode" />
+         <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+        </div>
         <div className="absolute inset-0 z-10" style={{background: 'radial-gradient(circle at 50% 50%, transparent 0%, hsl(var(--background)) 70%)'}} />
         
         <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
