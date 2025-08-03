@@ -30,12 +30,12 @@ export default function Home() {
         <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="mb-4">
-              <p className="text-3xl md:text-4xl text-muted-foreground/80 mb-2">We are</p>
-              <h1 className="font-headline text-6xl md:text-7xl font-black tracking-wider glow-effect uppercase">
+               <p className="text-3xl md:text-4xl text-muted-foreground/80 mb-2">We are</p>
+              <h1 className="font-headline text-5xl md:text-6xl font-black tracking-wider glow-effect uppercase">
                 G-ELECTRA
               </h1>
             </div>
-            <p className="font-body text-xl md:text-2xl text-muted-foreground mb-8 tracking-widest">
+             <p className="font-body text-2xl md:text-3xl text-muted-foreground mb-8 tracking-widest">
               Smart Systems Club
             </p>
             <p className="max-w-xl text-lg md:text-xl text-muted-foreground/80 mb-10">
@@ -51,7 +51,7 @@ export default function Home() {
             </div>
           </div>
           <div className="relative w-full h-[400px] md:h-[600px]">
-            <SplineViewer />
+            <SplineViewer url="https://prod.spline.design/AR-PPXQV-gCjabI9/scene.splinecode" />
           </div>
         </div>
       </section>
