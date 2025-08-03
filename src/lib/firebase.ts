@@ -21,6 +21,26 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 
 // Hardcoded list of admin emails
-const adminEmails = ['admin@example.com', 'showryjames@gitam.in'];
+const adminEmails = [
+    // Board Members
+    'smotapar2@gitam.in',
+    'sgaleti@gitam.in',
+    'cthigull@gitam.in',
+    'stummala9@gitam.in',
+    'amadiraj2@gitam.in',
+    'pjanumul@gitam.in',
+    'lmaganti2@gitam.in',
+    'dkommine@gitam.in',
+    'kkasula@gitam.in',
+    'kvemugan@gitam.in',
+    // Club Handlers
+    'mtatinen@gitam.edu',
+    'nmenmula@gitam.edu',
+    'adid@gitam.edu',
+    // Main Admins
+    'gelectra@gitam.edu',
+    'webdevlopment0210@gmail.com',
+    'admin@example.com' // Keeping the original for testing
+];
 
 export { app, db, auth, storage, adminEmails };
