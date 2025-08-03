@@ -6,7 +6,7 @@ export default function PlaygroundPage() {
     <div className="relative isolate flex flex-col items-center justify-center min-h-[calc(100vh-theme(spacing.14))] py-16 sm:py-24">
       <div className="absolute inset-0 -z-10 h-full w-full">
         <SplineViewer url="https://prod.spline.design/RiP-3wN4pmYBVpMU/scene.splinecode" />
-        <div className="absolute inset-0 bg-background/60 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px]"></div>
       </div>
       <div className="container flex flex-col items-center text-center">
         <div className="mb-12">
