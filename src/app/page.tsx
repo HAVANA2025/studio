@@ -31,18 +31,18 @@ export default function Home() {
         </div>
         <div className="absolute inset-0 z-10" style={{background: 'radial-gradient(circle at 50% 50%, transparent 0%, hsl(var(--background)) 70%)'}} />
         
-        <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
+        <div className="relative z-20 container mx-auto px-4 pt-16 md:pt-0 grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="mb-4">
-               <p className="text-3xl md:text-4xl text-muted-foreground/80 mb-2">We are</p>
-              <h1 className="font-headline text-5xl md:text-6xl font-black tracking-wider glow-effect uppercase">
+               <p className="text-2xl md:text-4xl text-muted-foreground/80 mb-2">We are</p>
+              <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl font-black tracking-wider glow-effect uppercase">
                 G-ELECTRA
               </h1>
             </div>
-             <p className="font-body text-2xl md:text-3xl text-muted-foreground mb-8 tracking-widest">
+             <p className="font-body text-xl sm:text-2xl md:text-3xl text-muted-foreground mb-8 tracking-widest">
               Smart Systems Club
             </p>
-            <p className="max-w-xl text-lg md:text-xl text-muted-foreground/80 mb-10">
+            <p className="max-w-xl text-base sm:text-lg md:text-xl text-muted-foreground/80 mb-10">
               Welcome to the nexus of innovation. We are the architects of the future, building smart systems for a connected world.
             </p>
             <div className="flex gap-4">
@@ -54,7 +54,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <div className="relative w-full h-[400px] md:h-[600px]">
+          <div className="relative w-full h-[300px] md:h-[600px]">
             <SplineViewer url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" />
           </div>
         </div>
