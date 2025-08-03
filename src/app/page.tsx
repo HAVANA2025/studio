@@ -28,10 +28,13 @@ export default function Home() {
         
         <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h1 className="font-headline text-6xl md:text-7xl font-black tracking-wider mb-2 glow-effect uppercase">
-              G-ELECTRA
-            </h1>
-            <p className="font-body text-2xl md:text-3xl text-muted-foreground mb-8 tracking-widest">
+            <div className="mb-4">
+              <p className="text-3xl md:text-4xl text-muted-foreground/80 mb-2">We are</p>
+              <h1 className="font-headline text-6xl md:text-7xl font-black tracking-wider glow-effect uppercase">
+                G-ELECTRA
+              </h1>
+            </div>
+            <p className="font-body text-xl md:text-2xl text-muted-foreground mb-8 tracking-widest">
               Smart Systems Club
             </p>
             <p className="max-w-xl text-lg md:text-xl text-muted-foreground/80 mb-10">
