@@ -94,18 +94,20 @@ export default function CommunityPage() {
                 <h2 className="font-headline text-4xl font-bold text-center mb-12 flex items-center justify-center gap-4">
                     <Users className="text-primary"/> Executive Board {board.phase}
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-8">
-                {board.members.map(member => (
-                    <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2">
-                    <div className="relative h-48">
-                        <Image src={member.image} alt={member.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300" data-ai-hint={member.hint} />
+                <div className="flex justify-center">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+                    {board.members.map(member => (
+                        <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
+                        <div className="relative h-48">
+                            <Image src={member.image} alt={member.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300" data-ai-hint={member.hint} />
+                        </div>
+                        <CardHeader>
+                            <CardTitle className="font-headline">{member.name}</CardTitle>
+                            <p className="text-primary">{member.designation}</p>
+                        </CardHeader>
+                        </Card>
+                    ))}
                     </div>
-                    <CardHeader>
-                        <CardTitle className="font-headline">{member.name}</CardTitle>
-                        <p className="text-primary">{member.designation}</p>
-                    </CardHeader>
-                    </Card>
-                ))}
                 </div>
             </section>
         ))}
