@@ -70,8 +70,8 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
         createdAt: announcement?.createdAt || new Date().toISOString(),
       };
       
-      delete announcementData.image;
-      delete announcementData.pdf;
+      delete (announcementData as any).image;
+      delete (announcementData as any).pdf;
 
       if (announcement) {
         // Update existing document
