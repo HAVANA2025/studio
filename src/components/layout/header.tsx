@@ -24,6 +24,7 @@ import {
   LogIn,
   UserPlus,
   LogOut,
+  UserCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -31,7 +32,9 @@ import {
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '../logo';
 import { useRouter } from 'next/navigation';
@@ -93,7 +96,7 @@ export function Header() {
           })}
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-               <div className={cn('transition-all duration-300 relative flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium cursor-pointer', dropdownNavLinks.some(l => pathname === l.href) ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'text-muted-foreground hover:text-foreground')}>
+               <div className={cn('transition-all duration-300 relative flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium cursor-pointer text-muted-foreground hover:text-foreground', dropdownNavLinks.some(l => pathname === l.href) ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : '')}>
                 <Shapes className="w-4 h-4"/> More <ChevronDown className="w-4 h-4" />
                </div>
             </DropdownMenuTrigger>
@@ -115,7 +118,28 @@ export function Header() {
             <Link href="#"><Bell /></Link>
           </Button>
           {!loading && user ? (
-            <Button variant="ghost" onClick={handleSignOut}><LogOut className="mr-2"/>Sign Out</Button>
+             <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <UserCircle />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-secondary/80 backdrop-blur-md border-primary/20 w-56" align="end" forceMount>
+                   <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">My Account</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
           ) : !loading ? (
             <>
               <Button asChild variant="ghost">
