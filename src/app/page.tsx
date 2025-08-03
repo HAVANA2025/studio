@@ -30,8 +30,11 @@ export default function Home() {
         <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tighter mb-4 glow-effect">
-              G-ELECTRA HUB
+              G-ELECTRA
             </h1>
+            <p className="font-headline text-lg md:text-xl text-muted-foreground mb-2">
+              Smart Systems Club
+            </p>
             <p className="max-w-xl text-lg md:text-xl text-muted-foreground mb-8">
               Welcome to the nexus of innovation. We are the architects of the future, building smart systems for a connected world.
             </p>
