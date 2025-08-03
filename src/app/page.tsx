@@ -28,7 +28,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-background opacity-40 z-0"></div>
         
         <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+          <div className="flex flex-col items-center text-center">
             <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tighter mb-4 glow-effect">
               G-ELECTRA
             </h1>
