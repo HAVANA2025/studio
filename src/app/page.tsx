@@ -1,3 +1,4 @@
+
 import { AnimatedStatCard } from '@/components/animated-stat-card';
 import { SplineViewer } from '@/components/spline-viewer';
 import { Button } from '@/components/ui/button';
@@ -54,7 +55,7 @@ export default function Home() {
             </div>
           </div>
           <div className="relative w-full h-[400px] md:h-[600px]">
-            <SplineViewer url="https://prod.spline.design/AR-PPXQV-gCjabI9/scene.splinecode" />
+            <SplineViewer url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" />
           </div>
         </div>
       </section>
