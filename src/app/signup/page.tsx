@@ -4,6 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,11 +16,13 @@ import { Input } from '@/components/ui/input';
 
 const signupSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
-  rollNumber: z.string().min(5, { message: 'Please enter a valid roll number.'}),
+  rollNumber: z.string().min(5, { message: 'Please enter a valid roll number.'}).optional(),
   password: z.string().min(8, { message: 'Password must be at least 8 characters.' }),
 });
 
 export default function SignupPage() {
+  const router = useRouter();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -26,9 +32,17 @@ export default function SignupPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof signupSchema>) {
-    console.log(values);
-    // Handle signup logic here
+  async function onSubmit(values: z.infer<typeof signupSchema>) {
+    try {
+      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      router.push('/announcements');
+    } catch (error: any) {
+      toast({
+        title: 'Sign Up Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
   }
 
   return (
@@ -48,7 +62,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="you@gitam.in" {...field} />
+                      <Input type="email" placeholder="you@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -59,7 +73,7 @@ export default function SignupPage() {
                 name="rollNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Gitam Roll Number</FormLabel>
+                    <FormLabel>Gitam Roll Number (Optional)</FormLabel>
                     <FormControl>
                       <Input placeholder="Your university roll number" {...field} />
                     </FormControl>
@@ -80,8 +94,8 @@ export default function SignupPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Create Account
+              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
           </Form>

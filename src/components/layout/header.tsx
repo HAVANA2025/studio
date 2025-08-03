@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useAuth } from '@/hooks/use-auth';
 import { 
   Menu, 
   X, 
@@ -17,7 +20,10 @@ import {
   Mail,
   Bell,
   ChevronDown,
-  Shapes
+  Shapes,
+  LogIn,
+  UserPlus,
+  LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -28,6 +34,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '../logo';
+import { useRouter } from 'next/navigation';
 
 const mainNavLinks = [
   { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
@@ -47,8 +54,15 @@ const dropdownNavLinks = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
   const allNavLinks = [...mainNavLinks, ...dropdownNavLinks];
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/');
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -79,7 +93,7 @@ export function Header() {
           })}
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-               <div className={cn('transition-all duration-300 relative flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium cursor-pointer text-muted-foreground hover:text-foreground', dropdownNavLinks.some(l => pathname === l.href) ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'text-muted-foreground hover:text-foreground')}>
+               <div className={cn('transition-all duration-300 relative flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium cursor-pointer', dropdownNavLinks.some(l => pathname === l.href) ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'text-muted-foreground hover:text-foreground')}>
                 <Shapes className="w-4 h-4"/> More <ChevronDown className="w-4 h-4" />
                </div>
             </DropdownMenuTrigger>
@@ -100,12 +114,18 @@ export function Header() {
           <Button asChild variant="ghost" size="icon">
             <Link href="#"><Bell /></Link>
           </Button>
-          <Button asChild variant="ghost">
-            <Link href="/login">Login</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signup">Sign Up</Link>
-          </Button>
+          {!loading && user ? (
+            <Button variant="ghost" onClick={handleSignOut}><LogOut className="mr-2"/>Sign Out</Button>
+          ) : !loading ? (
+            <>
+              <Button asChild variant="ghost">
+                <Link href="/login"><LogIn className="mr-2"/>Login</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup"><UserPlus className="mr-2"/>Sign Up</Link>
+              </Button>
+            </>
+          ) : null }
         </div>
 
         <button
@@ -142,12 +162,18 @@ export function Header() {
                  <Button asChild variant="outline" className="w-full">
                   <Link href="#" onClick={() => setIsOpen(false)}><Bell className="mr-2"/> Notifications</Link>
                 </Button>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/login" onClick={() => setIsOpen(false)}>Login</Link>
-                </Button>
-                <Button asChild className="w-full">
-                  <Link href="/signup" onClick={() => setIsOpen(false)}>Sign Up</Link>
-                </Button>
+                {!loading && user ? (
+                  <Button variant="outline" onClick={() => { handleSignOut(); setIsOpen(false);}} className="w-full"><LogOut className="mr-2"/>Sign Out</Button>
+                ) : !loading ? (
+                  <>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/login" onClick={() => setIsOpen(false)}>Login</Link>
+                    </Button>
+                    <Button asChild className="w-full">
+                      <Link href="/signup" onClick={() => setIsOpen(false)}>Sign Up</Link>
+                    </Button>
+                  </>
+                ) : null }
               </div>
             </div>
           </div>
