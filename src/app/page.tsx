@@ -25,11 +25,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full h-screen min-h-[800px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-10" style={{background: 'radial-gradient(circle at 50% 50%, transparent 0%, hsl(var(--background)) 70%)'}} />
-        <div className="absolute inset-0 bg-background opacity-40 z-0"></div>
         
         <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h1 className="font-headline text-6xl md:text-8xl font-black tracking-wider mb-2 glow-effect uppercase">
+            <h1 className="font-headline text-6xl md:text-7xl font-black tracking-wider mb-2 glow-effect uppercase">
               G-ELECTRA
             </h1>
             <p className="font-body text-2xl md:text-3xl text-muted-foreground mb-8 tracking-widest">
@@ -47,7 +46,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <div className="relative w-full h-[400px] md:h-[600px] pointer-events-none">
+          <div className="relative w-full h-[400px] md:h-[600px]">
             <SplineViewer />
           </div>
         </div>
