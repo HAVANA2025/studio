@@ -26,7 +26,7 @@ export default function Home() {
       <section className="relative w-full h-screen min-h-[800px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 -z-10">
          <SplineViewer url="https://prod.spline.design/fXAFIhXMv6YadalH/scene.splinecode" />
-         <div className="absolute inset-0 bg-background/80 backdrop-blur-sm"></div>
+         <div className="absolute inset-0 bg-background/80 backdrop-blur-[1px]"></div>
         </div>
         <div className="absolute inset-0 z-10" style={{background: 'radial-gradient(circle at 50% 50%, transparent 0%, hsl(var(--background)) 70%)'}} />
         
