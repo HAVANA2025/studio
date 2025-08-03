@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { Inter, Space_Mono } from 'next/font/google';
 
 export const metadata: Metadata = {
-  title: 'G-Electra Hub',
+  title: 'G-Electra',
   description: 'The official website for G-ELECTRA – Smart Systems Club.',
 };
 
