@@ -29,13 +29,13 @@ export default function Home() {
         
         <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col items-center text-center">
-            <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tighter mb-4 glow-effect">
+            <h1 className="font-headline text-6xl md:text-8xl font-black tracking-wider mb-2 glow-effect uppercase">
               G-ELECTRA
             </h1>
-            <p className="font-headline text-lg md:text-xl text-muted-foreground mb-2">
+            <p className="font-body text-xl md:text-2xl text-muted-foreground mb-8 tracking-widest">
               Smart Systems Club
             </p>
-            <p className="max-w-xl text-lg md:text-xl text-muted-foreground mb-8">
+            <p className="max-w-xl text-lg md:text-xl text-muted-foreground/80 mb-10">
               Welcome to the nexus of innovation. We are the architects of the future, building smart systems for a connected world.
             </p>
             <div className="flex gap-4">

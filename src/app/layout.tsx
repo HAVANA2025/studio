@@ -4,7 +4,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import { Inter, Space_Mono } from 'next/font/google';
+import { Inter, Orbitron } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: 'G-Electra',
@@ -16,10 +16,10 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-const spaceMono = Space_Mono({
+const orbitron = Orbitron({
   subsets: ['latin'],
-  variable: '--font-space-mono',
-  weight: ['400', '700'],
+  variable: '--font-orbitron',
+  weight: ['400', '700', '900'],
 });
 
 export default function RootLayout({
@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={cn('font-body antialiased min-h-screen bg-background flex flex-col', inter.variable, spaceMono.variable)}>
+      <body className={cn('font-body antialiased min-h-screen bg-background flex flex-col', inter.variable, orbitron.variable)}>
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />
