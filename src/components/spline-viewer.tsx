@@ -11,7 +11,7 @@ export function SplineViewer({ className }: { className?: string }) {
         src="https://unpkg.com/@splinetool/viewer@1.10.39/build/spline-viewer.js"
         strategy="lazyOnload"
       />
-      <spline-viewer url="https://prod.spline.design/A5w56-F124gqvI-d/scene.splinecode" />
+      <spline-viewer loading-anim-type="spinner-small-dark" url="https://prod.spline.design/AR-PPXQV-gCjabI9/scene.splinecode" />
     </div>
   );
 }
