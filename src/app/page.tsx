@@ -24,15 +24,9 @@ export default function Home() {
     <div className="flex flex-col items-center overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative w-full h-[90vh] min-h-[700px] flex items-center justify-center text-center overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-60 z-10"></div>
-        <Image 
-          src="https://placehold.co/1920x1080.png"
-          alt="Futuristic cyberpunk background"
-          fill
-          className="object-cover z-0"
-          data-ai-hint="futuristic cyberpunk city"
-          priority
-        />
+        <div className="absolute inset-0 z-10" style={{background: 'radial-gradient(circle at center, transparent 20%, hsl(var(--background)) 70%)'}} />
+        <div className="absolute inset-0 bg-background opacity-40 z-0"></div>
+        
         <div className="relative z-20 container mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <h1 className="font-headline text-5xl md:text-7xl font-bold tracking-tighter mb-4 glow-effect">
@@ -54,7 +48,6 @@ export default function Home() {
             <SplineViewer />
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-background to-transparent z-10"></div>
       </section>
 
       {/* Stats Section */}
@@ -62,7 +55,7 @@ export default function Home() {
         <div className="container mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <Card key={index} className="bg-card/50 border-primary/20 text-center p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+              <Card key={index} className="bg-secondary/40 border-primary/20 text-center p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
                 <div className="text-primary mx-auto mb-4">{stat.icon}</div>
                 <p className="text-4xl font-bold font-headline">{stat.value}</p>
                 <p className="text-muted-foreground">{stat.label}</p>
@@ -79,7 +72,7 @@ export default function Home() {
           <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">We are active in various cutting-edge fields. Dive into the one that excites you most.</p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {domains.map((domain) => (
-               <Card key={domain.name} className="bg-card p-6 text-center transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-accent/20">
+               <Card key={domain.name} className="bg-card p-6 text-center transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/20">
                 <CardHeader>
                   <div className="text-5xl mb-4">{domain.icon}</div>
                   <CardTitle className="font-headline">{domain.name}</CardTitle>
@@ -90,7 +83,7 @@ export default function Home() {
               </Card>
             ))}
           </div>
-           <Button asChild variant="link" className="mt-8 text-accent text-lg">
+           <Button asChild variant="link" className="mt-8 text-primary text-lg">
             <Link href="/domains">View All Domains <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </div>
