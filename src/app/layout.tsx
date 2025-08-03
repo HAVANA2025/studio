@@ -4,11 +4,23 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
+import { Inter, Space_Mono } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: 'G-Electra Hub',
   description: 'The official website for G-ELECTRA – Smart Systems Club.',
 };
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+});
+
+const spaceMono = Space_Mono({
+  subsets: ['latin'],
+  variable: '--font-space-mono',
+  weight: ['400', '700'],
+});
 
 export default function RootLayout({
   children,
@@ -17,15 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={cn('font-body antialiased min-h-screen bg-background flex flex-col')}>
+      <body className={cn('font-body antialiased min-h-screen bg-background flex flex-col', inter.variable, spaceMono.variable)}>
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />
