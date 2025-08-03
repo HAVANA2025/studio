@@ -25,7 +25,6 @@ import { cn } from '@/lib/utils';
 const navLinks = [
   { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
   { href: '/about', label: 'About Us', icon: <Info className="w-4 h-4" /> },
-  { href: '/domains', label: 'Domains', icon: <Shapes className="w-4 h-4" /> },
   { href: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
   { href: '/community', label: 'Community', icon: <Users className="w-4 h-4" /> },
   { href: '/media', label: 'Media', icon: <ImageIcon className="w-4 h-4" /> },
