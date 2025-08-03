@@ -3,7 +3,7 @@ import { SplineViewer } from "@/components/spline-viewer";
 
 export default function PlaygroundPage() {
   return (
-    <div className="relative isolate flex flex-col items-center justify-center min-h-[calc(100vh-theme(spacing.14))] py-16 sm:py-24">
+    <div className="relative isolate flex flex-col items-center justify-end min-h-[calc(100vh-theme(spacing.14))] pb-16 sm:pb-24">
       <div className="absolute inset-0 -z-10 h-full w-full">
         <SplineViewer url="https://prod.spline.design/RiP-3wN4pmYBVpMU/scene.splinecode" />
         <div className="absolute inset-0 bg-background/60 backdrop-blur-[1px]"></div>
