@@ -1,3 +1,4 @@
+import { AnimatedStatCard } from '@/components/animated-stat-card';
 import { SplineViewer } from '@/components/spline-viewer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,10 +7,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const stats = [
-  { value: '50+', label: 'Members', icon: <Users className="w-8 h-8" /> },
-  { value: '10+', label: 'Domains', icon: <Code className="w-8 h-8" /> },
-  { value: '20+', label: 'Workshops', icon: <Zap className="w-8 h-8" /> },
-  { value: '15+', label: 'Projects', icon: <Cpu className="w-8 h-8" /> },
+  { value: 50, label: 'Members', icon: <Users className="w-8 h-8" /> },
+  { value: 10, label: 'Domains', icon: <Code className="w-8 h-8" /> },
+  { value: 20, label: 'Workshops', icon: <Zap className="w-8 h-8" /> },
+  { value: 15, label: 'Projects', icon: <Cpu className="w-8 h-8" /> },
 ];
 
 const domains = [
@@ -58,13 +59,15 @@ export default function Home() {
       {/* Stats Section */}
       <section id="stats" className="w-full py-16 sm:py-24 bg-background">
         <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-4xl font-bold">
+              <span className="text-primary">LEARN.</span> BUILD. <span className="text-primary">INNOVATE.</span>
+            </h2>
+            <h3 className="font-headline text-3xl font-bold mt-2">ELEVATE YOURSELF.</h3>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <Card key={index} className="bg-secondary/40 border-primary/20 text-center p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
-                <div className="text-primary mx-auto mb-4">{stat.icon}</div>
-                <p className="text-4xl font-bold font-headline">{stat.value}</p>
-                <p className="text-muted-foreground">{stat.label}</p>
-              </Card>
+              <AnimatedStatCard key={index} stat={stat} />
             ))}
           </div>
         </div>
