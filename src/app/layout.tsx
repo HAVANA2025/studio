@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'G-Electra',
   description: 'The official website for G-ELECTRA – Smart Systems Club.',
   icons: {
-    icon: '/images/logo.png',
+    icon: '/favicon.ico',
   },
 };
 
