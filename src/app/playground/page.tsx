@@ -1,5 +1,7 @@
 import { ProjectSuggestionForm } from "@/components/project-suggestion-form";
-import { SplineViewer } from "@/components/spline-viewer";
+import dynamic from "next/dynamic";
+
+const SplineViewer = dynamic(() => import('@/components/spline-viewer').then(mod => mod.SplineViewer), { ssr: false });
 
 export default function PlaygroundPage() {
   return (

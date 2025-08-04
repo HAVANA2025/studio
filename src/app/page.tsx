@@ -1,10 +1,13 @@
 
-import { AnimatedStatCard } from '@/components/animated-stat-card';
-import { SplineViewer } from '@/components/spline-viewer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Users, Code, Zap, Cpu } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+const AnimatedStatCard = dynamic(() => import('@/components/animated-stat-card').then(mod => mod.AnimatedStatCard), { ssr: false });
+const SplineViewer = dynamic(() => import('@/components/spline-viewer').then(mod => mod.SplineViewer), { ssr: false });
+
 
 const stats = [
   { value: 50, label: 'Members', icon: <Users className="w-8 h-8" /> },

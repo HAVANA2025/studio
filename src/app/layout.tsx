@@ -17,12 +17,14 @@ export const metadata: Metadata = {
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
 });
 
 const audiowide = Audiowide({
   subsets: ['latin'],
   weight: '400',
   variable: '--font-audiowide',
+  display: 'swap',
 });
 
 export default function RootLayout({
