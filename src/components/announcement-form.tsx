@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -13,13 +13,18 @@ import { useToast } from '@/hooks/use-toast';
 import type { Announcement } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
+const categories = ['General', 'Events', 'Workshops', 'Results'] as const;
 
 const formSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
   text: z.string().min(10, 'Text must be at least 10 characters.'),
+  category: z.enum(categories, { required_error: 'Please select a category.'}),
   date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid date format.'}),
   link: z.string().url().optional().or(z.literal('')),
   linkText: z.string().optional(),
+  imageUrl: z.string().url().optional().or(z.literal('')),
 });
 
 type AnnouncementFormProps = {
@@ -36,9 +41,11 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
     defaultValues: {
       title: announcement?.title || '',
       text: announcement?.text || '',
+      category: announcement?.category || 'General',
       date: announcement?.date || new Date().toISOString().split('T')[0],
       link: announcement?.link || '',
       linkText: announcement?.linkText || '',
+      imageUrl: announcement?.imageUrl || '',
     },
   });
 
@@ -86,6 +93,26 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
             </FormItem>
           )}
         />
+         <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="text"
@@ -126,6 +153,17 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
             <FormItem>
               <FormLabel>Link Text (Optional)</FormLabel>
               <FormControl><Input placeholder="E.g., Read More" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Image URL (Optional)</FormLabel>
+              <FormControl><Input placeholder="https://example.com/image.jpg" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}

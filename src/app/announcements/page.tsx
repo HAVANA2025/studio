@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { collection, onSnapshot, orderBy, query, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -23,11 +23,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Megaphone, PlusCircle, Edit, Trash2, LogOut, FileText, Image as ImageIcon, ExternalLink, UserCircle, Shield } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Megaphone, PlusCircle, Edit, Trash2, LogOut, FileText, Image as ImageIcon, ExternalLink, UserCircle, Shield, Search } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnnouncementForm } from '@/components/announcement-form';
 import type { Announcement } from '@/lib/types';
 import Link from 'next/link';
+
+const categories = ['All', 'General', 'Events', 'Workshops', 'Results'] as const;
+type Category = typeof categories[number];
 
 export default function AnnouncementsPage() {
   const { user, isAdmin, loading, handleSignOut } = useAuth();
@@ -35,6 +40,9 @@ export default function AnnouncementsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
   useEffect(() => {
     const q = query(collection(db, 'announcements'), orderBy('date', 'desc'));
@@ -48,6 +56,16 @@ export default function AnnouncementsPage() {
     });
     return () => unsubscribe();
   }, []);
+
+  const filteredAnnouncements = useMemo(() => {
+    return announcements.filter(ann => {
+      const matchesCategory = selectedCategory === 'All' || ann.category === selectedCategory;
+      const matchesSearch = searchTerm === '' || 
+        ann.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ann.text.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [announcements, selectedCategory, searchTerm]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -89,6 +107,30 @@ export default function AnnouncementsPage() {
             </Card>
         )}
       </div>
+      
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="relative flex-grow">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input 
+            placeholder="Search announcements..."
+            className="pl-10 h-12"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center justify-center gap-2 p-1 bg-secondary rounded-full">
+          {categories.map(category => (
+            <Button 
+              key={category} 
+              variant={selectedCategory === category ? 'default' : 'ghost'}
+              className="rounded-full"
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+      </div>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         {isAdmin && (
@@ -115,14 +157,17 @@ export default function AnnouncementsPage() {
         </div>
       ) : (
         <div className="space-y-8">
-          {announcements.map((ann) => (
+          {filteredAnnouncements.length > 0 ? filteredAnnouncements.map((ann) => (
             <Card key={ann.id} className="relative transition-all duration-300 hover:shadow-md hover:shadow-accent/10">
               <CardHeader>
                 <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                          <Megaphone className="text-accent" /> {ann.title}
-                      </CardTitle>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                            <Megaphone className="text-accent" /> {ann.title}
+                        </CardTitle>
+                        <Badge variant={ann.category === 'Events' ? 'default' : 'secondary'}>{ann.category}</Badge>
+                      </div>
                       <CardDescription className="mt-2">
                           Posted on {new Date(ann.date).toLocaleDateString()}
                       </CardDescription>
@@ -153,15 +198,24 @@ export default function AnnouncementsPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground whitespace-pre-wrap">{ann.text}</p>
+                {ann.imageUrl && (
+                  <div className="mt-4">
+                    <img src={ann.imageUrl} alt={ann.title} className="rounded-lg max-w-full h-auto" />
+                  </div>
+                )}
               </CardContent>
-              {(ann.imageUrl || ann.link) && (
+              {(ann.link) && (
                  <CardFooter className="flex gap-4 pt-4">
-                  {ann.imageUrl && <a href={ann.imageUrl} target="_blank" rel="noopener noreferrer"><Button variant="outline"><ImageIcon className="mr-2"/>View Image</Button></a>}
                   {ann.link && <a href={ann.link} target="_blank" rel="noopener noreferrer"><Button variant="outline"><ExternalLink className="mr-2"/>{ann.linkText || 'Visit Link'}</Button></a>}
                 </CardFooter>
               )}
             </Card>
-          ))}
+          )) : (
+            <Card className="text-center py-16 border-2 border-dashed border-muted-foreground/20">
+              <h3 className="font-headline text-2xl">No Announcements Found</h3>
+              <p className="text-muted-foreground mt-2">Try adjusting your search or filter.</p>
+            </Card>
+          )}
         </div>
       )}
     </div>

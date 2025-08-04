@@ -4,10 +4,12 @@ export interface Announcement {
   id: string;
   title: string;
   text: string;
+  category: 'General' | 'Events' | 'Workshops' | 'Results';
   createdAt: Timestamp;
   date: string;
   link?: string;
   linkText?: string;
+  imageUrl?: string;
 }
 
 export type Event = {
