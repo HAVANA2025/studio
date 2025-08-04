@@ -11,10 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, MapPin, Phone } from 'lucide-react';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { sendContactEmail } from './actions';
 
 const contactSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -37,21 +36,23 @@ export default function ContactPage() {
   async function onSubmit(values: z.infer<typeof contactSchema>) {
     setIsSubmitting(true);
     try {
-      await addDoc(collection(db, 'contacts'), {
-        ...values,
-        createdAt: serverTimestamp(),
-      });
+      const result = await sendContactEmail(values);
 
-      toast({
-        title: 'Message Sent!',
-        description: "We've received your message and will get back to you shortly.",
-      });
-      form.reset();
-    } catch (error) {
-      console.error('Error saving contact message:', error);
+      if (result.success) {
+         toast({
+            title: 'Message Sent!',
+            description: "We've received your message and will get back to you shortly.",
+        });
+        form.reset();
+      } else {
+        throw new Error(result.error);
+      }
+
+    } catch (error: any) {
+      console.error('Error sending contact message:', error);
       toast({
         title: 'Submission Failed',
-        description: 'There was an error sending your message. Please try again.',
+        description: `There was an error sending your message: ${error.message}`,
         variant: 'destructive',
       });
     } finally {
