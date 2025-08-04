@@ -6,7 +6,7 @@ import * as z from 'zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Github } from 'lucide-react';
-import { signInWithEmailAndPassword, GithubAuthProvider, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithEmailAndPassword, GithubAuthProvider, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
 import { Button } from '@/components/ui/button';
@@ -54,8 +54,7 @@ export default function LoginPage() {
   async function handleGithubLogin() {
     const provider = new GithubAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      router.push('/announcements');
+      await signInWithRedirect(auth, provider);
     } catch (error: any) {
        toast({
         title: 'Login Failed',
@@ -68,8 +67,7 @@ export default function LoginPage() {
   async function handleGoogleLogin() {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      router.push('/announcements');
+      await signInWithRedirect(auth, provider);
     } catch (error: any) {
        toast({
         title: 'Login Failed',

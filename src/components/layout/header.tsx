@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -37,7 +37,6 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '../logo';
-import { useRouter } from 'next/navigation';
 
 const mainNavLinks = [
   { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
@@ -149,7 +148,7 @@ export function Header() {
                 <Link href="/signup"><UserPlus className="mr-2"/>Sign Up</Link>
               </Button>
             </>
-          ) : null }
+          ) : <div className="w-24 h-10 animate-pulse rounded-md bg-muted" /> }
         </div>
 
         <button

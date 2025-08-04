@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, GithubAuthProvider, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Github } from 'lucide-react';
@@ -55,8 +55,7 @@ export default function SignupPage() {
 
   async function handleSocialSignup(provider: GoogleAuthProvider | GithubAuthProvider) {
     try {
-      await signInWithPopup(auth, provider);
-      router.push('/announcements');
+      await signInWithRedirect(auth, provider);
     } catch (error: any) {
        toast({
         title: 'Sign Up Failed',
