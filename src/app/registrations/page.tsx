@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Calendar, MapPin, Ticket, PlusCircle, Edit, Trash2, Users, FileText, Youtube } from 'lucide-react';
+import { Calendar, MapPin, Ticket, PlusCircle, Edit, Trash2, Users, FileText } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EventForm } from '@/components/event-form';
 import type { Event } from '@/lib/types';
@@ -62,7 +62,6 @@ export default function RegistrationsPage() {
   const pastEvents = events.filter(event => new Date(event.date) < today);
 
   // A mock list of past events to demonstrate the new design.
-  // In a real scenario, this data would come from Firebase and be sorted by date.
   const mockPastEvents: Event[] = [
       {
           id: '2',
@@ -243,5 +242,3 @@ export default function RegistrationsPage() {
     </div>
   );
 }
-
-    
