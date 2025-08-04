@@ -1,3 +1,5 @@
+'use client';
+
 import { ProjectSuggestionForm } from "@/components/project-suggestion-form";
 import dynamic from "next/dynamic";
 
