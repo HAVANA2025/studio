@@ -55,6 +55,7 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
         await addDoc(collection(db, 'announcements'), announcementData);
         toast({ title: 'Success', description: 'Announcement added successfully.' });
       }
+      form.reset();
       onFinished();
 
     } catch (error: any) {

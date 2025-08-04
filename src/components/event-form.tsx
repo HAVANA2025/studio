@@ -54,6 +54,7 @@ export function EventForm({ event, onFinished }: EventFormProps) {
         await addDoc(collection(db, 'events'), eventData);
         toast({ title: 'Success', description: 'Event added successfully.' });
       }
+      form.reset();
       onFinished();
     } catch (error: any)
 {
