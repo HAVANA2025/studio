@@ -1,10 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { useAuth } from '@/hooks/use-auth';
 import { 
   Menu, 
@@ -56,15 +54,9 @@ const dropdownNavLinks = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user, loading, handleSignOut } = useAuth();
 
   const allNavLinks = [...mainNavLinks, ...dropdownNavLinks];
-
-  const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/');
-  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

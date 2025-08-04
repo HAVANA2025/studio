@@ -76,7 +76,7 @@ export default function AnnouncementsPage() {
               Stay updated with the latest news and events.
             </p>
         </div>
-        { user && (
+        { user && !loading && (
             <Card className="p-4 bg-secondary/30 w-full sm:w-auto">
               <div className="flex items-center gap-4">
                 {isAdmin ? <Shield className="text-primary"/> : <UserCircle/>}

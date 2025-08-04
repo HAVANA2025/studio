@@ -15,11 +15,9 @@ type AuthState = {
 export function useAuth(): AuthState {
   const { toast } = useToast();
   const router = useRouter();
-  const [authState, setAuthState] = useState<Omit<AuthState, 'handleSignOut'>>({
-    user: null,
-    isAdmin: false,
-    loading: true,
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -36,14 +34,28 @@ export function useAuth(): AuthState {
 
 
   useEffect(() => {
-    // This function runs once on mount to process the redirect result.
-    const processRedirect = async () => {
+    // This function handles both initial auth state and redirect results.
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUser(user);
+        setIsAdmin(adminEmails.includes(user.email || ''));
+        setLoading(false);
+        return;
+      }
+
+      // If no user, check for redirect result. This might sign them in.
       try {
         const result = await getRedirectResult(auth);
         if (result) {
-          // User has successfully signed in or signed up via redirect.
-          // The onAuthStateChanged listener below will handle the user state update.
-          router.push('/announcements'); // Redirect to a logged-in page
+          // A user was signed in via redirect.
+          // onAuthStateChanged will be re-triggered with the new user.
+          // We can redirect them to the announcements page.
+          router.push('/announcements');
+        } else {
+          // No active user and no redirect result.
+          setUser(null);
+          setIsAdmin(false);
+          setLoading(false);
         }
       } catch (error: any) {
         toast({
@@ -51,21 +63,14 @@ export function useAuth(): AuthState {
           description: error.message,
           variant: 'destructive',
         });
+        setUser(null);
+        setIsAdmin(false);
+        setLoading(false);
       }
-    };
-    
-    processRedirect();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      let isAdmin = false;
-      if (user && user.email) {
-        isAdmin = adminEmails.includes(user.email);
-      }
-      setAuthState({ user, isAdmin, loading: false });
     });
 
     return () => unsubscribe();
   }, [router, toast]);
 
-  return { ...authState, handleSignOut };
+  return { user, isAdmin, loading, handleSignOut };
 }
