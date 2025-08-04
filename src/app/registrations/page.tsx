@@ -201,7 +201,7 @@ export default function RegistrationsPage() {
             {allPastEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10">
                 {event.imageUrl ? (
-                  <div className="relative aspect-[16/9]">
+                  <div className="relative aspect-[3/2]">
                     <Image src={event.imageUrl} alt={event.title} fill className="object-cover" data-ai-hint="tech conference students" />
                   </div>
                 ) : (

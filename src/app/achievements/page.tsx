@@ -82,7 +82,7 @@ export default function AchievementsPage() {
       <div className="max-w-5xl mx-auto grid gap-12">
         {achievements.map((ach, index) => (
           <Card key={index} className="grid md:grid-cols-5 gap-6 items-center overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10 p-6">
-            <div className="md:col-span-2 relative aspect-video md:aspect-square rounded-lg overflow-hidden">
+            <div className="md:col-span-2 relative aspect-[3/2] rounded-lg overflow-hidden">
                 <Image 
                     src={ach.image} 
                     alt={ach.event} 
