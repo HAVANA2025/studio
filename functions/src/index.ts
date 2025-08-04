@@ -1,6 +1,6 @@
 
 import * as functions from "firebase-functions/v1";
-import type {AuthUserRecord} from "firebase-functions/v1/auth";
+import type {UserRecord} from "firebase-functions/v1/auth";
 import {Resend} from "resend";
 
 // Initialize Resend with the API key you set in the config
@@ -9,7 +9,7 @@ const resend = new Resend(functions.config().resend.apikey);
 /**
  * Sends a welcome email to new users when they sign up.
  */
-export const sendWelcomeEmail = functions.auth.user().onCreate((user: AuthUserRecord) => {
+export const sendWelcomeEmail = functions.auth.user().onCreate((user: UserRecord) => {
   const email = user.email;
 
   if (!email) {
