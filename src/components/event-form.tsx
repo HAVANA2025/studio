@@ -19,7 +19,7 @@ const formSchema = z.object({
   date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid date format.' }),
   location: z.string().min(2, 'Location is required.'),
   registrationLink: z.string().url().optional().or(z.literal('')),
-  image: z.any().optional(),
+  image: z.instanceof(FileList).optional(),
 });
 
 type EventFormProps = {
@@ -38,15 +38,13 @@ export function EventForm({ event, onFinished }: EventFormProps) {
       date: event?.date ? new Date(event.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       location: event?.location || '',
       registrationLink: event?.registrationLink || '',
-      image: null,
     },
   });
 
   const uploadFile = async (file: File): Promise<string> => {
     const storageRef = ref(storage, `events/images/${Date.now()}_${file.name}`);
     await uploadBytes(storageRef, file);
-    const downloadUrl = await getDownloadURL(storageRef);
-    return downloadUrl;
+    return await getDownloadURL(storageRef);
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -57,7 +55,7 @@ export function EventForm({ event, onFinished }: EventFormProps) {
         imageUrl = await uploadFile(values.image[0]);
       } else if (!event) {
         toast({ title: 'Error', description: 'An image is required for a new event.', variant: 'destructive' });
-        setIsSubmitting(false);
+        setIsSubmitting(false); // Stop submission if no image for new event
         return;
       }
 
@@ -65,7 +63,7 @@ export function EventForm({ event, onFinished }: EventFormProps) {
           title: values.title,
           date: values.date,
           location: values.location,
-          registrationLink: values.registrationLink,
+          registrationLink: values.registrationLink || '',
           imageUrl 
         };
 
@@ -140,15 +138,14 @@ export function EventForm({ event, onFinished }: EventFormProps) {
         <FormField
           control={form.control}
           name="image"
-          render={({ field: { onChange, value, ...rest } }) => (
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>Event Image {event ? '(Optional)' : ''}</FormLabel>
+              <FormLabel>Event Image {event ? '(Optional Update)' : ''}</FormLabel>
               <FormControl>
                 <Input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => onChange(e.target.files)}
-                  {...rest}
+                  {...form.register('image')}
                 />
               </FormControl>
               <FormMessage />
