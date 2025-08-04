@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Calendar, MapPin, Ticket, PlusCircle, Edit, Trash2, Users, FileText } from 'lucide-react';
+import { Calendar, MapPin, Ticket, PlusCircle, Edit, Trash2, Users, FileText, Youtube } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EventForm } from '@/components/event-form';
 import type { Event } from '@/lib/types';
@@ -201,9 +201,19 @@ export default function RegistrationsPage() {
             {allPastEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10">
                 {event.imageUrl ? (
-                  <div className="relative aspect-[3/2]">
-                    <Image src={event.imageUrl} alt={event.title} fill className="object-cover" data-ai-hint="tech conference students" />
-                  </div>
+                  !event.imageUrl.includes('youtube.com') ? (
+                    <div className="relative aspect-[3/2]">
+                      <Image src={event.imageUrl} alt={event.title} fill className="object-cover" data-ai-hint="tech conference students" />
+                    </div>
+                  ) : (
+                    <div className="relative aspect-video bg-black flex items-center justify-center">
+                        <Button asChild variant="destructive">
+                            <a href={event.imageUrl} target='_blank' rel='noopener noreferrer'>
+                                <Youtube className="mr-2"/> View Video
+                            </a>
+                        </Button>
+                    </div>
+                  )
                 ) : (
                   <div className="bg-secondary flex items-center justify-center h-48">
                     <FileText className="w-12 h-12 text-muted-foreground" />
