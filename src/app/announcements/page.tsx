@@ -45,10 +45,19 @@ export default function AnnouncementsPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
 
   useEffect(() => {
-    const q = query(collection(db, 'announcements'), orderBy('date', 'desc'));
+    const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        setIsLoading(false);
+        return;
+      }
       const announcementsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Announcement));
       setAnnouncements(announcementsData);
+      
+      // Update the last seen timestamp
+      const latestTimestamp = announcementsData[0].createdAt.seconds;
+      localStorage.setItem('lastSeenAnnouncementTimestamp', latestTimestamp.toString());
+      
       setIsLoading(false);
     }, (error) => {
         console.error("Error fetching announcements: ", error);

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { 
   Menu, 
@@ -35,6 +35,10 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '../logo';
+import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { Announcement } from '@/lib/types';
+
 
 const mainNavLinks = [
   { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
@@ -55,8 +59,31 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { user, loading, handleSignOut } = useAuth();
+  const [hasNewAnnouncements, setHasNewAnnouncements] = useState(false);
 
   const allNavLinks = [...mainNavLinks, ...dropdownNavLinks];
+
+  useEffect(() => {
+    const checkAnnouncements = async () => {
+      try {
+        const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'), limit(1));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          const latestAnnouncement = snapshot.docs[0].data() as Announcement;
+          const lastSeenTimestamp = localStorage.getItem('lastSeenAnnouncementTimestamp');
+          
+          if (!lastSeenTimestamp || (latestAnnouncement.createdAt.seconds > parseInt(lastSeenTimestamp, 10))) {
+            setHasNewAnnouncements(true);
+          } else {
+            setHasNewAnnouncements(false);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to check for new announcements:", error);
+      }
+    };
+    checkAnnouncements();
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -105,8 +132,16 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" size="icon">
-            <Link href="#"><Bell /></Link>
+          <Button asChild variant="ghost" size="icon" className="relative">
+            <Link href="/announcements">
+              <Bell />
+              {hasNewAnnouncements && (
+                <span className="absolute top-1 right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                </span>
+              )}
+            </Link>
           </Button>
           {!loading && user ? (
              <DropdownMenu>
@@ -174,8 +209,16 @@ export function Header() {
                 ))}
               </nav>
               <div className="flex flex-col gap-2">
-                 <Button asChild variant="outline" className="w-full">
-                  <Link href="#" onClick={() => setIsOpen(false)}><Bell className="mr-2"/> Notifications</Link>
+                 <Button asChild variant="outline" className="w-full relative">
+                  <Link href="/announcements" onClick={() => setIsOpen(false)}>
+                    <Bell className="mr-2"/> Notifications
+                    {hasNewAnnouncements && (
+                      <span className="absolute top-1 right-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                      </span>
+                    )}
+                  </Link>
                 </Button>
                 {!loading && user ? (
                   <Button variant="outline" onClick={() => { handleSignOut(); setIsOpen(false);}} className="w-full"><LogOut className="mr-2"/>Sign Out</Button>
