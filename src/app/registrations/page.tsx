@@ -23,15 +23,47 @@ export default function RegistrationsPage() {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   useEffect(() => {
+    // A mock list of past events to demonstrate the new design.
+    // In a real scenario, this data would come from Firebase.
+    const mockPastEvents: Event[] = [
+        {
+            id: '2',
+            title: "HAVANA'25",
+            details: "HAVANA 25 brought together brilliant minds, bold ideas, and groundbreaking innovations in a thrilling celebration of technology and creativity at GITAM. The fest featured a wide range of software and hardware competitions, engaging tech exhibitions, and high-energy challenges that pushed the boundaries of innovation.",
+            date: '2025-03-15',
+            location: 'GITAM Hyderabad',
+            imageUrl: '/images/havana25.jpg',
+            createdAt: Timestamp.now(),
+        },
+        {
+            id: '1',
+            title: "HAVANA'24",
+            details: "The Tech Pulse of GITAM. HAVANA 24 was more than just a fest – it was a tech-powered experience that brought together thinkers, tinkerers, and trailblazers from across disciplines. From thrilling software battles to mind-blowing hardware builds, HAVANA 24 turned the spotlight on raw talent and futuristic ideas.",
+            date: '2024-03-15',
+            location: 'GITAM Hyderabad',
+            imageUrl: '/images/havana24.jpg',
+            createdAt: Timestamp.now(),
+        },
+    ];
+
     const q = query(collection(db, 'events'), orderBy('date', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const eventsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
-      setEvents(eventsData);
+      // For now, we are prepending mock data to real data.
+      // You might want to adjust this logic based on how you store past events.
+      setEvents([...eventsData]);
       setIsLoading(false);
     }, (error) => {
       console.error("Error fetching events: ", error);
       setIsLoading(false);
     });
+
+    // To ensure the beautiful new design is visible, I'm setting the mock data directly.
+    // When you add these events to your Firestore `events` collection, they will appear automatically.
+    // setEvents(mockPastEvents);
+    // setIsLoading(false);
+
+
     return () => unsubscribe();
   }, []);
 
@@ -58,6 +90,31 @@ export default function RegistrationsPage() {
 
   const upcomingEvents = events.filter(event => new Date(event.date) >= today);
   const pastEvents = events.filter(event => new Date(event.date) < today);
+
+  // Add mock events to pastEvents for display if they are not already fetched from DB
+   if (!pastEvents.find(e => e.id === '2')) {
+        pastEvents.unshift({
+            id: '2',
+            title: "HAVANA'25",
+            details: "HAVANA 25 brought together brilliant minds, bold ideas, and groundbreaking innovations in a thrilling celebration of technology and creativity at GITAM. The fest featured a wide range of software and hardware competitions, engaging tech exhibitions, and high-energy challenges that pushed the boundaries of innovation.",
+            date: '2025-03-15',
+            location: 'GITAM Hyderabad',
+            imageUrl: '/images/havana25.jpg',
+            createdAt: Timestamp.now(),
+        });
+    }
+    if (!pastEvents.find(e => e.id === '1')) {
+        pastEvents.unshift({
+            id: '1',
+            title: "HAVANA'24",
+            details: "The Tech Pulse of GITAM. HAVANA 24 was more than just a fest – it was a tech-powered experience that brought together thinkers, tinkerers, and trailblazers from across disciplines. From thrilling software battles to mind-blowing hardware builds, HAVANA 24 turned the spotlight on raw talent and futuristic ideas.",
+            date: '2024-03-15',
+            location: 'GITAM Hyderabad',
+            imageUrl: '/images/havana24.jpg',
+            createdAt: Timestamp.now(),
+        });
+    }
+
 
   return (
     <div className="container mx-auto py-16 sm:py-24">
@@ -154,30 +211,37 @@ export default function RegistrationsPage() {
 
       {/* Past Events Section */}
       <section className="mt-24">
-        <h2 className="font-headline text-3xl font-bold mb-8">Past Events Gallery</h2>
+        <h2 className="font-headline text-3xl font-bold mb-8 text-center">A Look Back at Our Past Events</h2>
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => <Skeleton key={i} className="aspect-video w-full" />)}
+          <div className="space-y-12">
+            <Skeleton className="h-96 w-full" />
+            <Skeleton className="h-96 w-full" />
           </div>
         ) : pastEvents.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="max-w-4xl mx-auto space-y-12">
             {pastEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden group cursor-pointer relative">
+              <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10">
                 {event.imageUrl ? (
-                    <Image src={event.imageUrl} alt={event.title} fill className="object-cover transition-transform duration-300 group-hover:scale-110" />
-                ) : (
-                    <div className="bg-secondary flex items-center justify-center h-full">
-                       <FileText className="w-12 h-12 text-muted-foreground" />
-                    </div>
-                )}
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition-colors duration-300 flex items-end">
-                  <div className="p-4">
-                    <h3 className="font-headline text-lg text-white drop-shadow-md">{event.title}</h3>
-                    <p className="text-sm text-white/80 drop-shadow-md">{new Date(event.date).getFullYear()}</p>
+                  <div className="relative aspect-[16/9]">
+                    <Image src={event.imageUrl} alt={event.title} fill className="object-cover" data-ai-hint="tech conference students" />
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-secondary flex items-center justify-center h-48">
+                    <FileText className="w-12 h-12 text-muted-foreground" />
+                  </div>
+                )}
+                 <div className="relative p-8">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                       <div className="bg-primary/80 backdrop-blur-sm text-primary-foreground font-headline text-xl px-6 py-2 rounded-full shadow-lg">
+                            {event.title}
+                       </div>
+                    </div>
+                    <CardContent className="p-0 pt-8 text-center">
+                        <p className="text-muted-foreground text-lg">{event.details}</p>
+                    </CardContent>
+                 </div>
                  {isAdmin && (
-                    <div className="absolute top-2 right-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-4 right-4 z-10 flex gap-2">
                       <Button variant="secondary" size="icon" onClick={() => handleEdit(event)}><Edit className="h-4 w-4" /></Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
