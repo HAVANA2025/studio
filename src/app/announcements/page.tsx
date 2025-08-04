@@ -7,6 +7,12 @@ import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -25,7 +31,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Megaphone, PlusCircle, Edit, Trash2, LogOut, FileText, Image as ImageIcon, ExternalLink, UserCircle, Shield, Search } from 'lucide-react';
+import { Megaphone, PlusCircle, Edit, Trash2, LogOut, FileText, Image as ImageIcon, ExternalLink, UserCircle, Shield, Search, ChevronDown } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnnouncementForm } from '@/components/announcement-form';
 import type { Announcement } from '@/lib/types';
@@ -55,8 +61,10 @@ export default function AnnouncementsPage() {
       setAnnouncements(announcementsData);
       
       // Update the last seen timestamp
-      const latestTimestamp = announcementsData[0].createdAt.seconds;
-      localStorage.setItem('lastSeenAnnouncementTimestamp', latestTimestamp.toString());
+      if (announcementsData.length > 0) {
+          const latestTimestamp = announcementsData[0].createdAt.seconds;
+          localStorage.setItem('lastSeenAnnouncementTimestamp', latestTimestamp.toString());
+      }
       
       setIsLoading(false);
     }, (error) => {
@@ -127,7 +135,8 @@ export default function AnnouncementsPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex items-center justify-center gap-2 p-1 bg-secondary rounded-full">
+         {/* Desktop Filters */}
+        <div className="hidden md:flex items-center justify-center gap-2 p-1 bg-secondary rounded-full">
           {categories.map(category => (
             <Button 
               key={category} 
@@ -138,6 +147,24 @@ export default function AnnouncementsPage() {
               {category}
             </Button>
           ))}
+        </div>
+         {/* Mobile Dropdown */}
+        <div className="md:hidden">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between h-12">
+                        {selectedCategory}
+                        <ChevronDown className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-full">
+                    {categories.map(category => (
+                        <DropdownMenuItem key={category} onSelect={() => setSelectedCategory(category)}>
+                            {category}
+                        </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
       </div>
 
