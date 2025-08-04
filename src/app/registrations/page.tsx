@@ -59,10 +59,9 @@ export default function RegistrationsPage() {
   today.setHours(0, 0, 0, 0); // Set time to midnight to compare dates accurately
 
   const upcomingEvents = events.filter(event => new Date(event.date) >= today);
-  const pastEvents = events.filter(event => new Date(event.date) < today);
 
   // A mock list of past events to demonstrate the new design.
-  const mockPastEvents: Event[] = [
+  const allPastEvents: Omit<Event, 'createdAt'>[] = [
       {
           id: '2',
           title: "HAVANA'25",
@@ -70,20 +69,16 @@ export default function RegistrationsPage() {
           date: '2025-03-15',
           location: 'GITAM Hyderabad',
           imageUrl: '/images/havana25.jpg',
-          createdAt: Timestamp.now(),
       },
-  ];
-
-  // Combine fetched past events with mock events, ensuring no duplicates
-  const allPastEvents = [...mockPastEvents];
-  pastEvents.forEach(event => {
-      if (!allPastEvents.find(e => e.id === event.id)) {
-          allPastEvents.push(event);
+      {
+          id: '3',
+          title: "HAVANA'24",
+          details: "HAVANA'24 set a new benchmark for technical festivals, with international workshops and inspiring keynote sessions that brought together students and professionals from around the globe to explore the future of technology.",
+          date: '2024-03-15',
+          location: 'GITAM Hyderabad',
+          imageUrl: '/images/havana24.jpg',
       }
-  });
-
-  // Sort all past events by date in descending order
-  allPastEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  ];
 
   return (
     <div className="container mx-auto py-16 sm:py-24">
@@ -211,7 +206,7 @@ export default function RegistrationsPage() {
                  </div>
                  {isAdmin && (
                     <div className="absolute top-4 right-4 z-10 flex gap-2">
-                      <Button variant="secondary" size="icon" onClick={() => handleEdit(event)}><Edit className="h-4 w-4" /></Button>
+                      <Button variant="secondary" size="icon" onClick={() => handleEdit(event as Event)}><Edit className="h-4 w-4" /></Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button>
