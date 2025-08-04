@@ -9,6 +9,9 @@ import { Inter, Audiowide } from 'next/font/google';
 export const metadata: Metadata = {
   title: 'G-Electra',
   description: 'The official website for G-ELECTRA – Smart Systems Club.',
+  icons: {
+    icon: '/images/logo.png',
+  },
 };
 
 const inter = Inter({
