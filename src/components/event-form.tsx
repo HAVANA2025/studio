@@ -44,8 +44,9 @@ export function EventForm({ event, onFinished }: EventFormProps) {
 
   const uploadFile = async (file: File): Promise<string> => {
     const storageRef = ref(storage, `events/images/${Date.now()}_${file.name}`);
-    const snapshot = await uploadBytes(storageRef, file);
-    return getDownloadURL(snapshot.ref);
+    await uploadBytes(storageRef, file);
+    const downloadUrl = await getDownloadURL(storageRef);
+    return downloadUrl;
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -73,6 +74,7 @@ export function EventForm({ event, onFinished }: EventFormProps) {
       }
       onFinished();
     } catch (error: any) {
+      console.error("Failed to save event:", error);
       toast({
         title: 'Error',
         description: `Failed to save event: ${error.message}`,
@@ -133,14 +135,15 @@ export function EventForm({ event, onFinished }: EventFormProps) {
         <FormField
           control={form.control}
           name="image"
-          render={({ field }) => (
+          render={({ field: { onChange, value, ...rest } }) => (
             <FormItem>
               <FormLabel>Event Image {event ? '(Optional)' : ''}</FormLabel>
               <FormControl>
                 <Input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => field.onChange(e.target.files)}
+                  onChange={(e) => onChange(e.target.files)}
+                  {...rest}
                 />
               </FormControl>
               <FormMessage />

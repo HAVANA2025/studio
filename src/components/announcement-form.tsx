@@ -46,19 +46,20 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
 
   const uploadFile = async (file: File, path: string): Promise<string> => {
     const storageRef = ref(storage, path);
-    const snapshot = await uploadBytes(storageRef, file);
-    return getDownloadURL(snapshot.ref);
+    await uploadBytes(storageRef, file);
+    const downloadUrl = await getDownloadURL(storageRef);
+    return downloadUrl;
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      let imageUrl = announcement?.imageUrl || '';
+      let imageUrl = announcement?.imageUrl || undefined;
       if (values.image && values.image.length > 0) {
         imageUrl = await uploadFile(values.image[0], `announcements/images/${Date.now()}_${values.image[0].name}`);
       }
 
-      let pdfUrl = announcement?.pdfUrl || '';
+      let pdfUrl = announcement?.pdfUrl || undefined;
       if (values.pdf && values.pdf.length > 0) {
         pdfUrl = await uploadFile(values.pdf[0], `announcements/pdfs/${Date.now()}_${values.pdf[0].name}`);
       }
@@ -85,6 +86,7 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
       }
       onFinished();
     } catch (error: any) {
+      console.error("Failed to save announcement:", error);
       toast({
         title: 'Error',
         description: `Failed to save announcement: ${error.message}`,
@@ -145,14 +147,15 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
          <FormField
           control={form.control}
           name="image"
-          render={({ field }) => (
+          render={({ field: { onChange, value, ...rest } }) => (
             <FormItem>
               <FormLabel>Image (Optional)</FormLabel>
               <FormControl>
                 <Input 
                   type="file" 
                   accept="image/*"
-                  onChange={(e) => field.onChange(e.target.files)}
+                  onChange={(e) => onChange(e.target.files)}
+                  {...rest}
                 />
               </FormControl>
               <FormMessage />
@@ -162,14 +165,15 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
         <FormField
           control={form.control}
           name="pdf"
-          render={({ field }) => (
+          render={({ field: { onChange, value, ...rest } }) => (
             <FormItem>
               <FormLabel>PDF (Optional)</FormLabel>
               <FormControl>
                 <Input 
                   type="file" 
                   accept=".pdf"
-                  onChange={(e) => field.onChange(e.target.files)}
+                  onChange={(e) => onChange(e.target.files)}
+                  {...rest}
                 />
               </FormControl>
               <FormMessage />
