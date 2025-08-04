@@ -73,15 +73,6 @@ export default function RegistrationsPage() {
           imageUrl: '/images/havana25.jpg',
           createdAt: Timestamp.now(),
       },
-      {
-          id: '1',
-          title: "HAVANA'24",
-          details: "The Tech Pulse of GITAM. HAVANA 24 was more than just a fest – it was a tech-powered experience that brought together thinkers, tinkerers, and trailblazers from across disciplines. From thrilling software battles to mind-blowing hardware builds, HAVANA 24 turned the spotlight on raw talent and futuristic ideas.",
-          date: '2024-03-15',
-          location: 'GITAM Hyderabad',
-          imageUrl: '/images/havana24.jpg',
-          createdAt: Timestamp.now(),
-      },
   ];
 
   // Combine fetched past events with mock events, ensuring no duplicates
@@ -201,20 +192,10 @@ export default function RegistrationsPage() {
             {allPastEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10">
                 {event.imageUrl ? (
-                  !event.imageUrl.includes('youtube.com') ? (
                     <div className="relative aspect-[3/2]">
                       <Image src={event.imageUrl} alt={event.title} fill className="object-cover" data-ai-hint="tech conference students" />
                     </div>
                   ) : (
-                    <div className="relative aspect-video bg-black flex items-center justify-center">
-                        <Button asChild variant="destructive">
-                            <a href={event.imageUrl} target='_blank' rel='noopener noreferrer'>
-                                <Youtube className="mr-2"/> View Video
-                            </a>
-                        </Button>
-                    </div>
-                  )
-                ) : (
                   <div className="bg-secondary flex items-center justify-center h-48">
                     <FileText className="w-12 h-12 text-muted-foreground" />
                   </div>
