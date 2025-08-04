@@ -55,7 +55,8 @@ export function EventForm({ event, onFinished }: EventFormProps) {
         toast({ title: 'Success', description: 'Event added successfully.' });
       }
       onFinished();
-    } catch (error: any) {
+    } catch (error: any)
+{
       console.error("Failed to save event:", error);
       toast({
         title: 'Error',
