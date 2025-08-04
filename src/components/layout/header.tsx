@@ -226,9 +226,17 @@ export function Header() {
                   </Link>
                 ))}
               </nav>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-4 border-t border-border pt-4">
                 {!loading && user ? (
-                  <Button variant="outline" onClick={() => { handleSignOut(); setIsOpen(false);}} className="w-full"><LogOut className="mr-2"/>Sign Out</Button>
+                  <>
+                    <div className="flex items-center gap-2 px-2">
+                       <UserCircle className="h-5 w-5 text-muted-foreground" />
+                       <div className="flex flex-col">
+                           <span className="text-sm font-medium">{user.email}</span>
+                       </div>
+                    </div>
+                    <Button variant="outline" onClick={() => { handleSignOut(); setIsOpen(false);}} className="w-full"><LogOut className="mr-2"/>Sign Out</Button>
+                  </>
                 ) : !loading ? (
                   <>
                     <Button asChild variant="outline" className="w-full">
