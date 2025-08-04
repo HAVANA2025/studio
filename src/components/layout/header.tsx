@@ -109,6 +109,12 @@ export function Header() {
               >
                 {link.icon}
                 <span className={cn(isActive ? 'glow-effect' : '')}>{link.label}</span>
+                 {link.href === '/announcements' && hasNewAnnouncements && (
+                    <span className="absolute top-1 right-1 flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-background opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-background"></span>
+                    </span>
+                 )}
               </Link>
             )
           })}
@@ -213,7 +219,7 @@ export function Header() {
                   <Link href="/announcements" onClick={() => setIsOpen(false)}>
                     <Bell className="mr-2"/> Notifications
                     {hasNewAnnouncements && (
-                      <span className="absolute top-1 right-1 flex h-3 w-3">
+                      <span className="absolute top-2 right-2 flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
                       </span>
