@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Twitter, Github, Linkedin } from 'lucide-react';
+import { Twitter, Github, Linkedin, Phone, Mail } from 'lucide-react';
 import { Logo } from '../logo';
 
 const quickLinks = [
@@ -77,11 +77,18 @@ export function Footer() {
           {/* Column 4: Contact */}
           <div>
             <h3 className="font-headline text-lg font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-3">
-               <li>
-                  <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
-                    Contact Page
-                  </Link>
+            <ul className="space-y-3 text-muted-foreground">
+               <li className="flex items-start gap-2">
+                  <Mail className="w-4 h-4 mt-1 shrink-0"/>
+                  <a href="mailto:gelectra@gitam.edu" className="hover:text-primary transition-colors">
+                    gelectra@gitam.edu
+                  </a>
+                </li>
+                 <li className="flex items-start gap-2">
+                  <Phone className="w-4 h-4 mt-1 shrink-0"/>
+                  <a href="tel:+917995988480" className="hover:text-primary transition-colors">
+                    +91 79959 88480
+                  </a>
                 </li>
             </ul>
           </div>

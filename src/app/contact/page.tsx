@@ -51,13 +51,13 @@ export default function ContactPage() {
         <div className="space-y-8">
             <h2 className="font-headline text-3xl font-bold">Get in Touch</h2>
             <div className="space-y-6 text-lg">
-                <a href="mailto:contact@g-electra.com" className="flex items-center gap-4 transition-colors hover:text-primary">
+                <a href="mailto:gelectra@gitam.edu" className="flex items-center gap-4 transition-colors hover:text-primary">
                     <Mail className="w-6 h-6 text-primary" />
-                    <span>contact@g-electra.com</span>
+                    <span>gelectra@gitam.edu</span>
                 </a>
-                <a href="#" className="flex items-center gap-4 transition-colors hover:text-primary">
+                <a href="tel:+917995988480" className="flex items-center gap-4 transition-colors hover:text-primary">
                     <Phone className="w-6 h-6 text-primary" />
-                    <span>+1 (555) 123-4567</span>
+                    <span>+91 79959 88480</span>
                 </a>
                 <div className="flex items-start gap-4">
                     <MapPin className="w-6 h-6 text-primary mt-1" />
