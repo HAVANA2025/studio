@@ -7,14 +7,14 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
 const mediaItems = [
-  { event: "Tech Fest 2023", src: "https://placehold.co/600x400.png", hint: "tech conference" },
-  { event: "Workshop Series", src: "https://placehold.co/600x400.png", hint: "students workshop" },
-  { event: "Hackathon Finals", src: "https://placehold.co/600x400.png", hint: "hackathon team" },
-  { event: "Annual Meetup", src: "https://placehold.co/600x400.png", hint: "team meeting" },
-  { event: "Project Showcase", src: "https://placehold.co/600x400.png", hint: "science fair" },
-  { event: "Guest Lecture", src: "https://placehold.co/600x400.png", hint: "speaker presentation" },
-  { event: "Robotics Competition", src: "https://placehold.co/600x400.png", hint: "robot competition" },
-  { event: "Club Anniversary", src: "https://placehold.co/600x400.png", hint: "office party" },
+  { event: "Tech Fest 2023", src: "https://picsum.photos/seed/techfest/600/400", hint: "tech conference" },
+  { event: "Workshop Series", src: "https://picsum.photos/seed/workshop/600/400", hint: "students workshop" },
+  { event: "Hackathon Finals", src: "https://picsum.photos/seed/hackathon/600/400", hint: "hackathon team" },
+  { event: "Annual Meetup", src: "https://picsum.photos/seed/meetup/600/400", hint: "team meeting" },
+  { event: "Project Showcase", src: "https://picsum.photos/seed/showcase/600/400", hint: "science fair" },
+  { event: "Guest Lecture", src: "https://picsum.photos/seed/lecture/600/400", hint: "speaker presentation" },
+  { event: "Robotics Competition", src: "https://picsum.photos/seed/robotics/600/400", hint: "robot competition" },
+  { event: "Club Anniversary", src: "https://picsum.photos/seed/anniversary/600/400", hint: "office party" },
 ];
 
 export default function MediaPage() {
