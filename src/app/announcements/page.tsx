@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { collection, onSnapshot, orderBy, query, deleteDoc, doc } from 'firebase/firestore';
-import { db, auth, storage } from '@/lib/firebase';
-import { deleteObject, ref } from 'firebase/storage';
+import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -42,7 +41,7 @@ export type Announcement = {
 };
 
 export default function AnnouncementsPage() {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, loading, handleSignOut } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -61,18 +60,8 @@ export default function AnnouncementsPage() {
     return () => unsubscribe();
   }, []);
 
-  const handleDelete = async (id: string, imageUrl?: string, pdfUrl?: string) => {
+  const handleDelete = async (id: string) => {
     try {
-      // Delete files from storage if they exist
-      if (imageUrl) {
-        const imageRef = ref(storage, imageUrl);
-        await deleteObject(imageRef);
-      }
-      if (pdfUrl) {
-        const pdfRef = ref(storage, pdfUrl);
-        await deleteObject(pdfRef);
-      }
-      // Delete document from firestore
       await deleteDoc(doc(db, 'announcements', id));
     } catch (error) {
       console.error("Error deleting announcement: ", error);
@@ -88,10 +77,6 @@ export default function AnnouncementsPage() {
     setEditingAnnouncement(null);
     setIsFormOpen(true);
   }
-
-  const handleSignOut = async () => {
-    await auth.signOut();
-  };
   
   return (
     <div className="container mx-auto py-16 sm:py-24">
@@ -164,12 +149,12 @@ export default function AnnouncementsPage() {
                                 <AlertDialogHeader>
                                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the announcement and any associated files.
+                                    This action cannot be undone. This will permanently delete the announcement.
                                 </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(ann.id, ann.imageUrl, ann.pdfUrl)}>Delete</AlertDialogAction>
+                                <AlertDialogAction onClick={() => handleDelete(ann.id)}>Delete</AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>

@@ -5,8 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { collection, onSnapshot, orderBy, query, deleteDoc, doc } from 'firebase/firestore';
-import { db, storage } from '@/lib/firebase';
-import { deleteObject, ref } from 'firebase/storage';
+import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -20,8 +19,8 @@ export type Event = {
   title: string;
   date: string;
   location: string;
-  registrationLink: string;
-  imageUrl: string;
+  registrationLink?: string;
+  imageUrl?: string;
 };
 
 export default function RegistrationsPage() {
@@ -46,10 +45,6 @@ export default function RegistrationsPage() {
 
   const handleDelete = async (event: Event) => {
     try {
-      if (event.imageUrl) {
-        const imageRef = ref(storage, event.imageUrl);
-        await deleteObject(imageRef);
-      }
       await deleteDoc(doc(db, 'events', event.id));
     } catch (error) {
       console.error("Error deleting event: ", error);
@@ -123,9 +118,11 @@ export default function RegistrationsPage() {
                       </AlertDialog>
                     </div>
                   )}
-                  <div className="relative aspect-video">
-                    <Image src={event.imageUrl || 'https://placehold.co/600x400.png'} alt={event.title} fill className="object-cover" />
-                  </div>
+                  {event.imageUrl && (
+                    <div className="relative aspect-video">
+                        <Image src={event.imageUrl || 'https://placehold.co/600x400.png'} alt={event.title} fill className="object-cover" />
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent className="p-6 flex-grow">
                   <CardTitle className="font-headline text-2xl mb-2">{event.title}</CardTitle>

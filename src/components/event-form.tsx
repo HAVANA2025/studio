@@ -4,8 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -19,7 +18,7 @@ const formSchema = z.object({
   date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid date format.' }),
   location: z.string().min(2, 'Location is required.'),
   registrationLink: z.string().url().optional().or(z.literal('')),
-  image: z.instanceof(FileList).optional(),
+  imageUrl: z.string().url().optional().or(z.literal('')),
 });
 
 type EventFormProps = {
@@ -38,34 +37,14 @@ export function EventForm({ event, onFinished }: EventFormProps) {
       date: event?.date ? new Date(event.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       location: event?.location || '',
       registrationLink: event?.registrationLink || '',
+      imageUrl: event?.imageUrl || '',
     },
   });
-
-  const uploadFile = async (file: File): Promise<string> => {
-    const storageRef = ref(storage, `events/images/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
-  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      let imageUrl = event?.imageUrl || '';
-      if (values.image && values.image.length > 0) {
-        imageUrl = await uploadFile(values.image[0]);
-      } else if (!event) {
-        toast({ title: 'Error', description: 'An image is required for a new event.', variant: 'destructive' });
-        setIsSubmitting(false); // Stop submission if no image for new event
-        return;
-      }
-
-      const eventData = { 
-          title: values.title,
-          date: values.date,
-          location: values.location,
-          registrationLink: values.registrationLink || '',
-          imageUrl 
-        };
+      const eventData = { ...values };
 
       if (event) {
         const docRef = doc(db, 'events', event.id);
@@ -137,16 +116,12 @@ export function EventForm({ event, onFinished }: EventFormProps) {
         />
         <FormField
           control={form.control}
-          name="image"
+          name="imageUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Event Image {event ? '(Optional Update)' : ''}</FormLabel>
+              <FormLabel>Image URL (Optional)</FormLabel>
               <FormControl>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  {...form.register('image')}
-                />
+                <Input placeholder="https://example.com/image.png" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
