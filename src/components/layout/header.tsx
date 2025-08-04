@@ -184,13 +184,25 @@ export function Header() {
           ) : <div className="w-24 h-10 animate-pulse rounded-md bg-muted" /> }
         </div>
 
-        <button
-          className="md:hidden"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X /> : <Menu />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+            <Button asChild variant="ghost" size="icon" className="relative">
+                <Link href="/announcements">
+                <Bell />
+                {hasNewAnnouncements && (
+                    <span className="absolute top-1 right-1 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                    </span>
+                )}
+                </Link>
+            </Button>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Toggle menu"
+            >
+                {isOpen ? <X /> : <Menu />}
+            </button>
+        </div>
       </div>
 
       {isOpen && (
@@ -215,17 +227,6 @@ export function Header() {
                 ))}
               </nav>
               <div className="flex flex-col gap-2">
-                 <Button asChild variant="outline" className="w-full relative">
-                  <Link href="/announcements" onClick={() => setIsOpen(false)}>
-                    <Bell className="mr-2"/> Notifications
-                    {hasNewAnnouncements && (
-                      <span className="absolute top-2 right-2 flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-                      </span>
-                    )}
-                  </Link>
-                </Button>
                 {!loading && user ? (
                   <Button variant="outline" onClick={() => { handleSignOut(); setIsOpen(false);}} className="w-full"><LogOut className="mr-2"/>Sign Out</Button>
                 ) : !loading ? (
