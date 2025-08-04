@@ -11,6 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Mail, MapPin, Phone } from 'lucide-react';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
 
 const contactSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -20,6 +24,7 @@ const contactSchema = z.object({
 
 export default function ContactPage() {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof contactSchema>>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -29,13 +34,29 @@ export default function ContactPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof contactSchema>) {
-    console.log(values);
-    toast({
-      title: 'Message Sent!',
-      description: "We've received your message and will get back to you shortly.",
-    });
-    form.reset();
+  async function onSubmit(values: z.infer<typeof contactSchema>) {
+    setIsSubmitting(true);
+    try {
+      await addDoc(collection(db, 'contacts'), {
+        ...values,
+        createdAt: serverTimestamp(),
+      });
+
+      toast({
+        title: 'Message Sent!',
+        description: "We've received your message and will get back to you shortly.",
+      });
+      form.reset();
+    } catch (error) {
+      console.error('Error saving contact message:', error);
+      toast({
+        title: 'Submission Failed',
+        description: 'There was an error sending your message. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -114,7 +135,8 @@ export default function ContactPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Submit
                 </Button>
               </form>
