@@ -156,8 +156,7 @@ export default function AnnouncementsPage() {
               </CardContent>
               {(ann.imageUrl || ann.link) && (
                  <CardFooter className="flex gap-4 pt-4">
-                  {ann.imageUrl && <a href={ann.imageUrl} target="_blank" rel="noopener noreferrer"><Button variant="outline"><ImageIcon className="mr-2"/>View Image</Button>a>}
-                  
+                  {ann.imageUrl && <a href={ann.imageUrl} target="_blank" rel="noopener noreferrer"><Button variant="outline"><ImageIcon className="mr-2"/>View Image</Button></a>}
                   {ann.link && <a href={ann.link} target="_blank" rel="noopener noreferrer"><Button variant="outline"><ExternalLink className="mr-2"/>{ann.linkText || 'Visit Link'}</Button></a>}
                 </CardFooter>
               )}
