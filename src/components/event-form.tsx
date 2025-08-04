@@ -61,8 +61,13 @@ export function EventForm({ event, onFinished }: EventFormProps) {
         return;
       }
 
-      const eventData = { ...values, imageUrl };
-      delete (eventData as any).image;
+      const eventData = { 
+          title: values.title,
+          date: values.date,
+          location: values.location,
+          registrationLink: values.registrationLink,
+          imageUrl 
+        };
 
       if (event) {
         const docRef = doc(db, 'events', event.id);

@@ -56,23 +56,25 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
     try {
       let imageUrl = announcement?.imageUrl || undefined;
       if (values.image && values.image.length > 0) {
-        imageUrl = await uploadFile(values.image[0], `announcements/images/${Date.now()}_${values.image[0].name}`);
+        const imageFile = values.image[0];
+        imageUrl = await uploadFile(imageFile, `announcements/images/${Date.now()}_${imageFile.name}`);
       }
 
       let pdfUrl = announcement?.pdfUrl || undefined;
       if (values.pdf && values.pdf.length > 0) {
-        pdfUrl = await uploadFile(values.pdf[0], `announcements/pdfs/${Date.now()}_${values.pdf[0].name}`);
+        const pdfFile = values.pdf[0];
+        pdfUrl = await uploadFile(pdfFile, `announcements/pdfs/${Date.now()}_${pdfFile.name}`);
       }
       
       const announcementData = {
-        ...values,
+        title: values.title,
+        text: values.text,
+        date: values.date,
+        link: values.link,
         imageUrl,
         pdfUrl,
         createdAt: announcement?.createdAt || new Date().toISOString(),
       };
-      
-      delete (announcementData as any).image;
-      delete (announcementData as any).pdf;
 
       if (announcement) {
         // Update existing document
