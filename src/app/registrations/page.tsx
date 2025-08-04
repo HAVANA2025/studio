@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,46 +24,15 @@ export default function RegistrationsPage() {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   useEffect(() => {
-    // A mock list of past events to demonstrate the new design.
-    // In a real scenario, this data would come from Firebase.
-    const mockPastEvents: Event[] = [
-        {
-            id: '2',
-            title: "HAVANA'25",
-            details: "HAVANA 25 brought together brilliant minds, bold ideas, and groundbreaking innovations in a thrilling celebration of technology and creativity at GITAM. The fest featured a wide range of software and hardware competitions, engaging tech exhibitions, and high-energy challenges that pushed the boundaries of innovation.",
-            date: '2025-03-15',
-            location: 'GITAM Hyderabad',
-            imageUrl: '/images/havana25.jpg',
-            createdAt: Timestamp.now(),
-        },
-        {
-            id: '1',
-            title: "HAVANA'24",
-            details: "The Tech Pulse of GITAM. HAVANA 24 was more than just a fest – it was a tech-powered experience that brought together thinkers, tinkerers, and trailblazers from across disciplines. From thrilling software battles to mind-blowing hardware builds, HAVANA 24 turned the spotlight on raw talent and futuristic ideas.",
-            date: '2024-03-15',
-            location: 'GITAM Hyderabad',
-            imageUrl: '/images/havana24.jpg',
-            createdAt: Timestamp.now(),
-        },
-    ];
-
     const q = query(collection(db, 'events'), orderBy('date', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const eventsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
-      // For now, we are prepending mock data to real data.
-      // You might want to adjust this logic based on how you store past events.
-      setEvents([...eventsData]);
+      setEvents(eventsData);
       setIsLoading(false);
     }, (error) => {
       console.error("Error fetching events: ", error);
       setIsLoading(false);
     });
-
-    // To ensure the beautiful new design is visible, I'm setting the mock data directly.
-    // When you add these events to your Firestore `events` collection, they will appear automatically.
-    // setEvents(mockPastEvents);
-    // setIsLoading(false);
-
 
     return () => unsubscribe();
   }, []);
@@ -91,30 +61,39 @@ export default function RegistrationsPage() {
   const upcomingEvents = events.filter(event => new Date(event.date) >= today);
   const pastEvents = events.filter(event => new Date(event.date) < today);
 
-  // Add mock events to pastEvents for display if they are not already fetched from DB
-   if (!pastEvents.find(e => e.id === '2')) {
-        pastEvents.unshift({
-            id: '2',
-            title: "HAVANA'25",
-            details: "HAVANA 25 brought together brilliant minds, bold ideas, and groundbreaking innovations in a thrilling celebration of technology and creativity at GITAM. The fest featured a wide range of software and hardware competitions, engaging tech exhibitions, and high-energy challenges that pushed the boundaries of innovation.",
-            date: '2025-03-15',
-            location: 'GITAM Hyderabad',
-            imageUrl: '/images/havana25.jpg',
-            createdAt: Timestamp.now(),
-        });
-    }
-    if (!pastEvents.find(e => e.id === '1')) {
-        pastEvents.unshift({
-            id: '1',
-            title: "HAVANA'24",
-            details: "The Tech Pulse of GITAM. HAVANA 24 was more than just a fest – it was a tech-powered experience that brought together thinkers, tinkerers, and trailblazers from across disciplines. From thrilling software battles to mind-blowing hardware builds, HAVANA 24 turned the spotlight on raw talent and futuristic ideas.",
-            date: '2024-03-15',
-            location: 'GITAM Hyderabad',
-            imageUrl: '/images/havana24.jpg',
-            createdAt: Timestamp.now(),
-        });
-    }
+  // A mock list of past events to demonstrate the new design.
+  // In a real scenario, this data would come from Firebase and be sorted by date.
+  const mockPastEvents: Event[] = [
+      {
+          id: '2',
+          title: "HAVANA'25",
+          details: "HAVANA 25 brought together brilliant minds, bold ideas, and groundbreaking innovations in a thrilling celebration of technology and creativity at GITAM. The fest featured a wide range of software and hardware competitions, engaging tech exhibitions, and high-energy challenges that pushed the boundaries of innovation.",
+          date: '2025-03-15',
+          location: 'GITAM Hyderabad',
+          imageUrl: '/images/havana25.jpg',
+          createdAt: Timestamp.now(),
+      },
+      {
+          id: '1',
+          title: "HAVANA'24",
+          details: "The Tech Pulse of GITAM. HAVANA 24 was more than just a fest – it was a tech-powered experience that brought together thinkers, tinkerers, and trailblazers from across disciplines. From thrilling software battles to mind-blowing hardware builds, HAVANA 24 turned the spotlight on raw talent and futuristic ideas.",
+          date: '2024-03-15',
+          location: 'GITAM Hyderabad',
+          imageUrl: '/images/havana24.jpg',
+          createdAt: Timestamp.now(),
+      },
+  ];
 
+  // Combine fetched past events with mock events, ensuring no duplicates
+  const allPastEvents = [...mockPastEvents];
+  pastEvents.forEach(event => {
+      if (!allPastEvents.find(e => e.id === event.id)) {
+          allPastEvents.push(event);
+      }
+  });
+
+  // Sort all past events by date in descending order
+  allPastEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <div className="container mx-auto py-16 sm:py-24">
@@ -217,9 +196,9 @@ export default function RegistrationsPage() {
             <Skeleton className="h-96 w-full" />
             <Skeleton className="h-96 w-full" />
           </div>
-        ) : pastEvents.length > 0 ? (
+        ) : allPastEvents.length > 0 ? (
           <div className="max-w-4xl mx-auto space-y-12">
-            {pastEvents.map((event) => (
+            {allPastEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10">
                 {event.imageUrl ? (
                   <div className="relative aspect-[16/9]">
