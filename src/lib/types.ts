@@ -4,10 +4,21 @@ export interface Announcement {
   id: string;
   title: string;
   text: string;
-  createdAt: Timestamp | string; // Allow string for new objects, but Firestore will store it as Timestamp
+  createdAt: Timestamp;
   date: string;
   link?: string;
   linkText?: string;
+}
+
+export type Event = {
+  id: string;
+  title: string;
+  details: string;
+  date: string;
+  location: string;
+  registrationLink?: string;
+  linkText?: string;
+  whatsappLink?: string;
   imageUrl?: string;
-  pdfUrl?: string;
+  createdAt: Timestamp;
 };

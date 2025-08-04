@@ -4,27 +4,19 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { collection, onSnapshot, orderBy, query, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Calendar, MapPin, Ticket, PlusCircle, Edit, Trash2 } from 'lucide-react';
+import { Calendar, MapPin, Ticket, PlusCircle, Edit, Trash2, Users, FileText } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EventForm } from '@/components/event-form';
-
-export type Event = {
-  id: string;
-  title: string;
-  date: string;
-  location: string;
-  registrationLink?: string;
-  imageUrl?: string;
-};
+import type { Event } from '@/lib/types';
 
 export default function RegistrationsPage() {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -43,9 +35,9 @@ export default function RegistrationsPage() {
     return () => unsubscribe();
   }, []);
 
-  const handleDelete = async (event: Event) => {
+  const handleDelete = async (eventId: string) => {
     try {
-      await deleteDoc(doc(db, 'events', event.id));
+      await deleteDoc(doc(db, 'events', eventId));
     } catch (error) {
       console.error("Error deleting event: ", error);
     }
@@ -61,6 +53,12 @@ export default function RegistrationsPage() {
     setIsFormOpen(true);
   };
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set time to midnight to compare dates accurately
+
+  const upcomingEvents = events.filter(event => new Date(event.date) >= today);
+  const pastEvents = events.filter(event => new Date(event.date) < today);
+
   return (
     <div className="container mx-auto py-16 sm:py-24">
       <div className="text-center mb-12">
@@ -71,7 +69,7 @@ export default function RegistrationsPage() {
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        {isAdmin && (
+        {isAdmin && user && (
           <div className="mb-8 text-right">
             <Button onClick={handleAddNew}><PlusCircle className="mr-2 h-4 w-4" /> Add New Event</Button>
           </div>
@@ -80,10 +78,14 @@ export default function RegistrationsPage() {
           <DialogHeader>
             <DialogTitle className="font-headline text-2xl">{editingEvent ? 'Edit' : 'Add'} Event</DialogTitle>
           </DialogHeader>
-          <EventForm event={editingEvent} onFinished={() => setIsFormOpen(false)} />
+          <EventForm 
+            event={editingEvent} 
+            onFinished={() => setIsFormOpen(false)} 
+          />
         </DialogContent>
       </Dialog>
 
+      {/* Upcoming Events Section */}
       <section>
         <h2 className="font-headline text-3xl font-bold mb-8">Upcoming Events</h2>
         {isLoading ? (
@@ -91,11 +93,14 @@ export default function RegistrationsPage() {
             <Skeleton className="h-96 w-full" />
             <Skeleton className="h-96 w-full" />
           </div>
-        ) : events.length > 0 ? (
-          <div className="grid md:grid-cols-2 gap-8">
-            {events.map((event) => (
+        ) : upcomingEvents.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {upcomingEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 flex flex-col">
-                <CardHeader className="p-0 relative">
+                <CardHeader>
+                  <CardTitle className="font-headline text-2xl mb-2">{event.title}</CardTitle>
+                   <CardDescription className="flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</CardDescription>
+                   <CardDescription className="flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> {event.location}</CardDescription>
                    {isAdmin && (
                     <div className="absolute top-2 right-2 z-10 flex gap-2">
                       <Button variant="secondary" size="icon" onClick={() => handleEdit(event)}><Edit className="h-4 w-4" /></Button>
@@ -106,37 +111,35 @@ export default function RegistrationsPage() {
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the event.
-                            </AlertDialogDescription>
+                            <AlertDialogDescription>This action cannot be undone. This will permanently delete the event.</AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(event)}>Delete</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleDelete(event.id)}>Delete</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
                   )}
-                  {event.imageUrl && (
-                    <div className="relative aspect-video">
-                        <Image src={event.imageUrl || 'https://placehold.co/600x400.png'} alt={event.title} fill className="object-cover" />
-                    </div>
-                  )}
                 </CardHeader>
-                <CardContent className="p-6 flex-grow">
-                  <CardTitle className="font-headline text-2xl mb-2">{event.title}</CardTitle>
-                  <div className="text-muted-foreground space-y-2">
-                    <p className="flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                    <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> {event.location}</p>
-                  </div>
+                <CardContent className="p-6 pt-0 flex-grow">
+                  <p className="text-muted-foreground whitespace-pre-wrap">{event.details}</p>
                 </CardContent>
-                <CardFooter className="p-6 pt-0">
-                  <Button asChild className="w-full" disabled={!event.registrationLink || event.registrationLink === '#'}>
-                    <Link href={event.registrationLink || '#'} target="_blank" rel="noopener noreferrer">
-                      {event.registrationLink && event.registrationLink !== '#' ? <>Register Now <Ticket className="ml-2 w-4 h-4" /></> : 'Registration Closed'}
-                    </Link>
-                  </Button>
+                <CardFooter className="p-6 pt-0 flex flex-col sm:flex-row gap-2 w-full">
+                  {event.registrationLink && (
+                    <Button asChild className="w-full">
+                      <Link href={event.registrationLink} target="_blank" rel="noopener noreferrer">
+                        {event.linkText || 'Register Now'} <Ticket className="ml-2 w-4 h-4" />
+                      </Link>
+                    </Button>
+                  )}
+                  {event.whatsappLink && (
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href={event.whatsappLink} target="_blank" rel="noopener noreferrer">
+                        Join Group <Users className="ml-2 w-4 h-4" />
+                      </Link>
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             ))}
@@ -149,29 +152,60 @@ export default function RegistrationsPage() {
         )}
       </section>
 
-      {!isLoading && events.length === 0 && (
-         <section className="mt-24 text-center">
-            <h2 className="font-headline text-3xl font-bold mb-8">More Coming Soon...</h2>
-            <p className="text-muted-foreground mb-8">We're always planning something new. Stay tuned!</p>
-            <div className="grid md:grid-cols-3 gap-8">
-                {[...Array(3)].map((_, i) => (
-                    <Card key={i} className="animate-pulse bg-secondary/50">
-                        <div className="bg-muted aspect-video w-full"></div>
-                        <CardHeader>
-                            <div className="h-6 w-3/4 bg-muted rounded"></div>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <div className="h-4 w-full bg-muted rounded"></div>
-                            <div className="h-4 w-1/2 bg-muted rounded"></div>
-                        </CardContent>
-                        <CardFooter>
-                             <div className="h-10 w-full bg-muted rounded-md"></div>
-                        </CardFooter>
-                    </Card>
-                ))}
-            </div>
-          </section>
-      )}
+      {/* Past Events Section */}
+      <section className="mt-24">
+        <h2 className="font-headline text-3xl font-bold mb-8">Past Events Gallery</h2>
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => <Skeleton key={i} className="aspect-video w-full" />)}
+          </div>
+        ) : pastEvents.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {pastEvents.map((event) => (
+              <Card key={event.id} className="overflow-hidden group cursor-pointer relative">
+                {event.imageUrl ? (
+                    <Image src={event.imageUrl} alt={event.title} fill className="object-cover transition-transform duration-300 group-hover:scale-110" />
+                ) : (
+                    <div className="bg-secondary flex items-center justify-center h-full">
+                       <FileText className="w-12 h-12 text-muted-foreground" />
+                    </div>
+                )}
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/40 transition-colors duration-300 flex items-end">
+                  <div className="p-4">
+                    <h3 className="font-headline text-lg text-white drop-shadow-md">{event.title}</h3>
+                    <p className="text-sm text-white/80 drop-shadow-md">{new Date(event.date).getFullYear()}</p>
+                  </div>
+                </div>
+                 {isAdmin && (
+                    <div className="absolute top-2 right-2 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button variant="secondary" size="icon" onClick={() => handleEdit(event)}><Edit className="h-4 w-4" /></Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="icon"><Trash2 className="h-4 w-4" /></Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>This action cannot be undone. This will permanently delete the event.</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(event.id)}>Delete</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  )}
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 border-2 border-dashed border-muted-foreground/20 rounded-lg">
+             <h3 className="font-headline text-2xl">No Past Events Yet</h3>
+             <p className="text-muted-foreground mt-2">Our event history will appear here.</p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

@@ -3,21 +3,25 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Event } from '@/app/registrations/page';
+import type { Event } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { Textarea } from './ui/textarea';
 
 const formSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters.'),
+  details: z.string().min(10, 'Details must be at least 10 characters.'),
   date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid date format.' }),
   location: z.string().min(2, 'Location is required.'),
-  registrationLink: z.string().url().optional().or(z.literal('')),
+  registrationLink: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  linkText: z.string().optional(),
+  whatsappLink: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   imageUrl: z.string().url().optional().or(z.literal('')),
 });
 
@@ -34,9 +38,12 @@ export function EventForm({ event, onFinished }: EventFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: event?.title || '',
+      details: event?.details || '',
       date: event?.date ? new Date(event.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       location: event?.location || '',
       registrationLink: event?.registrationLink || '',
+      linkText: event?.linkText || '',
+      whatsappLink: event?.whatsappLink || '',
       imageUrl: event?.imageUrl || '',
     },
   });
@@ -44,20 +51,22 @@ export function EventForm({ event, onFinished }: EventFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const eventData = { ...values };
-
       if (event) {
+        // Update existing document
         const docRef = doc(db, 'events', event.id);
-        await updateDoc(docRef, eventData);
+        await updateDoc(docRef, { ...values });
         toast({ title: 'Success', description: 'Event updated successfully.' });
       } else {
-        await addDoc(collection(db, 'events'), eventData);
+        // Add new document
+        await addDoc(collection(db, 'events'), {
+          ...values,
+          createdAt: Timestamp.now(),
+        });
         toast({ title: 'Success', description: 'Event added successfully.' });
       }
       form.reset();
       onFinished();
-    } catch (error: any)
-{
+    } catch (error: any) {
       console.error("Failed to save event:", error);
       toast({
         title: 'Error',
@@ -85,33 +94,70 @@ export function EventForm({ event, onFinished }: EventFormProps) {
         />
         <FormField
           control={form.control}
-          name="date"
+          name="details"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date</FormLabel>
-              <FormControl><Input type="date" {...field} /></FormControl>
+              <FormLabel>Details</FormLabel>
+              <FormControl><Textarea placeholder="Tell us more about the event..." {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
+         <div className="grid grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Date</FormLabel>
+                <FormControl><Input type="date" {...field} /></FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Location</FormLabel>
+                <FormControl><Input placeholder="E.g., Online" {...field} /></FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="registrationLink"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Registration Link</FormLabel>
+                <FormControl><Input placeholder="https://..." {...field} /></FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+             <FormField
+            control={form.control}
+            name="linkText"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Link Text</FormLabel>
+                <FormControl><Input placeholder="E.g., Register Here" {...field} /></FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
+         <FormField
           control={form.control}
-          name="location"
+          name="whatsappLink"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl><Input placeholder="E.g., Online or Main Campus" {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="registrationLink"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Registration Link (Optional)</FormLabel>
-              <FormControl><Input placeholder="https://example.com/register" {...field} /></FormControl>
+              <FormLabel>WhatsApp Group Link (Optional)</FormLabel>
+              <FormControl><Input placeholder="https://chat.whatsapp.com/..." {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -121,7 +167,7 @@ export function EventForm({ event, onFinished }: EventFormProps) {
           name="imageUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Image URL (Optional)</FormLabel>
+              <FormLabel>Image URL for Past Events (Optional)</FormLabel>
               <FormControl>
                 <Input placeholder="https://example.com/image.png" {...field} />
               </FormControl>
@@ -130,9 +176,7 @@ export function EventForm({ event, onFinished }: EventFormProps) {
           )}
         />
         <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-           ) : null}
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {event ? 'Update Event' : 'Add Event'}
         </Button>
       </form>
