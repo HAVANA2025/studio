@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { 
   AlertDialog, 
@@ -22,23 +21,12 @@ import {
   AlertDialogFooter, 
   AlertDialogHeader, 
   AlertDialogTitle,
-  AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 import { Megaphone, PlusCircle, Edit, Trash2, LogOut, FileText, Image as ImageIcon, ExternalLink, UserCircle, Shield } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnnouncementForm } from '@/components/announcement-form';
+import type { Announcement } from '@/lib/types';
 import Link from 'next/link';
-
-export type Announcement = {
-  id: string;
-  title: string;
-  text: string;
-  createdAt: string;
-  date: string;
-  link?: string;
-  imageUrl?: string;
-  pdfUrl?: string;
-};
 
 export default function AnnouncementsPage() {
   const { user, isAdmin, loading, handleSignOut } = useAuth();
@@ -166,10 +154,10 @@ export default function AnnouncementsPage() {
                 <p className="text-muted-foreground whitespace-pre-wrap">{ann.text}</p>
               </CardContent>
               {(ann.imageUrl || ann.pdfUrl || ann.link) && (
-                <CardFooter className="flex gap-4 pt-4">
+                 <CardFooter className="flex gap-4 pt-4">
                   {ann.imageUrl && <a href={ann.imageUrl} target="_blank" rel="noopener noreferrer"><Button variant="outline"><ImageIcon className="mr-2"/>View Image</Button></a>}
                   {ann.pdfUrl && <a href={ann.pdfUrl} target="_blank" rel="noopener noreferrer"><Button variant="outline"><FileText className="mr-2"/>View PDF</Button></a>}
-                  {ann.link && <a href={ann.link} target="_blank" rel="noopener noreferrer"><Button variant="outline"><ExternalLink className="mr-2"/>Visit Link</Button></a>}
+                  {ann.link && <a href={ann.link} target="_blank" rel="noopener noreferrer"><Button variant="outline"><ExternalLink className="mr-2"/>{ann.linkText || 'Visit Link'}</Button></a>}
                 </CardFooter>
               )}
             </Card>

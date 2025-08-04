@@ -3,14 +3,14 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Announcement } from '@/app/announcements/page';
+import type { Announcement } from '@/lib/types';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -19,6 +19,7 @@ const formSchema = z.object({
   text: z.string().min(10, 'Text must be at least 10 characters.'),
   date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: 'Invalid date format.'}),
   link: z.string().url().optional().or(z.literal('')),
+  linkText: z.string().optional(),
 });
 
 type AnnouncementFormProps = {
@@ -29,6 +30,7 @@ type AnnouncementFormProps = {
 export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,28 +38,28 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
       text: announcement?.text || '',
       date: announcement?.date || new Date().toISOString().split('T')[0],
       link: announcement?.link || '',
+      linkText: announcement?.linkText || '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const announcementData = {
-        ...values,
-        createdAt: announcement?.createdAt || new Date().toISOString(),
-      };
-      
       if (announcement) {
+        // Update existing document
         const docRef = doc(db, 'announcements', announcement.id);
-        await updateDoc(docRef, announcementData);
+        await updateDoc(docRef, { ...values });
         toast({ title: 'Success', description: 'Announcement updated successfully.' });
       } else {
-        await addDoc(collection(db, 'announcements'), announcementData);
+        // Add new document
+        await addDoc(collection(db, 'announcements'), {
+          ...values,
+          createdAt: Timestamp.now(),
+        });
         toast({ title: 'Success', description: 'Announcement added successfully.' });
       }
       form.reset();
       onFinished();
-
     } catch (error: any) {
       console.error("Failed to save announcement:", error);
       toast({
@@ -113,6 +115,17 @@ export function AnnouncementForm({ announcement, onFinished }: AnnouncementFormP
             <FormItem>
               <FormLabel>Link (Optional)</FormLabel>
               <FormControl><Input placeholder="https://example.com" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="linkText"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Link Text (Optional)</FormLabel>
+              <FormControl><Input placeholder="E.g., Read More" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
