@@ -1,6 +1,7 @@
+'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { onAuthStateChanged, User, getRedirectResult, signOut } from 'firebase/auth';
+import { onAuthStateChanged, User, getRedirectResult, signOut, AuthError } from 'firebase/auth';
 import { auth, adminEmails } from '@/lib/firebase';
 import { useToast } from './use-toast';
 import { useRouter } from 'next/navigation';
@@ -34,42 +35,45 @@ export function useAuth(): AuthState {
 
 
   useEffect(() => {
-    // This function handles both initial auth state and redirect results.
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUser(user);
-        setIsAdmin(adminEmails.includes(user.email || ''));
-        setLoading(false);
-        return;
-      }
-
-      // If no user, check for redirect result. This might sign them in.
-      try {
-        const result = await getRedirectResult(auth);
+    // First, check if we are returning from a redirect login flow
+    getRedirectResult(auth)
+      .then((result) => {
         if (result) {
-          // A user was signed in via redirect.
-          // onAuthStateChanged will be re-triggered with the new user.
-          // We can redirect them to the announcements page.
+          // User has successfully signed in via redirect.
+          // onAuthStateChanged will handle setting the user state.
+          // We can navigate them to a protected route.
+          toast({ title: 'Login Successful', description: `Welcome, ${result.user.email}!` });
           router.push('/announcements');
-        } else {
-          // No active user and no redirect result.
-          setUser(null);
-          setIsAdmin(false);
-          setLoading(false);
         }
-      } catch (error: any) {
+      })
+      .catch((error: AuthError) => {
+        // Handle Errors here.
+        console.error("Redirect result error:", error);
         toast({
           title: 'Login Failed',
-          description: error.message,
+          description: `An error occurred during sign-in: ${error.message}`,
           variant: 'destructive',
         });
-        setUser(null);
-        setIsAdmin(false);
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
+      })
+      .finally(() => {
+         // Now, set up the normal auth state listener.
+         // This will catch the user from the redirect, or any existing session.
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          if (user) {
+            setUser(user);
+            setIsAdmin(adminEmails.includes(user.email || ''));
+          } else {
+            setUser(null);
+            setIsAdmin(false);
+          }
+          // Whether there is a user or not, the check is complete.
+          setLoading(false);
+        });
+        
+        // Cleanup the listener on component unmount
+        return () => unsubscribe();
+      });
+  // The dependency array is empty, so this effect runs once on mount.
   }, [router, toast]);
 
   return { user, isAdmin, loading, handleSignOut };
