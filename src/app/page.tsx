@@ -2,9 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Users, Code, Zap, Cpu, Info } from 'lucide-react';
+import { ArrowRight, Users, Code, Zap, Cpu, Info, Network, Trophy, Star } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
 
 const AnimatedStatCard = dynamic(() => import('@/components/animated-stat-card').then(mod => mod.AnimatedStatCard), { ssr: false });
 const SplineViewer = dynamic(() => import('@/components/spline-viewer').then(mod => mod.SplineViewer), { ssr: false });
@@ -22,6 +24,24 @@ const domains = [
   { name: 'IoT & Embedded', description: 'Building the future of connected devices.', icon: '🤖', href: '/domains' },
   { name: 'Web & App Dev', description: 'Crafting modern digital experiences.', icon: '💻', href: '/domains' },
   { name: 'Cybersecurity', description: 'Defending the digital frontier.', icon: '🛡️', href: '/domains' },
+];
+
+const whyJoinReasons = [
+    {
+        title: "Build Your Network",
+        icon: <Network className="w-8 h-8 text-primary" />,
+        description: "Havana'25 provides you an unparalleled platform to connect with tech enthusiasts, innovative thinkers, and creative minds. Engage with like-minded individuals and industry professionals to expand your professional and social circles."
+    },
+    {
+        title: "Innovative Challenges",
+        icon: <Trophy className="w-8 h-8 text-primary" />,
+        description: "Havana'25 brings an array of 13 thrilling competitions, including many robotics challenges, AI hackathons, software development, and more designed to test your technical skills and ignite your creativity."
+    },
+    {
+        title: "Prestigious Certificates",
+        icon: <Star className="w-8 h-8 text-primary" />,
+        description: "Get recognized for your efforts with certificates of excellence endorsed by GITAM (Deemed to be University). Make your participation count by adding these accolades to your portfolio."
+    }
 ];
 
 export default function Home() {
@@ -67,8 +87,14 @@ export default function Home() {
       {/* About Us Section */}
       <section id="about" className="w-full py-24 sm:py-32 bg-background">
         <div className="container mx-auto grid lg:grid-cols-2 gap-16 items-center">
-          <div className="relative w-full h-[400px] lg:h-[500px] order-last lg:order-first">
-             <SplineViewer url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" />
+          <div className="relative w-full h-[400px] lg:h-[500px] order-last lg:order-first rounded-lg overflow-hidden border border-primary/20 shadow-lg shadow-primary/10">
+             <Image 
+                src="https://placehold.co/600x600.png" 
+                alt="About G-Electra" 
+                fill 
+                className="object-cover" 
+                data-ai-hint="team photo"
+             />
           </div>
           <div className="space-y-6">
             <h2 className="font-headline text-4xl font-bold">About G-Electra</h2>
@@ -81,9 +107,38 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
+
+      {/* Why Join Us Section */}
+      <section id="why-join" className="w-full bg-secondary/20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/starry-bg.png')] bg-repeat opacity-5"></div>
+        <div className="relative container mx-auto py-24 sm:py-32">
+            <div className="text-center">
+                <h2 className="font-headline text-5xl font-bold tracking-tight text-amber-400">WHY YOU SHOULD JOIN</h2>
+                <h3 className="font-headline text-6xl font-extrabold tracking-wider text-amber-300 glow-effect">HAVANA'25</h3>
+                <div className="mt-8 flex flex-wrap justify-center gap-4">
+                    <Badge className="bg-black text-white text-base px-4 py-2 border-amber-400/50">13 Competitions</Badge>
+                    <Badge className="bg-black text-white text-base px-4 py-2 border-amber-400/50">3000+ Participants</Badge>
+                    <Badge className="bg-black text-white text-base px-4 py-2 border-amber-400/50">2 Action-Packed Days</Badge>
+                </div>
+            </div>
+            <div className="mt-16 grid md:grid-cols-3 gap-8">
+                {whyJoinReasons.map((reason) => (
+                    <Card key={reason.title} className="bg-card/80 backdrop-blur-sm border-primary/10 text-center p-6 transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2">
+                        <CardHeader className="items-center">
+                            {reason.icon}
+                            <CardTitle className="font-headline mt-4">{reason.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{reason.description}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
-      <section id="stats" className="w-full py-16 sm:py-24 bg-secondary/20">
+      <section id="stats" className="w-full py-16 sm:py-24 bg-background">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-headline text-4xl font-bold">
@@ -100,7 +155,7 @@ export default function Home() {
       </section>
 
       {/* Domains Preview */}
-      <section id="domains" className="w-full py-16 sm:py-24 bg-background">
+      <section id="domains" className="w-full py-16 sm:py-24 bg-secondary/20">
         <div className="container mx-auto text-center">
           <h2 className="font-headline text-4xl font-bold mb-4">Our Domains</h2>
           <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">We are active in various cutting-edge fields. Dive into the one that excites you most.</p>
