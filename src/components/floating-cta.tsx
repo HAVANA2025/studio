@@ -19,7 +19,7 @@ export function FloatingCta() {
           <div className="absolute -inset-1.5 bg-gradient-to-r from-primary to-accent rounded-lg opacity-75 blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
           <button
             onClick={() => setIsOpen(true)}
-            className="relative px-7 py-3 bg-secondary/80 backdrop-blur-md text-foreground rounded-lg flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:scale-110 transition-transform duration-300"
+            className="relative px-8 py-3 bg-secondary/80 backdrop-blur-md text-foreground rounded-lg flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:scale-110 transition-transform duration-300"
             aria-label="Get project ideas"
           >
             <span className="font-headline text-sm">Got an Idea?</span>
