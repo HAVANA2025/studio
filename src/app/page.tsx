@@ -7,6 +7,8 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const AnimatedStatCard = dynamic(() => import('@/components/animated-stat-card').then(mod => mod.AnimatedStatCard), { ssr: false });
 const SplineViewer = dynamic(() => import('@/components/spline-viewer').then(mod => mod.SplineViewer), { ssr: false });
@@ -19,7 +21,7 @@ const stats = [
   { value: 15, label: 'Projects', icon: <Cpu className="w-8 h-8" /> },
 ];
 
-const projects = [
+const hardwareProjects = [
   {
     title: 'Self-Guided Aid Rover',
     description: 'An autonomous rover designed for search and rescue missions, equipped with advanced navigation and obstacle avoidance systems.',
@@ -40,6 +42,27 @@ const projects = [
   },
 ];
 
+const softwareProjects = [
+    {
+        title: 'G-Electra Hub Website',
+        description: 'The official website for the G-Electra club, built with Next.js, TypeScript, and Firebase for a seamless user experience.',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'modern website design',
+    },
+    {
+        title: 'Event Registration System',
+        description: 'A dynamic event management and registration system integrated into the club website, handling user sign-ups and event details.',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'online registration form',
+    },
+    {
+        title: 'AI Project Suggester',
+        description: 'An intelligent tool on the club\'s "Playground" page that uses AI to generate project ideas based on user interests.',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'artificial intelligence concept',
+    }
+]
+
 const mentors = [
     { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
     { name: 'T Madhavi', designation: 'Mentor (2023-2024)', image: '/images/tmadhavi.jpg', hint: 'woman portrait' },
@@ -58,6 +81,9 @@ const achievements = [
 ];
 
 export default function Home() {
+  const [projectType, setProjectType] = useState<'hardware' | 'software'>('hardware');
+  const projects = projectType === 'hardware' ? hardwareProjects : softwareProjects;
+
   return (
     <div className="flex flex-col items-center overflow-x-hidden">
       {/* Hero Section */}
@@ -126,7 +152,33 @@ export default function Home() {
       <section id="projects" className="w-full py-24 sm:py-32 bg-background">
         <div className="container mx-auto text-center">
           <h2 className="font-headline text-4xl font-bold mb-4">Featured Projects</h2>
-          <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">Here's a glimpse of the innovative solutions our members have built.</p>
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">Here's a glimpse of the innovative solutions our members have built.</p>
+          
+          <div className="flex justify-center mb-12">
+            <div className="flex items-center gap-2 rounded-full bg-secondary p-1.5 border border-border">
+                <button
+                    onClick={() => setProjectType('hardware')}
+                    className={cn(
+                        'flex items-center gap-2 rounded-full px-6 py-2 text-sm font-medium transition-colors',
+                        projectType === 'hardware' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
+                    )}
+                >
+                    <Cpu className="w-5 h-5"/>
+                    Hardware
+                </button>
+                 <button
+                    onClick={() => setProjectType('software')}
+                    className={cn(
+                        'flex items-center gap-2 rounded-full px-6 py-2 text-sm font-medium transition-colors',
+                        projectType === 'software' ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
+                    )}
+                >
+                    <Code className="w-5 h-5"/>
+                    Software
+                </button>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projects.map((project) => (
               <Card key={project.title} className="bg-card/50 border-primary/10 overflow-hidden transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/20">
@@ -228,3 +280,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
