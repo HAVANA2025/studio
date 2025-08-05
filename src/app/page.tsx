@@ -64,6 +64,19 @@ export default function Home() {
         </div>
       </section>
 
+      {/* About Us Section */}
+      <section id="about" className="w-full py-16 sm:py-24 bg-background">
+        <div className="container mx-auto text-center max-w-4xl">
+          <h2 className="font-headline text-4xl font-bold mb-4">About G-Electra</h2>
+          <p className="text-lg text-muted-foreground mb-8">
+             G-Electra is more than just a club; it's a launchpad for innovation. We are a vibrant community of creators, thinkers, and problem-solvers at GITAM, united by a passion for smart systems and emerging technologies. Our mission is to provide a platform for students to learn, build, and lead the next wave of technological advancement.
+          </p>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/about">Learn More <Info className="ml-2" /></Link>
+          </Button>
+        </div>
+      </section>
+      
       {/* Stats Section */}
       <section id="stats" className="w-full py-16 sm:py-24 bg-background">
         <div className="container mx-auto">
@@ -78,19 +91,6 @@ export default function Home() {
               <AnimatedStatCard key={index} stat={stat} />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* About Us Section */}
-      <section id="about" className="w-full py-16 sm:py-24 bg-background">
-        <div className="container mx-auto text-center max-w-4xl">
-          <h2 className="font-headline text-4xl font-bold mb-4">About G-Electra</h2>
-          <p className="text-lg text-muted-foreground mb-8">
-             G-Electra is more than just a club; it's a launchpad for innovation. We are a vibrant community of creators, thinkers, and problem-solvers at GITAM, united by a passion for smart systems and emerging technologies. Our mission is to provide a platform for students to learn, build, and lead the next wave of technological advancement.
-          </p>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/about">Learn More <Info className="ml-2" /></Link>
-          </Button>
         </div>
       </section>
 
