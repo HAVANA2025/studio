@@ -95,10 +95,15 @@ export default {
             height: '0',
           },
         },
+        'pulse-glow': {
+          '0%, 100%': { opacity: 0.75, filter: 'blur(0.75rem)' },
+          '50%': { opacity: 1, filter: 'blur(1.5rem)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'pulse-glow': 'pulse-glow 4s ease-in-out infinite',
       },
     },
   },
