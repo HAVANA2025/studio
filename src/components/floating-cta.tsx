@@ -4,8 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Lightbulb, Rocket, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Lightbulb, Rocket } from 'lucide-react';
 
 export function FloatingCta() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,13 +16,14 @@ export function FloatingCta() {
     <>
       <div className="fixed bottom-6 right-6 z-50">
         <div className="relative group">
-          <div className="absolute -inset-1.5 bg-gradient-to-r from-primary to-accent rounded-full opacity-75 blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+          <div className="absolute -inset-1.5 bg-gradient-to-r from-primary to-accent rounded-lg opacity-75 blur-lg group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
           <button
             onClick={() => setIsOpen(true)}
-            className="relative p-4 bg-secondary/80 backdrop-blur-md text-foreground rounded-full flex items-center justify-center shadow-2xl shadow-primary/20 hover:scale-110 transition-transform duration-300"
+            className="relative px-6 py-3 bg-secondary/80 backdrop-blur-md text-foreground rounded-lg flex items-center justify-center gap-3 shadow-2xl shadow-primary/20 hover:scale-110 transition-transform duration-300"
             aria-label="Get project ideas"
           >
-            <Lightbulb className="w-8 h-8 text-primary animate-pulse" />
+            <span className="font-headline text-sm">Got an Idea?</span>
+            <Lightbulb className="w-6 h-6 text-primary animate-pulse" />
           </button>
         </div>
       </div>
