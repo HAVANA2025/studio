@@ -42,6 +42,7 @@ const adminEmails = [
     // Main Admins
     'gelectra@gitam.edu',
     'webdevlopment0210@gmail.com',
+    'premkumarjanumula@gmail.com',
     'admin@example.com' // Keeping the original for testing
 ];
 
