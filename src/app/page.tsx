@@ -2,7 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Users, Code, Zap, Cpu, Info, Star, Award } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight, Users, Code, Zap, Cpu, Info, Star, Award, BookOpen, BrainCircuit, Rocket } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
@@ -64,9 +65,9 @@ const softwareProjects = [
 ]
 
 const mentors = [
-    { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
     { name: 'T Madhavi', designation: 'Mentor (2023-2024)', image: '/images/tmadhavi.jpg', hint: 'woman portrait' },
     { name: 'Naresh Kumar', designation: 'Mentor (2022-2023)', image: '/images/nareshkumar.jpg', hint: 'man portrait' },
+    { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
 ];
 
 const achievements = [
@@ -280,5 +281,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

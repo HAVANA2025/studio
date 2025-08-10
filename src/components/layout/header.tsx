@@ -51,7 +51,7 @@ const mainNavLinks = [
 
 const dropdownNavLinks = [
     { href: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
-    { href: '/community', label: 'Community', icon: <Users className="w-4 h-4" /> },
+    { href: '/community', label: 'Our Team', icon: <Users className="w-4 h-4" /> },
     { href: '/media', label: 'Media', icon: <ImageIcon className="w-4 h-4" /> },
 ];
 

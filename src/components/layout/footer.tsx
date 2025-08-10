@@ -6,7 +6,7 @@ const quickLinks = [
     { href: '/about', label: 'About Us' },
     { href: '/domains', label: 'Domains' },
     { href: '/achievements', label: 'Achievements' },
-    { href: '/community', label: 'Community' },
+    { href: '/community', label: 'Our Team' },
     { href: '/media', label: 'Media' },
 ];
 
