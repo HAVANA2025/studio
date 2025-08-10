@@ -1,10 +1,48 @@
 import * as functions from "firebase-functions/v1";
+import * as admin from "firebase-admin";
 import type {UserRecord} from "firebase-functions/v1/auth";
 import {Resend} from "resend";
 import { v4 as uuidv4 } from 'uuid';
 
+admin.initializeApp();
+const auth = admin.auth();
+
 // Initialize Resend with the API key you set in the config
 const resend = new Resend(functions.config().resend.apikey);
+
+/**
+ * A callable function for admins to create a new user.
+ */
+export const addUser = functions.https.onCall(async (data, context) => {
+    // Check if the user calling the function is an admin.
+    if (context.auth?.token.admin !== true) {
+        throw new functions.https.HttpsError('permission-denied', 'Only admins can create new users.');
+    }
+
+    const { email, displayName, role } = data;
+    
+    if (!email || !displayName || !role) {
+         throw new functions.https.HttpsError('invalid-argument', 'Please provide email, displayName, and role.');
+    }
+
+    try {
+        const userRecord = await auth.createUser({
+            email,
+            displayName,
+            // The temporary password will be sent via email, so the initial password can be random.
+            password: uuidv4(), 
+        });
+
+        // Set a custom claim for the user's role.
+        await auth.setCustomUserClaims(userRecord.uid, { role: role });
+
+        return { result: `Successfully created user ${email} with role ${role}.` };
+
+    } catch (error: any) {
+        throw new functions.https.HttpsError('internal', error.message);
+    }
+});
+
 
 /**
  * Sends a welcome email with credentials to new users created by an admin.

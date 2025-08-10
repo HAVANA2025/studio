@@ -3,6 +3,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getFunctions } from "firebase/functions";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,6 +20,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const functions = getFunctions(app);
 
 // Hardcoded list of admin emails
 const adminEmails = [
@@ -43,4 +45,4 @@ const adminEmails = [
     'admin@example.com' // Keeping the original for testing
 ];
 
-export { app, db, auth, storage, adminEmails };
+export { app, db, auth, storage, functions, adminEmails };

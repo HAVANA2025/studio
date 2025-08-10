@@ -4,12 +4,18 @@
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { Lock, UserPlus } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AddUserForm } from '@/components/add-user-form';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useState } from 'react';
+
 
 export default function AdminPage() {
     const { user, isAdmin, loading } = useAuth();
     const router = useRouter();
+    const [isFormOpen, setIsFormOpen] = useState(false);
+
 
     if (loading) {
         return (
@@ -49,10 +55,25 @@ export default function AdminPage() {
                         <UserPlus className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <p className="text-xs text-muted-foreground">
-                            Add, remove, or update Executive Board and Club members.
+                        <p className="text-xs text-muted-foreground mb-4">
+                            Add new Executive Board and Club members.
                         </p>
-                        <Button className="mt-4 w-full" disabled>Coming Soon</Button>
+                        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="w-full">
+                                    <UserPlus className="mr-2 h-4 w-4" /> Add User
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                <DialogTitle>Add New User</DialogTitle>
+                                <CardDescription>
+                                    Create a new account. They will receive an email with a temporary password.
+                                </CardDescription>
+                                </DialogHeader>
+                                <AddUserForm onFinished={() => setIsFormOpen(false)} />
+                            </DialogContent>
+                        </Dialog>
                     </CardContent>
                 </Card>
             </div>
