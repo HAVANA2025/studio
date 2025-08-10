@@ -66,7 +66,7 @@ const executiveBoard = [
   },
 ];
 
-const boardPhases = ['2024 - 2025', '2023 - 2024', '2022 - 2023', '2025 - 2026'];
+const boardPhases = ['2025 - 2026', '2024 - 2025', '2023 - 2024', '2022 - 2023'];
 
 export default function CommunityPage() {
   const [activePhase, setActivePhase] = useState(boardPhases[0]);
@@ -111,11 +111,9 @@ export default function CommunityPage() {
                 <Button 
                   key={phase}
                   onClick={() => setActivePhase(phase)}
-                  disabled={phase === '2025 - 2026'}
                   className={cn(
                       'rounded-full px-6 py-2 text-sm font-medium transition-colors',
-                      activePhase === phase ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground',
-                      phase === '2025 - 2026' && 'cursor-not-allowed opacity-50'
+                      activePhase === phase ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {phase}
@@ -143,8 +141,8 @@ export default function CommunityPage() {
             </div>
           ) : (
             <Card className="text-center py-24 border-2 border-dashed border-muted-foreground/20">
-                <h3 className="font-headline text-3xl">Coming Soon!</h3>
-                <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be announced soon. Stay tuned!</p>
+                <h3 className="font-headline text-3xl">The Future is Loading...</h3>
+                <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
             </Card>
           )}
       </section>
