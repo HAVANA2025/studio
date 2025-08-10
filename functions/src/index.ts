@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import type {UserRecord} from "firebase-functions/v1/auth";
 import {Resend} from "resend";
 import { v4 as uuidv4 } from 'uuid';
+import { adminEmails } from './adminEmails';
 
 admin.initializeApp();
 const auth = admin.auth();
@@ -15,7 +16,7 @@ const resend = new Resend(functions.config().resend.apikey);
  */
 export const addUser = functions.https.onCall(async (data, context) => {
     // Check if the user calling the function is an admin.
-    if (context.auth?.token.admin !== true) {
+    if (!context.auth || !adminEmails.includes(context.auth.token.email || '')) {
         throw new functions.https.HttpsError('permission-denied', 'Only admins can create new users.');
     }
 
