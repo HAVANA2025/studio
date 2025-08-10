@@ -23,6 +23,7 @@ import {
   UserPlus,
   LogOut,
   UserCircle,
+  Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -58,7 +59,7 @@ const dropdownNavLinks = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const { user, loading, handleSignOut } = useAuth();
+  const { user, isAdmin, loading, handleSignOut } = useAuth();
   const [hasNewAnnouncements, setHasNewAnnouncements] = useState(false);
 
   const allNavLinks = [...mainNavLinks, ...dropdownNavLinks];
@@ -82,8 +83,10 @@ export function Header() {
         console.error("Failed to check for new announcements:", error);
       }
     };
-    checkAnnouncements();
-  }, [pathname]);
+    if (user) {
+        checkAnnouncements();
+    }
+  }, [pathname, user]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -166,6 +169,14 @@ export function Header() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    {isAdmin && (
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href="/admin">
+                                <Shield className="mr-2 h-4 w-4" />
+                                <span>Admin Panel</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Sign Out</span>
@@ -222,6 +233,16 @@ export function Header() {
                     {link.label}
                   </Link>
                 ))}
+                {isAdmin && (
+                    <Link
+                        href="/admin"
+                        className="flex w-full items-center gap-2 rounded-md p-2 text-base font-medium hover:bg-accent"
+                        onClick={() => setIsOpen(false)}
+                    >
+                        <Shield />
+                        Admin Panel
+                    </Link>
+                )}
               </nav>
               <div className="flex flex-col gap-4 border-t border-border pt-4">
                 {!loading && user ? (
