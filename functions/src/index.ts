@@ -11,10 +11,7 @@ admin.initializeApp();
 const auth = admin.auth();
 
 const RESEND_API_KEY = functions.config().resend?.apikey;
-if (!RESEND_API_KEY) {
-    throw new functions.https.HttpsError('failed-precondition', 'Resend API key is not configured. Please set resend.apikey in your Firebase Functions configuration.');
-}
-const resend = new Resend(RESEND_API_KEY);
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 /**
  * A callable function for admins to create a new user.
@@ -31,16 +28,20 @@ export const addUser = functions.https.onCall(async (data, context) => {
          throw new functions.https.HttpsError('invalid-argument', 'Please provide email, displayName, and role.');
     }
 
+    // Generate a secure, complex temporary password for the new user.
+    const temporaryPassword = `temp-${uuidv4()}`;
+
     try {
         const userRecord = await auth.createUser({
             email,
             displayName,
-            password: `password-${uuidv4()}`, // Ensure password meets complexity requirements if any
+            password: temporaryPassword, 
         });
 
         // Set a custom claim for the user's role.
         await auth.setCustomUserClaims(userRecord.uid, { role: role });
 
+        // The onCreate trigger will send the welcome email.
         return { result: `Successfully created user ${email} with role ${role}.` };
 
     } catch (error: any) {
@@ -65,16 +66,17 @@ export const sendWelcomeEmail = functions.auth.user().onCreate(async (user: User
     functions.logger.log("User does not have an email. Cannot send welcome email.");
     return;
   }
-
-  // Generate a secure, random temporary password for the new user.
-  const temporaryPassword = uuidv4().substring(0, 8);
   
-  try {
-      await auth.updateUser(user.uid, { password: temporaryPassword });
-  } catch (error) {
-      functions.logger.error(`Failed to update password for new user ${user.uid}`, error);
-      return; 
+  if (!resend) {
+    functions.logger.error("Resend API key not configured. Cannot send welcome email.");
+    return;
   }
+  
+  // To get the temporary password, it needs to be generated in the addUser function
+  // and passed here. For simplicity and better security, we will instead instruct
+  // the user to set their password via the "Forgot Password" flow.
+  // We'll generate a password reset link.
+  const link = await admin.auth().generatePasswordResetLink(email);
 
 
   const mailOptions = {
@@ -85,13 +87,10 @@ export const sendWelcomeEmail = functions.auth.user().onCreate(async (user: User
       <h1>Welcome to the G-Electra Community!</h1>
       <p>Hello ${displayName},</p>
       <p>An administrator has created an account for you on the G-Electra Hub.</p>
-      <p>Please use the following credentials to log in:</p>
-      <ul>
-        <li><strong>Email:</strong> ${email}</li>
-        <li><strong>Temporary Password:</strong> ${temporaryPassword}</li>
-      </ul>
-      <p>We recommend you change this password after you log in for the first time.</p>
-      <p>Thank you!</p>
+      <p>Your username is your email address: <strong>${email}</strong>.</p>
+      <p>To get started, please click the link below to set your password:</p>
+      <p><a href="${link}" target="_blank">Set Your Password</a></p>
+      <p>If you did not expect this, please ignore this email.</p>
       <p>Best,</p>
       <p>The G-Electra Team</p>
     `,
