@@ -31,17 +31,19 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Megaphone, PlusCircle, Edit, Trash2, LogOut, FileText, Image as ImageIcon, ExternalLink, UserCircle, Shield, Search, ChevronDown } from 'lucide-react';
+import { Megaphone, PlusCircle, Edit, Trash2, LogOut, FileText, Image as ImageIcon, ExternalLink, UserCircle, Shield, Search, ChevronDown, Lock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnnouncementForm } from '@/components/announcement-form';
 import type { Announcement } from '@/lib/types';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const categories = ['All', 'General', 'Events', 'Workshops', 'Results'] as const;
 type Category = typeof categories[number];
 
 export default function AnnouncementsPage() {
   const { user, isAdmin, loading, handleSignOut } = useAuth();
+  const router = useRouter();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -49,30 +51,38 @@ export default function AnnouncementsPage() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
+  
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+
 
   useEffect(() => {
-    const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (snapshot.empty) {
+    if(user) {
+      const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+          setIsLoading(false);
+          return;
+        }
+        const announcementsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Announcement));
+        setAnnouncements(announcementsData);
+        
+        if (announcementsData.length > 0) {
+            const latestTimestamp = announcementsData[0].createdAt.seconds;
+            localStorage.setItem('lastSeenAnnouncementTimestamp', latestTimestamp.toString());
+        }
+        
         setIsLoading(false);
-        return;
-      }
-      const announcementsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Announcement));
-      setAnnouncements(announcementsData);
-      
-      // Update the last seen timestamp
-      if (announcementsData.length > 0) {
-          const latestTimestamp = announcementsData[0].createdAt.seconds;
-          localStorage.setItem('lastSeenAnnouncementTimestamp', latestTimestamp.toString());
-      }
-      
-      setIsLoading(false);
-    }, (error) => {
-        console.error("Error fetching announcements: ", error);
-        setIsLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+      }, (error) => {
+          console.error("Error fetching announcements: ", error);
+          setIsLoading(false);
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   const filteredAnnouncements = useMemo(() => {
     return announcements.filter(ann => {
@@ -102,6 +112,26 @@ export default function AnnouncementsPage() {
     setIsFormOpen(true);
   }
   
+  if (loading || !user) {
+     return (
+      <div className="container mx-auto py-16 sm:py-24 text-center">
+        {loading ? (
+          <>
+            <h1 className="font-headline text-5xl font-bold tracking-tight">Loading...</h1>
+            <p className="mt-4 text-lg text-muted-foreground">Checking your credentials.</p>
+          </>
+        ) : (
+          <>
+             <Lock size={64} className="mx-auto text-primary mb-4" />
+             <h1 className="font-headline text-5xl font-bold tracking-tight">Access Denied</h1>
+             <p className="mt-4 text-lg text-muted-foreground">You must be logged in to view this page.</p>
+             <Button onClick={() => router.push('/login')} className="mt-8">Login</Button>
+          </>
+        )}
+      </div>
+    );
+  }
+  
   return (
     <div className="container mx-auto py-16 sm:py-24">
        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 gap-4">
@@ -111,18 +141,16 @@ export default function AnnouncementsPage() {
               Stay updated with the latest news and events.
             </p>
         </div>
-        { user && !loading && (
-            <Card className="p-4 bg-secondary/30 w-full sm:w-auto">
-              <div className="flex items-center gap-4">
-                {isAdmin ? <Shield className="text-primary"/> : <UserCircle/>}
-                <div>
-                  <p className="font-bold">{user.email}</p>
-                  <p className="text-sm text-primary font-semibold">{isAdmin ? 'Admin' : 'Student'}</p>
-                </div>
-                 <Button variant="ghost" size="icon" onClick={handleSignOut}><LogOut /></Button>
-              </div>
-            </Card>
-        )}
+        <Card className="p-4 bg-secondary/30 w-full sm:w-auto">
+          <div className="flex items-center gap-4">
+            {isAdmin ? <Shield className="text-primary"/> : <UserCircle/>}
+            <div>
+              <p className="font-bold">{user.email}</p>
+              <p className="text-sm text-primary font-semibold">{isAdmin ? 'Admin' : 'Student'}</p>
+            </div>
+              <Button variant="ghost" size="icon" onClick={handleSignOut}><LogOut /></Button>
+          </div>
+        </Card>
       </div>
       
       <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -185,7 +213,7 @@ export default function AnnouncementsPage() {
         </DialogContent>
       </Dialog>
       
-      {isLoading || loading ? (
+      {isLoading ? (
          <div className="space-y-8">
           <Skeleton className="h-40 w-full" />
           <Skeleton className="h-40 w-full" />

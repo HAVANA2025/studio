@@ -14,7 +14,6 @@ const getInvolvedLinks = [
     { href: '/registrations', label: 'Events' },
     { href: '/playground', label: 'Playground' },
     { href: '/announcements', label: 'Announcements' },
-    { href: '/signup', label: 'Join the Club' },
 ];
 
 

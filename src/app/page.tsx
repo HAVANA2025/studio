@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Users, Code, Zap, Cpu, Info, Star, Award, BookOpen, BrainCircuit, Rocket } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -110,9 +109,6 @@ export default function Home() {
               Welcome to the nexus of innovation. We are the architects of the future, building smart systems for a connected world.
             </p>
             <div className="flex gap-4">
-              <Button asChild size="lg">
-                <Link href="/signup">Join The Club</Link>
-              </Button>
               <Button asChild variant="outline" size="lg">
                 <Link href="/domains">Explore Domains</Link>
               </Button>

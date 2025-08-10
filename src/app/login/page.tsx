@@ -118,14 +118,7 @@ export default function LoginPage() {
               </Button>
             </form>
           </Form>
-          <div className="mt-6 text-center text-sm">
-            <p className="text-muted-foreground">
-              Don't have an account?{' '}
-              <Link href="/signup" className="text-primary hover:underline">
-                Sign up
-              </Link>
-            </p>
-          </div>
+
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-border"></span>

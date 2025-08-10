@@ -177,9 +177,6 @@ export function Header() {
               <Button asChild variant="ghost">
                 <Link href="/login"><LogIn className="mr-2"/>Login</Link>
               </Button>
-              <Button asChild>
-                <Link href="/signup"><UserPlus className="mr-2"/>Sign Up</Link>
-              </Button>
             </>
           ) : <div className="w-24 h-10 animate-pulse rounded-md bg-muted" /> }
         </div>
@@ -241,9 +238,6 @@ export function Header() {
                   <>
                     <Button asChild variant="outline" className="w-full">
                       <Link href="/login" onClick={() => setIsOpen(false)}>Login</Link>
-                    </Button>
-                    <Button asChild className="w-full">
-                      <Link href="/signup" onClick={() => setIsOpen(false)}>Sign Up</Link>
                     </Button>
                   </>
                 ) : null }
