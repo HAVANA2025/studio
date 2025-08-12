@@ -3,25 +3,24 @@ import { NextResponse } from 'next/server';
 import admin from 'firebase-admin';
 import axios from 'axios';
 
-// Initialize Firebase Admin SDK safely
-try {
-  if (!admin.apps.length) {
+// Initialize Firebase Admin SDK safely, only if it hasn't been initialized yet.
+if (!admin.apps.length) {
+  try {
     const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON!);
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
+  } catch (error: any) {
+      console.error('Firebase Admin Initialization Error:', error.message);
   }
-} catch (error: any) {
-    console.error('Firebase Admin Initialization Error:', error.message);
-    // This will prevent the API route from being created if initialization fails.
 }
 
 
 export async function POST(req: Request) {
   // Ensure the app is initialized before proceeding
   if (!admin.apps.length) {
-    console.error('Firebase Admin SDK is not initialized.');
-    return NextResponse.json({ error: 'Firebase Admin SDK is not initialized. Check server logs.' }, { status: 500 });
+    console.error('Firebase Admin SDK is not initialized. Check server logs for initialization errors.');
+    return NextResponse.json({ error: 'Internal Server Error: Firebase Admin SDK not initialized.' }, { status: 500 });
   }
 
   try {
@@ -80,7 +79,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, uid: userRecord.uid });
   } catch (error: any) {
     console.error('Create User Error:', error.response ? error.response.data : error.message);
-    const errorMessage = error.response ? JSON.stringify(error.response.data) : error.message;
+    // Provide a more generic error to the client for security
+    const errorMessage = "An error occurred while creating the user.";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
