@@ -9,6 +9,7 @@ import { adminEmails } from './adminEmails';
 
 admin.initializeApp();
 const auth = admin.auth();
+const db = admin.firestore();
 
 const RESEND_API_KEY = functions.config().resend?.apikey;
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
@@ -40,66 +41,58 @@ export const addUser = functions.https.onCall(async (data, context) => {
 
         // Set a custom claim for the user's role.
         await auth.setCustomUserClaims(userRecord.uid, { role: role });
+        
+        // Store user info in Firestore
+        await db.collection('users').doc(userRecord.uid).set({
+            displayName,
+            email,
+            role,
+            isTempPassword: true,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
 
-        // The onCreate trigger will send the welcome email.
+        // Trigger welcome email with temporary password
+        if (resend) {
+             const mailOptions = {
+                from: "G-Electra Hub <onboarding@resend.dev>",
+                to: email,
+                subject: "Welcome to G-Electra Hub!",
+                html: `
+                <h1>Welcome to the G-Electra Community!</h1>
+                <p>Hello ${displayName},</p>
+                <p>An administrator has created an account for you on the G-Electra Hub.</p>
+                <p>Please use the following credentials to log in:</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Temporary Password:</strong> ${temporaryPassword}</p>
+                <p>You will be required to change this password after your first login.</p>
+                <p>Best,</p>
+                <p>The G-Electra Team</p>
+                `,
+            };
+             await resend.emails.send(mailOptions);
+        } else {
+            functions.logger.error("Resend API key not configured. Cannot send welcome email.");
+        }
+
+
         return { result: `Successfully created user ${email} with role ${role}.` };
 
     } catch (error: any) {
         console.error("Error creating user:", error);
-        // Throw a more specific error to the client.
         if (error.code === 'auth/email-already-exists') {
             throw new functions.https.HttpsError('already-exists', 'This email address is already in use by another account.');
         }
-        throw new functions.https.HttpsError('internal', `Failed to create user in Firebase Auth: ${error.message}`);
+        throw new functions.https.HttpsError('internal', `Failed to create user: ${error.message}`);
     }
 });
 
 
 /**
- * Sends a welcome email with credentials to new users created by an admin.
+ * This function is no longer responsible for sending the initial welcome email with credentials,
+ * as that logic has been moved into the `addUser` function to include the temporary password.
+ * It can be repurposed for other "on user create" events if needed later.
  */
 export const sendWelcomeEmail = functions.auth.user().onCreate(async (user: UserRecord) => {
-  const email = user.email;
-  const displayName = user.displayName || 'there';
-  
-  if (!email) {
-    functions.logger.log("User does not have an email. Cannot send welcome email.");
-    return;
-  }
-  
-  if (!resend) {
-    functions.logger.error("Resend API key not configured. Cannot send welcome email.");
-    return;
-  }
-  
-  // To get the temporary password, it needs to be generated in the addUser function
-  // and passed here. For simplicity and better security, we will instead instruct
-  // the user to set their password via the "Forgot Password" flow.
-  // We'll generate a password reset link.
-  const link = await admin.auth().generatePasswordResetLink(email);
-
-
-  const mailOptions = {
-    from: "G-Electra Hub <onboarding@resend.dev>",
-    to: email,
-    subject: "Welcome to G-Electra Hub!",
-    html: `
-      <h1>Welcome to the G-Electra Community!</h1>
-      <p>Hello ${displayName},</p>
-      <p>An administrator has created an account for you on the G-Electra Hub.</p>
-      <p>Your username is your email address: <strong>${email}</strong>.</p>
-      <p>To get started, please click the link below to set your password:</p>
-      <p><a href="${link}" target="_blank">Set Your Password</a></p>
-      <p>If you did not expect this, please ignore this email.</p>
-      <p>Best,</p>
-      <p>The G-Electra Team</p>
-    `,
-  };
-
-  try {
-    await resend.emails.send(mailOptions);
-    functions.logger.log(`Welcome email sent successfully to ${email}`);
-  } catch (error) {
-    functions.logger.error("Error sending welcome email:", error);
-  }
+  functions.logger.log(`New user signed up: ${user.email}. The addUser function is responsible for sending the welcome email.`);
+  return null;
 });
