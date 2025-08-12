@@ -9,8 +9,8 @@ import { getFunctions } from "firebase/functions";
 const firebaseConfig = {
   projectId: "g-electra-hub",
   appId: "1:788171080845:web:8d270d4a30006aa8468ec4",
-  storageBucket: "g-electra-hub.firebasestorage.app",
-  apiKey: "AIzaSyDLujSdq_BO7Vf3kMPKk-VHWqBshM-IJ3U",
+  storageBucket: "g-electra-hub.appspot.com",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "g-electra-hub.firebaseapp.com",
   messagingSenderId: "788171080845",
 };
