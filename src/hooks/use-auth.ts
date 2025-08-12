@@ -1,10 +1,13 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged, User, getRedirectResult, signOut, AuthError } from 'firebase/auth';
-import { auth, adminEmails } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { useToast } from './use-toast';
 import { useRouter } from 'next/navigation';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 type AuthState = {
   user: User | null;
@@ -33,6 +36,16 @@ export function useAuth(): AuthState {
     }
   }, [router, toast]);
 
+  const checkAdminRole = useCallback(async (user: User) => {
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists() && userDoc.data().role === 'Executive Board') {
+        setIsAdmin(true);
+    } else {
+        setIsAdmin(false);
+    }
+  }, []);
+
 
   useEffect(() => {
     // First, check if we are returning from a redirect login flow
@@ -58,10 +71,10 @@ export function useAuth(): AuthState {
       .finally(() => {
          // Now, set up the normal auth state listener.
          // This will catch the user from the redirect, or any existing session.
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
           if (user) {
             setUser(user);
-            setIsAdmin(adminEmails.includes(user.email || ''));
+            await checkAdminRole(user);
           } else {
             setUser(null);
             setIsAdmin(false);
@@ -74,7 +87,7 @@ export function useAuth(): AuthState {
         return () => unsubscribe();
       });
   // The dependency array is empty, so this effect runs once on mount.
-  }, [router, toast]);
+  }, [router, toast, checkAdminRole]);
 
   return { user, isAdmin, loading, handleSignOut };
 }

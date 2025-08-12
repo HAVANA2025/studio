@@ -3,19 +3,49 @@
 
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
-import { Lock, UserPlus } from 'lucide-react';
+import { Lock, UserPlus, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AddUserForm } from '@/components/add-user-form';
+import { RequestUserForm } from '@/components/request-user-form';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
+import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { UserCreationRequest } from '@/lib/types';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function AdminPage() {
     const { user, isAdmin, loading } = useAuth();
     const router = useRouter();
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [requests, setRequests] = useState<UserCreationRequest[]>([]);
 
+    useEffect(() => {
+        if (!isAdmin) return;
+
+        const q = query(collection(db, 'userCreationRequests'), orderBy('requestedAt', 'desc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const requestsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserCreationRequest));
+            setRequests(requestsData);
+        });
+
+        return () => unsubscribe();
+    }, [isAdmin]);
+
+    const handleDeleteRequest = async (id: string) => {
+        await deleteDoc(doc(db, 'userCreationRequests', id));
+    };
 
     if (loading) {
         return (
@@ -46,36 +76,96 @@ export default function AdminPage() {
                 </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <Card className="border-primary/20 shadow-lg shadow-primary/10">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                            User Management
-                        </CardTitle>
-                        <UserPlus className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-xs text-muted-foreground mb-4">
-                            Add new Executive Board and Club members.
-                        </p>
-                        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-                            <DialogTrigger asChild>
-                                <Button className="w-full">
-                                    <UserPlus className="mr-2 h-4 w-4" /> Add User
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                <DialogTitle>Add New User</DialogTitle>
-                                <CardDescription>
-                                    Create a new account. They will receive an email with a temporary password.
-                                </CardDescription>
-                                </DialogHeader>
-                                <AddUserForm onFinished={() => setIsFormOpen(false)} />
-                            </DialogContent>
-                        </Dialog>
-                    </CardContent>
-                </Card>
+            <div className="grid lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1">
+                    <Card className="border-primary/20 shadow-lg shadow-primary/10">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-lg font-medium">
+                                User Management
+                            </CardTitle>
+                            <UserPlus className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-xs text-muted-foreground mb-4">
+                                Request creation of new Executive Board and Club members.
+                            </p>
+                            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                                <DialogTrigger asChild>
+                                    <Button className="w-full">
+                                        <UserPlus className="mr-2 h-4 w-4" /> Request New User
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                    <DialogTitle>Request New User Account</DialogTitle>
+                                    <CardDescription>
+                                        This will add a request for a new user. You must still create the user in the Firebase Console.
+                                    </CardDescription>
+                                    </DialogHeader>
+                                    <RequestUserForm onFinished={() => setIsFormOpen(false)} />
+                                </DialogContent>
+                            </Dialog>
+                        </CardContent>
+                    </Card>
+                </div>
+                <div className="lg:col-span-2">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Pending User Requests</CardTitle>
+                             <CardDescription>
+                                After creating a user in Firebase Auth, mark the request as complete.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Email</TableHead>
+                                        <TableHead>Role</TableHead>
+                                        <TableHead className="text-right">Action</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {requests.length > 0 ? requests.map(req => (
+                                        <TableRow key={req.id}>
+                                            <TableCell>{req.name}</TableCell>
+                                            <TableCell>{req.email}</TableCell>
+                                            <TableCell>{req.role}</TableCell>
+                                            <TableCell className="text-right">
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button variant="ghost" size="icon" title="Mark as complete">
+                                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                        <AlertDialogTitle>Mark as complete?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This will delete the request. This action should only be done after you have manually created the user in the Firebase Authentication console.
+                                                        </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleDeleteRequest(req.id)}>
+                                                            Mark as Complete
+                                                        </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </TableCell>
+                                        </TableRow>
+                                    )) : (
+                                        <TableRow>
+                                            <TableCell colSpan={4} className="text-center h-24">No pending requests.</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );
