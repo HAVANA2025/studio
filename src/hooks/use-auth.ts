@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged, User, getRedirectResult, signOut, AuthError } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
+import { auth, db, adminEmails } from '@/lib/firebase';
 import { useToast } from './use-toast';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
@@ -37,6 +37,13 @@ export function useAuth(): AuthState {
   }, [router, toast]);
 
   const checkAdminRole = useCallback(async (user: User) => {
+    // Check hardcoded list first
+    if (user.email && adminEmails.includes(user.email)) {
+        setIsAdmin(true);
+        return;
+    }
+
+    // Then check firestore
     const userDocRef = doc(db, 'users', user.uid);
     try {
         const userDoc = await getDoc(userDocRef);
@@ -46,10 +53,8 @@ export function useAuth(): AuthState {
             setIsAdmin(false);
         }
     } catch(e) {
-        const idTokenResult = await user.getIdTokenResult();
-        if(idTokenResult.claims.admin) {
-            setIsAdmin(true);
-        }
+        console.error("Could not check admin role from firestore", e);
+        setIsAdmin(false);
     }
   }, []);
 
