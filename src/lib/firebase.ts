@@ -30,7 +30,6 @@ const adminEmails = [
     'gelectra@gitam.edu',
     'webdevlopment0210@gmail.com',
     'premkumarjanumula@gmail.com',
-    'smotapar2@gitam.in',
 ];
 
 export { app, db, auth, storage, functions, adminEmails };
