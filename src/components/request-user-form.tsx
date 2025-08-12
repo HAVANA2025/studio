@@ -51,6 +51,7 @@ export function RequestUserForm({ onFinished }: RequestUserFormProps) {
         const result = await response.json();
 
         if (!response.ok) {
+            console.error("API Error Response:", result);
             throw new Error(result.error || 'An unknown error occurred.');
         }
       

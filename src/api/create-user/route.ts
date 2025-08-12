@@ -4,7 +4,6 @@ import { admin } from '@/lib/firebase-admin'; // Use the centralized admin insta
 import axios from 'axios';
 
 export async function POST(req: Request) {
-  // The admin app is now guaranteed to be initialized by the import from @/lib/firebase-admin
   try {
     const { name, email, role, phone } = await req.json();
     const tempPassword = Math.random().toString(36).slice(-8);
@@ -73,18 +72,36 @@ export async function POST(req: Request) {
   } catch (error: any) {
     // Log the detailed error to the server console for debugging
     console.error('Firebase Create User Error:', error);
-    
-    // Return a more informative error message to the client
-    const errorMessage = error.message || 'An unknown error occurred while creating the user.';
-    
-    // It's also helpful to check for specific Firebase error codes
-    if (error.code === 'auth/email-already-exists') {
-      return NextResponse.json({ error: 'A user with this email address already exists.' }, { status: 409 });
-    }
-     if (error.code === 'auth/invalid-phone-number') {
-      return NextResponse.json({ error: 'The phone number is not valid.' }, { status: 400 });
+
+    let errorMessage = 'An unknown error occurred while creating the user.';
+    let statusCode = 500;
+
+    // Handle Firebase Auth errors
+    if (error.code) {
+      switch (error.code) {
+        case 'auth/email-already-exists':
+          errorMessage = 'A user with this email address already exists.';
+          statusCode = 409; // Conflict
+          break;
+        case 'auth/invalid-phone-number':
+          errorMessage = 'The provided phone number is not valid.';
+          statusCode = 400; // Bad Request
+          break;
+        case 'auth/invalid-password':
+            errorMessage = 'The password must be a string with at least six characters.';
+            statusCode = 400;
+            break;
+        default:
+          errorMessage = error.message || errorMessage;
+      }
+    } else if (axios.isAxiosError(error)) {
+        // Handle email sending errors
+        console.error('Email (Brevo) API Error:', error.response?.data);
+        errorMessage = 'User was created in Firebase, but the welcome email could not be sent.';
+        // We don't change the status code here, because the primary action (user creation) might have succeeded
+        // Depending on requirements, you might want to handle this differently
     }
       
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json({ error: errorMessage }, { status: statusCode });
   }
 }
