@@ -3,26 +3,28 @@ import { NextResponse } from 'next/server';
 import admin from 'firebase-admin';
 import axios from 'axios';
 
-// Initialize Firebase Admin SDK
-function initializeFirebaseAdmin() {
-    if (!admin.apps.length) {
-        try {
-            const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON!);
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount),
-            });
-        } catch (error: any) {
-            console.error('Firebase Admin Initialization Error:', error.message);
-            // Throw an error to prevent the function from continuing with an uninitialized app
-            throw new Error('Firebase Admin initialization failed');
-        }
-    }
+// Initialize Firebase Admin SDK safely
+try {
+  if (!admin.apps.length) {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON!);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+  }
+} catch (error: any) {
+    console.error('Firebase Admin Initialization Error:', error.message);
+    // This will prevent the API route from being created if initialization fails.
 }
 
 
 export async function POST(req: Request) {
+  // Ensure the app is initialized before proceeding
+  if (!admin.apps.length) {
+    console.error('Firebase Admin SDK is not initialized.');
+    return NextResponse.json({ error: 'Firebase Admin SDK is not initialized. Check server logs.' }, { status: 500 });
+  }
+
   try {
-    initializeFirebaseAdmin();
     const { name, email, role, phone, tempPassword } = await req.json();
 
     // 1. Create the user in Firebase Auth
