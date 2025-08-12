@@ -22,7 +22,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
 export default function AdminPage() {
@@ -38,6 +37,9 @@ export default function AdminPage() {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const requestsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as UserCreationRequest));
             setRequests(requestsData);
+        }, (error) => {
+            console.error("Error fetching user requests: ", error);
+            // This can happen if security rules are not yet deployed or are incorrect.
         });
 
         return () => unsubscribe();
@@ -72,7 +74,7 @@ export default function AdminPage() {
             <div className="text-center mb-12">
                 <h1 className="font-headline text-5xl font-bold tracking-tight">Admin Dashboard</h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Manage users and site content from this central hub.
+                    Manage new user requests. Requests submitted here must be manually fulfilled in the Firebase Console.
                 </p>
             </div>
 
