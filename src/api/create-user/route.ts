@@ -4,20 +4,25 @@ import admin from 'firebase-admin';
 import axios from 'axios';
 
 // Initialize Firebase Admin SDK
-try {
-  if (!admin.apps.length) {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON!);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-  }
-} catch (error: any) {
-    console.error('Firebase Admin Initialization Error:', error.message);
+function initializeFirebaseAdmin() {
+    if (!admin.apps.length) {
+        try {
+            const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON!);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount),
+            });
+        } catch (error: any) {
+            console.error('Firebase Admin Initialization Error:', error.message);
+            // Throw an error to prevent the function from continuing with an uninitialized app
+            throw new Error('Firebase Admin initialization failed');
+        }
+    }
 }
 
 
 export async function POST(req: Request) {
   try {
+    initializeFirebaseAdmin();
     const { name, email, role, phone, tempPassword } = await req.json();
 
     // 1. Create the user in Firebase Auth
