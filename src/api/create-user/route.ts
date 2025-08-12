@@ -1,20 +1,7 @@
 
 import { NextResponse } from 'next/server';
-import admin from 'firebase-admin';
+import { admin } from '@/lib/firebase-admin'; // Use the centralized admin instance
 import axios from 'axios';
-
-// Initialize Firebase Admin SDK safely, only if it hasn't been initialized yet.
-if (!admin.apps.length) {
-  try {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_JSON!);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-  } catch (error: any) {
-      console.error('Firebase Admin Initialization Error:', error.message);
-  }
-}
-
 
 export async function POST(req: Request) {
   // Ensure the app is initialized before proceeding
