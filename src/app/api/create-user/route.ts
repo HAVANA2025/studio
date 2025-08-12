@@ -4,11 +4,12 @@ import { admin } from '@/lib/firebase-admin'; // Use the centralized admin insta
 import axios from 'axios';
 
 export async function POST(req: Request) {
+  // The admin app is now guaranteed to be initialized by the import from @/lib/firebase-admin
   try {
     const { name, email, role, phone } = await req.json();
     const tempPassword = Math.random().toString(36).slice(-8);
 
-    // 1. Create the user in Firebase Auth using the Admin SDK
+    // 1. Create the user in Firebase Auth
     const userRecord = await admin.auth().createUser({
       email,
       password: tempPassword,
@@ -17,11 +18,11 @@ export async function POST(req: Request) {
     });
 
     // Set custom claims for role-based access if needed
-    if (role) {
-        await admin.auth().setCustomUserClaims(userRecord.uid, { role });
+    if (role === 'Executive Board') {
+        await admin.auth().setCustomUserClaims(userRecord.uid, { role: 'admin' });
     }
 
-    // 2. Store additional user data in Firestore
+    // 2. Store extra data in Firestore
     const db = admin.firestore();
     await db.collection('users').doc(userRecord.uid).set({
       name,
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     });
 
     // 3. Send welcome email via Brevo
-    if (process.env.BREVO_API_KEY) {
+    if (process.env.BREVO_API_KEY && process.env.BREVO_SENDER_EMAIL) {
         await axios.post(
           'https://api.brevo.com/v3/smtp/email',
           {
@@ -65,19 +66,18 @@ export async function POST(req: Request) {
           }
         );
     } else {
-        console.warn('BREVO_API_KEY is not set. Skipping welcome email.');
+        console.warn('Brevo credentials are not fully set in .env.local. Skipping welcome email.');
     }
-
 
     return NextResponse.json({ success: true, uid: userRecord.uid });
   } catch (error: any) {
-    console.error('Create User Error:', error);
+    console.error('Create User Error:', error.response ? error.response.data : error.message);
     
-    // Provide a more specific error message if available
+    // Provide a more generic error to the client for security
     const errorMessage = error.code === 'auth/email-already-exists' 
       ? 'A user with this email address already exists.'
-      : error.message || 'An unknown error occurred while creating the user.';
-
+      : 'An error occurred while creating the user.';
+      
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
