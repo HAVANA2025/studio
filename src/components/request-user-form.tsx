@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { v4 as uuidv4 } from 'uuid';
 
 const roles = ['Executive Board', 'Club Member'] as const;
 
@@ -43,18 +42,16 @@ export function RequestUserForm({ onFinished }: RequestUserFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-        const tempPassword = uuidv4().slice(0, 8); // Generate a simple temporary password
-
         const response = await fetch('/api/create-user', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...values, tempPassword }),
+            body: JSON.stringify(values),
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.error || 'Something went wrong');
+            throw new Error(result.error || 'An unknown error occurred.');
         }
       
       toast({ title: 'Success', description: 'User created and welcome email sent.' });
@@ -63,8 +60,8 @@ export function RequestUserForm({ onFinished }: RequestUserFormProps) {
     } catch (error: any) {
       console.error("Failed to create user:", error);
       toast({
-        title: 'Error',
-        description: `Failed to create user: ${error.message}`,
+        title: 'Error Creating User',
+        description: error.message,
         variant: 'destructive',
       });
     } finally {

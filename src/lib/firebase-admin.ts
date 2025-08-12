@@ -5,7 +5,7 @@ if (!admin.apps.length) {
   try {
     const serviceAccountString = process.env.FIREBASE_ADMIN_JSON;
     if (!serviceAccountString) {
-      throw new Error('FIREBASE_ADMIN_JSON environment variable is not set.');
+      throw new Error('The FIREBASE_ADMIN_JSON environment variable is not set. Please check your .env.local file.');
     }
     const serviceAccount = JSON.parse(serviceAccountString);
     admin.initializeApp({
