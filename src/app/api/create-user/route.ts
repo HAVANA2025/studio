@@ -4,7 +4,6 @@ import { admin } from '@/lib/firebase-admin'; // Use the centralized admin insta
 import axios from 'axios';
 
 export async function POST(req: Request) {
-  // The admin app is now guaranteed to be initialized by the import from @/lib/firebase-admin
   try {
     const { name, email, role, phone } = await req.json();
     const tempPassword = Math.random().toString(36).slice(-8);
@@ -33,18 +32,15 @@ export async function POST(req: Request) {
       isTempPassword: true, // Flag to force password reset on first login
     });
 
-    // 3. Send welcome email via Brevo
-    if (process.env.BREVO_API_KEY && process.env.BREVO_SENDER_EMAIL) {
-        await axios.post(
-          'https://api.brevo.com/v3/smtp/email',
-          {
-            sender: { 
-                email: process.env.BREVO_SENDER_EMAIL, 
-                name: process.env.BREVO_SENDER_NAME || 'G-Electra Hub'
-            },
-            to: [{ email, name }],
+    // 3. Send welcome email via Resend (or Brevo, updated as per other files)
+    if (process.env.RESEND_API_KEY) {
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+            from: 'G-Electra Hub <onboarding@resend.dev>',
+            to: [email],
             subject: 'Welcome to G-Electra Hub!',
-            htmlContent: `
+            html: `
                 <h1>Welcome, ${name}!</h1>
                 <p>An administrator has created an account for you on the G-Electra Hub.</p>
                 <p>Please use the following credentials to log in:</p>
@@ -56,28 +52,49 @@ export async function POST(req: Request) {
                 <p>Thank you!</p>
                 <p>The G-Electra Team</p>
             `,
-          },
-          { 
-              headers: { 
-                  'api-key': process.env.BREVO_API_KEY, 
-                  'content-type': 'application/json',
-                  'accept': 'application/json',
-              } 
-          }
-        );
+        });
     } else {
-        console.warn('Brevo credentials are not fully set in .env.local. Skipping welcome email.');
+        console.warn('Resend API key is not set in .env.local. Skipping welcome email.');
     }
 
     return NextResponse.json({ success: true, uid: userRecord.uid });
   } catch (error: any) {
-    console.error('Create User Error:', error.response ? error.response.data : error.message);
-    
-    // Provide a more generic error to the client for security
-    const errorMessage = error.code === 'auth/email-already-exists' 
-      ? 'A user with this email address already exists.'
-      : 'An error occurred while creating the user.';
+    // Log the detailed error to the server console for debugging
+    console.error('Firebase Create User Error:', error);
+
+    let errorMessage = 'An unknown error occurred while creating the user.';
+    let statusCode = 500;
+
+    // Handle Firebase Auth errors
+    if (error.code) {
+      switch (error.code) {
+        case 'auth/email-already-exists':
+          errorMessage = 'A user with this email address already exists.';
+          statusCode = 409; // Conflict
+          break;
+        case 'auth/invalid-phone-number':
+          errorMessage = 'The provided phone number is not valid.';
+          statusCode = 400; // Bad Request
+          break;
+        case 'auth/invalid-password':
+            errorMessage = 'The password must be a string with at least six characters.';
+            statusCode = 400;
+            break;
+        default:
+          errorMessage = error.message || errorMessage;
+      }
+    } else if (axios.isAxiosError(error)) {
+        // Handle email sending errors
+        console.error('Email API Error:', error.response?.data);
+        errorMessage = 'User was created successfully, but the welcome email could not be sent. Please check the email service configuration.';
+        // We still return a success code because the main action succeeded.
+        // The frontend can show a warning.
+        return NextResponse.json({ success: true, uid: error.config?.headers?.['X-User-UID'], warning: errorMessage });
+
+    } else {
+        errorMessage = error.message || errorMessage;
+    }
       
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json({ error: errorMessage }, { status: statusCode });
   }
 }
