@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import { admin } from '@/lib/firebase-admin'; // Use the centralized admin instance
-import axios from 'axios';
+import { Resend } from 'resend';
 
 export async function POST(req: Request) {
   try {
@@ -32,29 +32,38 @@ export async function POST(req: Request) {
       isTempPassword: true, // Flag to force password reset on first login
     });
 
-    // 3. Send welcome email via Resend (or Brevo, updated as per other files)
+    // 3. Send welcome email via Resend
     if (process.env.RESEND_API_KEY) {
-        const { Resend } = await import('resend');
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        await resend.emails.send({
-            from: 'G-Electra Hub <onboarding@resend.dev>',
-            to: [email],
-            subject: 'Welcome to G-Electra Hub!',
-            html: `
-                <h1>Welcome, ${name}!</h1>
-                <p>An administrator has created an account for you on the G-Electra Hub.</p>
-                <p>Please use the following credentials to log in:</p>
-                <ul>
-                    <li><strong>Email:</strong> ${email}</li>
-                    <li><strong>Temporary Password:</strong> ${tempPassword}</li>
-                </ul>
-                <p>You will be required to change this password after your first login.</p>
-                <p>Thank you!</p>
-                <p>The G-Electra Team</p>
-            `,
-        });
+        try {
+            const resend = new Resend(process.env.RESEND_API_KEY);
+            await resend.emails.send({
+                from: 'G-Electra Hub <onboarding@resend.dev>',
+                to: [email],
+                subject: 'Welcome to G-Electra Hub!',
+                html: `
+                    <h1>Welcome, ${name}!</h1>
+                    <p>An administrator has created an account for you on the G-Electra Hub.</p>
+                    <p>Please use the following credentials to log in:</p>
+                    <ul>
+                        <li><strong>Email:</strong> ${email}</li>
+                        <li><strong>Temporary Password:</strong> ${tempPassword}</li>
+                    </ul>
+                    <p>You will be required to change this password after your first login.</p>
+                    <p>Thank you!</p>
+                    <p>The G-Electra Team</p>
+                `,
+            });
+        } catch (emailError: any) {
+            console.error('Resend email sending error:', emailError);
+            // Don't block user creation if email fails. Return a success response with a warning.
+            return NextResponse.json({ 
+                success: true, 
+                uid: userRecord.uid,
+                warning: 'User was created successfully, but the welcome email could not be sent. Please check the Resend integration.'
+            });
+        }
     } else {
-        console.warn('Resend API key is not set in .env.local. Skipping welcome email.');
+        console.warn('RESEND_API_KEY is not set in .env.local. Skipping welcome email.');
     }
 
     return NextResponse.json({ success: true, uid: userRecord.uid });
@@ -65,7 +74,7 @@ export async function POST(req: Request) {
     let errorMessage = 'An unknown error occurred while creating the user.';
     let statusCode = 500;
 
-    // Handle Firebase Auth errors
+    // Handle Firebase Auth errors specifically
     if (error.code) {
       switch (error.code) {
         case 'auth/email-already-exists':
@@ -83,18 +92,11 @@ export async function POST(req: Request) {
         default:
           errorMessage = error.message || errorMessage;
       }
-    } else if (axios.isAxiosError(error)) {
-        // Handle email sending errors
-        console.error('Email API Error:', error.response?.data);
-        errorMessage = 'User was created successfully, but the welcome email could not be sent. Please check the email service configuration.';
-        // We still return a success code because the main action succeeded.
-        // The frontend can show a warning.
-        return NextResponse.json({ success: true, uid: error.config?.headers?.['X-User-UID'], warning: errorMessage });
-
     } else {
         errorMessage = error.message || errorMessage;
     }
       
+    // IMPORTANT: Always return a JSON response
     return NextResponse.json({ error: errorMessage }, { status: statusCode });
   }
 }
