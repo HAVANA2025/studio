@@ -71,12 +71,19 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, uid: userRecord.uid });
   } catch (error: any) {
-    console.error('Create User Error:', error.response ? error.response.data : error.message);
+    // Log the detailed error to the server console for debugging
+    console.error('Firebase Create User Error:', error);
     
-    // Provide a more generic error to the client for security
-    const errorMessage = error.code === 'auth/email-already-exists' 
-      ? 'A user with this email address already exists.'
-      : 'An error occurred while creating the user.';
+    // Return a more informative error message to the client
+    const errorMessage = error.message || 'An unknown error occurred while creating the user.';
+    
+    // It's also helpful to check for specific Firebase error codes
+    if (error.code === 'auth/email-already-exists') {
+      return NextResponse.json({ error: 'A user with this email address already exists.' }, { status: 409 });
+    }
+     if (error.code === 'auth/invalid-phone-number') {
+      return NextResponse.json({ error: 'The phone number is not valid.' }, { status: 400 });
+    }
       
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
