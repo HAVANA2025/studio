@@ -1,12 +1,13 @@
+
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from "firebase/app";
+import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
+const firebaseConfig: FirebaseOptions = {
   projectId: "g-electra-hub",
   appId: "1:788171080845:web:8d270d4a30006aa8468ec4",
   storageBucket: "g-electra-hub.appspot.com",
