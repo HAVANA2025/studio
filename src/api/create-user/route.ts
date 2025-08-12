@@ -4,12 +4,7 @@ import { admin } from '@/lib/firebase-admin'; // Use the centralized admin insta
 import axios from 'axios';
 
 export async function POST(req: Request) {
-  // Ensure the app is initialized before proceeding
-  if (!admin.apps.length) {
-    console.error('Firebase Admin SDK is not initialized. Check server logs for initialization errors.');
-    return NextResponse.json({ error: 'Internal Server Error: Firebase Admin SDK not initialized.' }, { status: 500 });
-  }
-
+  // The admin app is now guaranteed to be initialized by the import from @/lib/firebase-admin
   try {
     const { name, email, role, phone, tempPassword } = await req.json();
 
@@ -67,7 +62,9 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Create User Error:', error.response ? error.response.data : error.message);
     // Provide a more generic error to the client for security
-    const errorMessage = "An error occurred while creating the user.";
+    const errorMessage = error.code === 'auth/email-already-exists' 
+      ? 'A user with this email address already exists.'
+      : 'An error occurred while creating the user.';
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
