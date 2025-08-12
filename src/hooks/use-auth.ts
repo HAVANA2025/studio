@@ -3,11 +3,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged, User, getRedirectResult, signOut, AuthError } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { useToast } from './use-toast';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+
 
 type AuthState = {
   user: User | null;
@@ -38,11 +38,18 @@ export function useAuth(): AuthState {
 
   const checkAdminRole = useCallback(async (user: User) => {
     const userDocRef = doc(db, 'users', user.uid);
-    const userDoc = await getDoc(userDocRef);
-    if (userDoc.exists() && userDoc.data().role === 'Executive Board') {
-        setIsAdmin(true);
-    } else {
-        setIsAdmin(false);
+    try {
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists() && userDoc.data().role === 'Executive Board') {
+            setIsAdmin(true);
+        } else {
+            setIsAdmin(false);
+        }
+    } catch(e) {
+        const idTokenResult = await user.getIdTokenResult();
+        if(idTokenResult.claims.admin) {
+            setIsAdmin(true);
+        }
     }
   }, []);
 
