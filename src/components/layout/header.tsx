@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -45,15 +46,14 @@ const mainNavLinks = [
   { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
   { href: '/about', label: 'About Us', icon: <Info className="w-4 h-4" /> },
   { href: '/registrations', label: 'Events', icon: <Calendar className="w-4 h-4" /> },
-  { href: '/playground', label: 'Playground', icon: <FlaskConical className="w-4 h-4" /> },
-  { href: '/announcements', label: 'Announcements', icon: <Megaphone className="w-4 h-4" /> },
+  { href: '/community', label: 'Our Team', icon: <Users className="w-4 h-4" /> },
   { href: '/contact', label: 'Contact', icon: <Mail className="w-4 h-4" /> },
 ];
 
 const dropdownNavLinks = [
     { href: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
-    { href: '/community', label: 'Our Team', icon: <Users className="w-4 h-4" /> },
     { href: '/media', label: 'Media', icon: <ImageIcon className="w-4 h-4" /> },
+    { href: '/playground', label: 'Playground', icon: <FlaskConical className="w-4 h-4" /> },
 ];
 
 export function Header() {
@@ -63,6 +63,9 @@ export function Header() {
   const [hasNewAnnouncements, setHasNewAnnouncements] = useState(false);
 
   const allNavLinks = [...mainNavLinks, ...dropdownNavLinks];
+  if(user) {
+    allNavLinks.push({ href: '/announcements', label: 'Announcements', icon: <Megaphone className="w-4 h-4" /> });
+  }
 
   useEffect(() => {
     const checkAnnouncements = async () => {
@@ -112,12 +115,6 @@ export function Header() {
               >
                 {link.icon}
                 <span className={cn(isActive ? 'glow-effect' : '')}>{link.label}</span>
-                 {link.href === '/announcements' && hasNewAnnouncements && (
-                    <span className="absolute top-1 right-1 flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-background opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-background"></span>
-                    </span>
-                 )}
               </Link>
             )
           })}
