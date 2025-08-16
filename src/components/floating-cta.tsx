@@ -39,7 +39,7 @@ export function FloatingCTA() {
           {/* Mobile Button */}
            <button
             className={cn(
-              'md:hidden flex h-16 w-16 items-center justify-center rounded-lg bg-secondary/80 text-secondary-foreground shadow-lg backdrop-blur-sm animate-colorful-glow-bg',
+              'md:hidden flex h-16 w-16 items-center justify-center rounded-full bg-secondary/80 text-secondary-foreground shadow-lg backdrop-blur-sm animate-colorful-glow-bg',
               'active:scale-95 transition-transform duration-200'
             )}
           >
