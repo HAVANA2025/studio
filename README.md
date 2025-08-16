@@ -87,7 +87,6 @@ The application should now be running at `http://localhost:9000`.
 ## File Structure
 
 Here's a brief overview of the key directories in this project:
-
 - **/public**: Contains static assets like images and fonts that are served directly.
 - **/src/app**: The main application directory using the Next.js App Router. Each folder represents a route.
 - **/src/components**: Contains all the reusable React components.
@@ -98,6 +97,45 @@ Here's a brief overview of the key directories in this project:
   - `firebase.ts`: Initializes the Firebase app and services.
   - `types.ts`: TypeScript type definitions used across the app.
 - **/functions**: Contains the code for Firebase Cloud Functions, such as the `sendWelcomeEmail` trigger.
+
+```
+/
+├── .env.example          # Example environment variables
+├── functions/            # Firebase Cloud Functions
+│   ├── src/index.ts      # Main functions file
+│   └── package.json
+├── public/               # Static assets (images, fonts, etc.)
+│   └── images/
+├── src/
+│   ├── app/              # Next.js App Router (pages and layouts)
+│   │   ├── about/
+│   │   ├── achievements/
+│   │   ├── announcements/
+│   │   ├── community/
+│   │   ├── contact/
+│   │   ├── domains/
+│   │   ├── login/
+│   │   ├── media/
+│   │   ├── playground/
+│   │   ├── projects/
+│   │   ├── registrations/
+│   │   ├── signup/
+│   │   ├── layout.tsx    # Root layout
+│   │   └── page.tsx      # Homepage
+│   ├── components/       # Reusable React components
+│   │   ├── ui/           # ShadCN UI components
+│   │   ├── layout/       # Header, Footer, etc.
+│   │   └── ...
+│   ├── hooks/            # Custom React hooks
+│   │   └── use-auth.ts
+│   └── lib/              # Core utility functions
+│       ├── firebase.ts
+│       ├── types.ts
+│       └── utils.ts
+├── next.config.ts        # Next.js configuration
+├── package.json
+└── tailwind.config.ts    # Tailwind CSS configuration
+```
 
 ---
 
