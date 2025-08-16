@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Lightbulb, Rocket } from 'lucide-react';
@@ -28,24 +29,21 @@ export function FloatingCTA() {
         <div className="fixed bottom-8 right-8 z-50 animate-pulse-glow">
           {/* Desktop Button */}
           <button
-            className="group relative hidden h-14 items-center justify-center gap-3 overflow-hidden rounded-full bg-secondary/80 pr-5 pl-14 text-lg font-semibold text-secondary-foreground shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-primary/80 hover:text-primary-foreground hover:shadow-primary/40 md:flex"
+            className="group relative hidden h-14 items-center justify-center gap-3 overflow-hidden rounded-full bg-secondary/80 pr-5 pl-[4.5rem] text-lg font-semibold text-secondary-foreground shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-primary/80 hover:text-primary-foreground hover:shadow-primary/40 md:flex"
           >
-            <div className="absolute left-0 top-0 h-full w-14 transform-gpu transition-all duration-300 group-hover:scale-150 group-hover:opacity-50">
-              <div className="absolute inset-0.5 rounded-full bg-gradient-to-br from-primary to-accent" />
-            </div>
+            <div className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 transform-gpu rounded-full transition-all duration-300 group-hover:scale-150 group-hover:opacity-50 animate-colorful-glow-bg" />
             <span className="relative z-10 transition-transform duration-300 group-hover:-translate-x-1">Got an Idea?</span>
-            <Lightbulb className="relative z-10 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+            <Lightbulb className="relative z-10 h-5 w-5 transition-transform duration-300 group-hover:scale-110 animate-bulb-glow" />
           </button>
           
           {/* Mobile Button */}
-          <button
+           <button
             className={cn(
-              'md:hidden flex h-14 w-14 items-center justify-center rounded-full bg-secondary/80 text-secondary-foreground shadow-lg backdrop-blur-sm',
+              'md:hidden flex h-16 w-16 items-center justify-center rounded-full bg-secondary/80 text-secondary-foreground shadow-lg backdrop-blur-sm animate-colorful-glow-bg',
               'active:scale-95 transition-transform duration-200'
             )}
           >
-            <div className="absolute inset-0.5 rounded-full bg-gradient-to-br from-primary to-accent" />
-            <Lightbulb className="relative z-10 h-6 w-6" />
+            <Lightbulb className="relative z-10 h-8 w-8 animate-bulb-glow" />
           </button>
         </div>
       </DialogTrigger>

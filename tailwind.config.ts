@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -98,12 +99,23 @@ export default {
         'pulse-glow': {
           '0%, 100%': { boxShadow: '0 0 20px -5px hsl(var(--primary) / 0.5)' },
           '50%': { boxShadow: '0 0 35px 0px hsl(var(--primary) / 0.7)' },
+        },
+         'colorful-glow-bg': {
+          '0%': { backgroundPosition: '0% 50%', backgroundImage: 'linear-gradient(45deg, hsl(var(--accent)), hsl(var(--primary)), hsl(var(--accent)))' },
+          '50%': { backgroundPosition: '100% 50%', backgroundImage: 'linear-gradient(45deg, hsl(var(--accent)), hsl(var(--primary)), hsl(var(--accent)))' },
+          '100%': { backgroundPosition: '0% 50%', backgroundImage: 'linear-gradient(45deg, hsl(var(--accent)), hsl(var(--primary)), hsl(var(--accent)))' },
+        },
+        'bulb-glow': {
+          '0%, 100%': { filter: 'drop-shadow(0 0 2px hsl(var(--primary)))', color: 'hsl(var(--primary-foreground))' },
+          '50%': { filter: 'drop-shadow(0 0 10px hsl(var(--primary))) drop-shadow(0 0 20px hsl(var(--primary) / 0.5))', color: 'hsl(var(--primary))'},
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'pulse-glow': 'pulse-glow 4s ease-in-out infinite',
+        'colorful-glow-bg': 'colorful-glow-bg 6s linear infinite',
+        'bulb-glow': 'bulb-glow 2s ease-in-out infinite',
       },
     },
   },
