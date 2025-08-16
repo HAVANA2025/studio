@@ -29,10 +29,10 @@ export function FloatingCTA() {
         <div className="fixed bottom-8 right-8 z-50 animate-button-glow">
           {/* Desktop Button */}
           <button
-            className="group relative hidden h-14 w-44 items-center justify-center gap-3 overflow-hidden rounded-lg bg-gradient-to-r from-primary via-primary to-violet-500 px-4 text-lg font-semibold text-primary-foreground shadow-lg transition-all duration-300 md:flex"
+            className="group relative hidden h-14 items-center justify-center gap-3 overflow-hidden rounded-lg bg-black px-6 text-base font-semibold text-white shadow-lg transition-all duration-300 md:flex"
           >
-            <span className="relative z-10 transition-transform duration-300 group-hover:-translate-x-1">Got an Idea?</span>
-            <Lightbulb className="relative z-10 h-6 w-6 transition-transform duration-300 group-hover:scale-110 animate-bulb-glow" />
+            <span className="relative z-10 transition-transform duration-300 group-hover:-translate-x-1 whitespace-nowrap">Got an Idea?</span>
+            <Lightbulb className="relative z-10 h-6 w-6 text-primary transition-transform duration-300 group-hover:scale-110 animate-bulb-glow" />
           </button>
           
           {/* Mobile Button */}

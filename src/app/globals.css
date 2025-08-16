@@ -76,7 +76,7 @@ body {
   }
 
   .animate-bulb-glow {
-    animation: bulb-glow 2.5s ease-in-out infinite;
+    animation: bulb-glow 2s ease-in-out infinite;
   }
   
    .animate-colorful-glow-bg {
