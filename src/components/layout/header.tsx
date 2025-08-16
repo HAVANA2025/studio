@@ -14,7 +14,7 @@ import {
   Users, 
   Image as ImageIcon, 
   Calendar, 
-  FlaskConical, 
+  Rocket, 
   Mail,
   Bell,
   LogIn,
@@ -42,6 +42,7 @@ const navLinks = [
   { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
   { href: '/about', label: 'About Us', icon: <Info className="w-4 h-4" /> },
   { href: '/registrations', label: 'Events', icon: <Calendar className="w-4 h-4" /> },
+  { href: '/projects', label: 'Projects', icon: <Rocket className="w-4 h-4" /> },
   { href: '/community', label: 'Our Team', icon: <Users className="w-4 h-4" /> },
   { href: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
   { href: '/media', label: 'Media', icon: <ImageIcon className="w-4 h-4" /> },
@@ -152,6 +153,12 @@ export function Header() {
                         </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                           <Link href="/announcements">
+                                <Bell className="mr-2 h-4 w-4" />
+                                <span>Announcements</span>
+                           </Link>
+                        </DropdownMenuItem>
                         {isAdmin && (
                             <DropdownMenuItem asChild className="cursor-pointer">
                                 <Link href="/admin">
