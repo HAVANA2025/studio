@@ -6,8 +6,8 @@ import { ArrowRight, Users, Code, Zap, Cpu, Info, Star, Award, BookOpen, BrainCi
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { useState, useRef } from 'react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { cn } from '@/lib/utils';
 
@@ -84,10 +84,30 @@ const achievements = [
 export default function Home() {
   const [projectType, setProjectType] = useState<'hardware' | 'software'>('hardware');
   const projects = projectType === 'hardware' ? hardwareProjects : softwareProjects;
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
 
   const autoplayPlugin = useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true })
+    Autoplay({ delay: 4000, stopOnInteraction: true })
   );
+
+  useEffect(() => {
+    if (!api) {
+      return
+    }
+
+    setCurrent(api.selectedScrollSnap())
+
+    const handleSelect = (api: CarouselApi) => {
+      setCurrent(api.selectedScrollSnap())
+    }
+
+    api.on('select', handleSelect)
+
+    return () => {
+      api.off('select', handleSelect)
+    }
+  }, [api])
 
   return (
     <div className="flex flex-col items-center overflow-x-hidden">
@@ -232,27 +252,31 @@ export default function Home() {
             <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">Our journey is marked by a legacy of innovation, dedication, and success.</p>
           </div>
           <Carousel
+            setApi={setApi}
             opts={{
-              align: "start",
+              align: "center",
               loop: true,
             }}
             plugins={[
                 autoplayPlugin.current
             ]}
             onMouseEnter={autoplayPlugin.current.stop}
-            onMouseLeave={autoplayPlugin.current.reset}
-            className="w-full max-w-4xl mx-auto"
+            onMouseLeave={autoplayPlugin.current.play}
+            className="w-full max-w-6xl mx-auto"
           >
-            <CarouselContent>
+            <CarouselContent className="-ml-4">
               {achievements.map((ach, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1">
-                    <Card className="h-full bg-card/50 border-primary/10 p-6 flex flex-col items-center text-center">
-                       <Award className="w-10 h-10 text-primary mb-4" />
-                       <CardTitle className="font-headline text-xl">{ach.event}</CardTitle>
-                       <p className="text-primary font-semibold mt-1">{ach.type}</p>
-                    </Card>
-                  </div>
+                <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1">
+                        <Card className={cn(
+                            "h-full bg-card/50 border-primary/10 p-6 flex flex-col items-center text-center transition-all duration-300 ease-in-out",
+                             current === index ? 'scale-105 shadow-2xl shadow-primary/20' : 'scale-90 opacity-60'
+                        )}>
+                            <Award className="w-10 h-10 text-primary mb-4" />
+                            <CardTitle className="font-headline text-xl">{ach.event}</CardTitle>
+                            <p className="text-primary font-semibold mt-1">{ach.type}</p>
+                        </Card>
+                    </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
