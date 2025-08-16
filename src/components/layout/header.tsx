@@ -15,12 +15,9 @@ import {
   Image as ImageIcon, 
   Calendar, 
   FlaskConical, 
-  Megaphone, 
   Mail,
   Bell,
-  Shapes,
   LogIn,
-  UserPlus,
   LogOut,
   UserCircle,
   Shield,
@@ -48,7 +45,6 @@ const navLinks = [
   { href: '/community', label: 'Our Team', icon: <Users className="w-4 h-4" /> },
   { href: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
   { href: '/media', label: 'Media', icon: <ImageIcon className="w-4 h-4" /> },
-  { href: '/playground', label: 'Playground', icon: <FlaskConical className="w-4 h-4" /> },
   { href: '/contact', label: 'Contact', icon: <Mail className="w-4 h-4" /> },
 ];
 
@@ -67,7 +63,6 @@ export function Header() {
       
       const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'), limit(1));
       
-      // Use onSnapshot for real-time updates
       const unsubscribe = onSnapshot(q, (snapshot) => {
         if (!snapshot.empty) {
           const latestAnnouncement = snapshot.docs[0].data() as Announcement;
@@ -120,6 +115,7 @@ export function Header() {
                     : 'text-muted-foreground hover:text-foreground'
                 )}
               >
+                {link.icon}
                 {link.label}
               </Link>
             )
@@ -181,6 +177,19 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
+            {!loading && user && (
+              <Link href="/announcements" passHref>
+                  <Button variant="ghost" size="icon" aria-label="Announcements">
+                      <Bell />
+                      {hasNewAnnouncements && (
+                          <span className="absolute top-2 right-2 flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                          </span>
+                      )}
+                  </Button>
+              </Link>
+            )}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Toggle menu"
@@ -214,18 +223,7 @@ export function Header() {
               <div className="flex flex-col gap-4 border-t border-border pt-4">
                 {!loading && user ? (
                   <>
-                     <Button asChild variant="outline" className="w-full">
-                        <Link href="/announcements" onClick={() => setIsOpen(false)}>
-                            <Bell className="mr-2"/>Announcements
-                            {hasNewAnnouncements && (
-                                <span className="relative flex h-2 w-2 ml-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                                </span>
-                            )}
-                        </Link>
-                    </Button>
-                    {isAdmin && (
+                     {isAdmin && (
                          <Button asChild variant="outline" className="w-full">
                             <Link href="/admin" onClick={() => setIsOpen(false)}>
                                 <Shield className="mr-2"/>Admin Panel
