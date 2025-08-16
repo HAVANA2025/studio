@@ -79,4 +79,8 @@ body {
   .animate-bulb-glow {
     animation: bulb-glow 2s ease-in-out infinite;
   }
+  
+  .animate-box-glow {
+    animation: box-glow 4s ease-in-out infinite;
+  }
 }
