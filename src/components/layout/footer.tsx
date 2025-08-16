@@ -111,7 +111,6 @@ export function Footer() {
         </div>
       </div>
       <div className="container mx-auto border-t border-border/40 py-6 text-center text-sm text-muted-foreground">
-        <div>© {new Date().getFullYear()} G-Electra Hub. All Rights Reserved.</div>
         <div className="mt-2">
             Powered by{' '}
             <a 
@@ -120,9 +119,22 @@ export function Footer() {
                 rel="noopener noreferrer" 
                 className="hover:text-primary transition-colors"
             >
-                EECE DEPT GTAM HYD
+                Department of EECE
             </a>
         </div>
+        <div>
+             <a 
+                href="https://www.gitam.edu/hyderabad/gitam-school-of-technology" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-primary transition-colors"
+            >
+                GITAM
+             </a>
+             <div>(Deemed to be University)</div>
+             <div>HYDERABAD-502 329</div>
+        </div>
+        <div className="mt-2">© {new Date().getFullYear()} G-Electra Hub. All Rights Reserved.</div>
       </div>
     </footer>
   );
