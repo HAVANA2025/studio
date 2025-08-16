@@ -111,7 +111,18 @@ export function Footer() {
         </div>
       </div>
       <div className="container mx-auto border-t border-border/40 py-6 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} G-Electra Hub. All Rights Reserved.
+        <div>© {new Date().getFullYear()} G-Electra Hub. All Rights Reserved.</div>
+        <div className="mt-2">
+            Powered by{' '}
+            <a 
+                href="https://www.gitam.edu/hyderabad/electrical-electronics-communication-engineering" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-primary transition-colors"
+            >
+                EECE DEPT GTAM HYD
+            </a>
+        </div>
       </div>
     </footer>
   );
