@@ -7,7 +7,8 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import Autoplay from "embla-carousel-autoplay"
 import { cn } from '@/lib/utils';
 
 const AnimatedStatCard = dynamic(() => import('@/components/animated-stat-card').then(mod => mod.AnimatedStatCard), { ssr: false });
@@ -83,6 +84,10 @@ const achievements = [
 export default function Home() {
   const [projectType, setProjectType] = useState<'hardware' | 'software'>('hardware');
   const projects = projectType === 'hardware' ? hardwareProjects : softwareProjects;
+
+  const autoplayPlugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true })
+  );
 
   return (
     <div className="flex flex-col items-center overflow-x-hidden">
@@ -231,6 +236,11 @@ export default function Home() {
               align: "start",
               loop: true,
             }}
+            plugins={[
+                autoplayPlugin.current
+            ]}
+            onMouseEnter={autoplayPlugin.current.stop}
+            onMouseLeave={autoplayPlugin.current.reset}
             className="w-full max-w-4xl mx-auto"
           >
             <CarouselContent>
