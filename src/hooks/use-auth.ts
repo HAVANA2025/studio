@@ -37,6 +37,10 @@ export function useAuth(): AuthState {
   }, [router, toast]);
 
   const checkAdminRole = useCallback(async (user: User) => {
+    if (!db) {
+        setIsAdmin(false);
+        return;
+    }
     // Check hardcoded list first
     if (user.email && adminEmails.includes(user.email)) {
         setIsAdmin(true);
@@ -60,6 +64,10 @@ export function useAuth(): AuthState {
 
 
   useEffect(() => {
+    if (!auth) {
+        setLoading(false);
+        return;
+    }
     // First, check if we are returning from a redirect login flow
     getRedirectResult(auth)
       .then((result) => {

@@ -5,7 +5,6 @@ import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { Inter, Audiowide } from 'next/font/google';
-import { FloatingCta } from '@/components/floating-cta';
 
 export const metadata: Metadata = {
   title: 'G-Electra',
@@ -40,7 +39,6 @@ export default function RootLayout({
         <main className="flex-grow">{children}</main>
         <Footer />
         <Toaster />
-        <FloatingCta />
       </body>
     </html>
   );

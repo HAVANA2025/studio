@@ -84,7 +84,9 @@ export function Header() {
       return () => unsubscribe();
     };
 
-    checkAnnouncements();
+    if (user && db) {
+        checkAnnouncements();
+    }
   }, [user]);
 
   // Close mobile menu on route change
@@ -161,9 +163,9 @@ export function Header() {
                         </DropdownMenuItem>
                         {isAdmin && (
                             <DropdownMenuItem asChild className="cursor-pointer">
-                                <Link href="/announcements">
+                                <Link href="/admin">
                                     <Shield className="mr-2 h-4 w-4" />
-                                    <span>Admin Actions</span>
+                                    <span>Admin Dashboard</span>
                                 </Link>
                             </DropdownMenuItem>
                         )}
@@ -232,8 +234,8 @@ export function Header() {
                   <>
                      {isAdmin && (
                          <Button asChild variant="outline" className="w-full">
-                            <Link href="/announcements" onClick={() => setIsOpen(false)}>
-                                <Shield className="mr-2"/>Admin Actions
+                            <Link href="/admin" onClick={() => setIsOpen(false)}>
+                                <Shield className="mr-2"/>Admin
                             </Link>
                         </Button>
                     )}

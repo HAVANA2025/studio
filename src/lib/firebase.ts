@@ -17,10 +17,26 @@ const firebaseConfig: FirebaseOptions = {
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
-const functions = getFunctions(app);
+let auth: ReturnType<typeof getAuth>;
+let db: ReturnType<typeof getFirestore>;
+let storage: ReturnType<typeof getStorage>;
+let functions: ReturnType<typeof getFunctions>;
+
+// Safely initialize Firebase services only on the client-side
+// or when the API key is available. This prevents build errors.
+if (typeof window !== 'undefined' || firebaseConfig.apiKey) {
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+    functions = getFunctions(app);
+} else {
+    // Provide mock instances or null objects for server-side build
+    auth = {} as any;
+    db = {} as any;
+    storage = {} as any;
+    functions = {} as any;
+}
+
 
 // Hardcoded list of admin emails
 const adminEmails = [

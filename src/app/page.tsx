@@ -60,12 +60,6 @@ const softwareProjects = [
         description: 'A dynamic event management and registration system integrated into the club website, handling user sign-ups and event details.',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'online registration form',
-    },
-    {
-        title: 'AI Project Suggester',
-        description: 'An intelligent tool on the club\'s "Playground" page that uses AI to generate project ideas based on user interests.',
-        image: 'https://placehold.co/600x400.png',
-        imageHint: 'artificial intelligence concept',
     }
 ]
 
@@ -116,6 +110,10 @@ export default function Home() {
   }, [api])
   
   useEffect(() => {
+    if (!db) {
+        setUpcomingEvent(null);
+        return;
+    }
     const today = new Date().toISOString().split('T')[0];
     const q = query(
       collection(db, 'events'),
