@@ -138,17 +138,6 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button asChild variant="ghost" size="icon" className="relative">
-            <Link href="/announcements">
-              <Bell />
-              {hasNewAnnouncements && (
-                <span className="absolute top-1 right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-                </span>
-              )}
-            </Link>
-          </Button>
           {!loading && user ? (
              <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -166,6 +155,18 @@ export function Header() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                     <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/announcements">
+                            <Bell className="mr-2 h-4 w-4" />
+                            <span>Announcements</span>
+                             {hasNewAnnouncements && (
+                                <span className="relative flex h-2 w-2 ml-auto">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                </span>
+                            )}
+                        </Link>
+                    </DropdownMenuItem>
                     {isAdmin && (
                         <DropdownMenuItem asChild className="cursor-pointer">
                             <Link href="/admin">
@@ -174,6 +175,7 @@ export function Header() {
                             </Link>
                         </DropdownMenuItem>
                     )}
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Sign Out</span>
@@ -190,17 +192,6 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2 md:hidden">
-            <Button asChild variant="ghost" size="icon" className="relative">
-                <Link href="/announcements">
-                <Bell />
-                {hasNewAnnouncements && (
-                    <span className="absolute top-1 right-1 flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
-                    </span>
-                )}
-                </Link>
-            </Button>
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Toggle menu"
@@ -219,7 +210,18 @@ export function Header() {
           >
             <div className="relative z-20 grid gap-6 rounded-md bg-popover p-4 text-popover-foreground shadow-md">
               <nav className="grid grid-flow-row auto-rows-max text-sm">
-                {allNavLinks.map((link) => (
+                {mainNavLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="flex w-full items-center gap-2 rounded-md p-2 text-base font-medium hover:bg-accent"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.icon}
+                    {link.label}
+                  </Link>
+                ))}
+                 {dropdownNavLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -250,6 +252,17 @@ export function Header() {
                            <span className="text-sm font-medium">{user.email}</span>
                        </div>
                     </div>
+                     <Button asChild variant="outline" className="w-full">
+                        <Link href="/announcements" onClick={() => setIsOpen(false)}>
+                            <Bell className="mr-2"/>Announcements
+                            {hasNewAnnouncements && (
+                                <span className="relative flex h-2 w-2 ml-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                </span>
+                            )}
+                        </Link>
+                    </Button>
                     <Button variant="outline" onClick={() => { handleSignOut(); setIsOpen(false);}} className="w-full"><LogOut className="mr-2"/>Sign Out</Button>
                   </>
                 ) : !loading ? (
