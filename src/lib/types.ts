@@ -25,13 +25,3 @@ export type Event = {
   imageUrl?: string;
   createdAt: Timestamp;
 };
-
-export type UserCreationRequest = {
-    id: string;
-    name: string;
-    email: string;
-    role: 'Executive Board' | 'Club Member';
-    phone?: string;
-    requestedBy: string;
-    requestedAt: Timestamp;
-}

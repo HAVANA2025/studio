@@ -161,9 +161,9 @@ export function Header() {
                         </DropdownMenuItem>
                         {isAdmin && (
                             <DropdownMenuItem asChild className="cursor-pointer">
-                                <Link href="/admin">
+                                <Link href="/announcements">
                                     <Shield className="mr-2 h-4 w-4" />
-                                    <span>Admin Panel</span>
+                                    <span>Admin Actions</span>
                                 </Link>
                             </DropdownMenuItem>
                         )}
@@ -232,8 +232,8 @@ export function Header() {
                   <>
                      {isAdmin && (
                          <Button asChild variant="outline" className="w-full">
-                            <Link href="/admin" onClick={() => setIsOpen(false)}>
-                                <Shield className="mr-2"/>Admin Panel
+                            <Link href="/announcements" onClick={() => setIsOpen(false)}>
+                                <Shield className="mr-2"/>Admin Actions
                             </Link>
                         </Button>
                     )}
