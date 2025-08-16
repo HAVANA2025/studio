@@ -96,8 +96,8 @@ export default {
           },
         },
         'pulse-glow': {
-          '0%, 100%': { opacity: 0.75, filter: 'blur(0.75rem)' },
-          '50%': { opacity: 1, filter: 'blur(1.5rem)' },
+          '0%, 100%': { boxShadow: '0 0 20px -5px hsl(var(--primary) / 0.5)' },
+          '50%': { boxShadow: '0 0 35px 0px hsl(var(--primary) / 0.7)' },
         }
       },
       animation: {
