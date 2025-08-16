@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Users, Code, Zap, Cpu, Info, Star, Award, BookOpen, BrainCircuit, Rocket } from 'lucide-react';
+import { ArrowRight, Users, Code, Zap, Cpu, Info, Star, Award, BookOpen, BrainCircuit, Rocket, Calendar, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
@@ -10,6 +10,11 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { cn } from '@/lib/utils';
+import { collection, query, orderBy, where, limit, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import type { Event } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
+
 
 const AnimatedStatCard = dynamic(() => import('@/components/animated-stat-card').then(mod => mod.AnimatedStatCard), { ssr: false });
 const SplineViewer = dynamic(() => import('@/components/spline-viewer').then(mod => mod.SplineViewer), { ssr: false });
@@ -86,6 +91,7 @@ export default function Home() {
   const projects = projectType === 'hardware' ? hardwareProjects : softwareProjects;
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const [upcomingEvent, setUpcomingEvent] = useState<Event | null | undefined>(undefined);
 
   const autoplayPlugin = useRef(
     Autoplay({ delay: 4000, stopOnInteraction: true })
@@ -108,6 +114,30 @@ export default function Home() {
       api.off('select', handleSelect)
     }
   }, [api])
+  
+  useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const q = query(
+      collection(db, 'events'),
+      where('date', '>=', today),
+      orderBy('date', 'asc'),
+      limit(1)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        setUpcomingEvent(null); // No upcoming events
+      } else {
+        const eventData = snapshot.docs[0].data() as Omit<Event, 'id'>;
+        setUpcomingEvent({ id: snapshot.docs[0].id, ...eventData });
+      }
+    }, (error) => {
+      console.error("Error fetching upcoming event: ", error);
+      setUpcomingEvent(null);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="flex flex-col items-center overflow-x-hidden">
@@ -169,15 +199,65 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      {/* Upcoming Event Section */}
+        <section id="upcoming-event" className="w-full py-24 sm:py-32 bg-background">
+            <div className="container mx-auto">
+                <div className="text-center mb-12">
+                    <h2 className="font-headline text-4xl font-bold">Upcoming Events</h2>
+                    <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">Join our next event and connect with fellow tech enthusiasts.</p>
+                </div>
+                <div className="max-w-4xl mx-auto">
+                    {upcomingEvent === undefined ? (
+                        <Skeleton className="w-full h-64 rounded-lg" />
+                    ) : upcomingEvent ? (
+                        <Card className="overflow-hidden transition-all duration-300 shadow-lg shadow-primary/10 border-primary/20 grid md:grid-cols-2">
+                           <div className="p-8 flex flex-col justify-center">
+                             <CardHeader className="p-0">
+                                <CardTitle className="font-headline text-3xl mb-2">{upcomingEvent.title}</CardTitle>
+                                <p className="text-muted-foreground flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> {new Date(upcomingEvent.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                <p className="text-muted-foreground flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> {upcomingEvent.location}</p>
+                            </CardHeader>
+                            <CardContent className="p-0 pt-4">
+                                <p className="text-muted-foreground line-clamp-3">{upcomingEvent.details}</p>
+                            </CardContent>
+                            <div className="mt-6">
+                               <Button asChild>
+                                    <Link href="/registrations">More Info <ArrowRight className="ml-2" /></Link>
+                               </Button>
+                            </div>
+                           </div>
+                           <div className="relative min-h-[250px] md:min-h-full">
+                                {upcomingEvent.imageUrl ? (
+                                    <Image src={upcomingEvent.imageUrl} alt={upcomingEvent.title} fill className="object-cover" />
+                                ) : (
+                                    <div className="bg-secondary h-full flex items-center justify-center">
+                                       <Calendar className="w-16 h-16 text-muted-foreground/50"/>
+                                    </div>
+                                )}
+                           </div>
+                        </Card>
+                    ) : (
+                        <Card className="text-center py-16 border-2 border-dashed border-muted-foreground/20">
+                            <h3 className="font-headline text-2xl">No New Events Scheduled</h3>
+                            <p className="text-muted-foreground mt-2">Please check back soon for our next exciting event!</p>
+                             <Button asChild variant="outline" className="mt-6">
+                                <Link href="/registrations">View Past Events</Link>
+                             </Button>
+                        </Card>
+                    )}
+                </div>
+            </div>
+        </section>
 
       {/* Projects Section */}
-      <section id="projects" className="w-full py-24 sm:py-32 bg-background">
+      <section id="projects" className="w-full py-24 sm:py-32 bg-secondary/20">
         <div className="container mx-auto text-center">
           <h2 className="font-headline text-4xl font-bold mb-4">Featured Projects</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">Here's a glimpse of the innovative solutions our members have built.</p>
           
           <div className="flex justify-center mb-12">
-            <div className="flex items-center gap-2 rounded-full bg-secondary p-1.5 border border-border">
+            <div className="flex items-center gap-2 rounded-full bg-background/50 p-1.5 border border-border">
                 <button
                     onClick={() => setProjectType('hardware')}
                     className={cn(
@@ -223,7 +303,7 @@ export default function Home() {
       </section>
       
        {/* Mentors Section */}
-      <section id="mentors" className="w-full py-24 sm:py-32 bg-secondary/20">
+      <section id="mentors" className="w-full py-24 sm:py-32 bg-background">
         <div className="container mx-auto text-center">
            <h2 className="font-headline text-4xl font-bold mb-12 flex items-center justify-center gap-4">
               <Star className="text-primary"/> Our Mentors
@@ -245,7 +325,7 @@ export default function Home() {
       </section>
 
       {/* Achievements Section */}
-      <section id="achievements" className="w-full py-24 sm:py-32 bg-background">
+      <section id="achievements" className="w-full py-24 sm:py-32 bg-secondary/20">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-headline text-4xl font-bold">Milestones & Achievements</h2>
@@ -292,7 +372,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section id="stats" className="w-full py-16 sm:py-24 bg-secondary/20">
+      <section id="stats" className="w-full py-16 sm:py-24 bg-background">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-headline text-4xl font-bold">
