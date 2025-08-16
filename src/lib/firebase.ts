@@ -22,9 +22,9 @@ let db: ReturnType<typeof getFirestore>;
 let storage: ReturnType<typeof getStorage>;
 let functions: ReturnType<typeof getFunctions>;
 
-// Safely initialize Firebase services only on the client-side
-// or when the API key is available. This prevents build errors.
-if (typeof window !== 'undefined' || firebaseConfig.apiKey) {
+// Safely initialize Firebase services only on the client-side.
+// This prevents build errors when the API key is not available server-side.
+if (typeof window !== 'undefined') {
     auth = getAuth(app);
     db = getFirestore(app);
     storage = getStorage(app);

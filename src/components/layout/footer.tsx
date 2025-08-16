@@ -12,7 +12,6 @@ const quickLinks = [
 
 const getInvolvedLinks = [
     { href: '/registrations', label: 'Events' },
-    { href: '/playground', label: 'Playground' },
     { href: '/announcements', label: 'Announcements' },
 ];
 
@@ -111,7 +110,7 @@ export function Footer() {
         </div>
       </div>
       <div className="container mx-auto border-t border-border/40 py-6 text-center text-sm text-muted-foreground">
-        <div className="mt-2">
+        <div>
             Powered by{' '}
             <a 
                 href="https://www.gitam.edu/hyderabad/electrical-electronics-communication-engineering" 
