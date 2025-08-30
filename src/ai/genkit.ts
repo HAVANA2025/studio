@@ -1,9 +1,9 @@
 
 import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
-import { configureGenkit } from 'genkit';
 
-configureGenkit({
+// Initialize Genkit with plugins directly. This is the correct syntax for v1.x.
+const ai = genkit({
   plugins: [
     googleAI({
       apiKey: process.env.GEMINI_API_KEY,
@@ -13,4 +13,4 @@ configureGenkit({
   enableTracing: false,
 });
 
-export { ai } from 'genkit';
+export { ai };
