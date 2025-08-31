@@ -40,7 +40,7 @@ export default function PlaygroundPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <section className="relative overflow-hidden flex-grow flex items-center justify-center">
+      <section className="relative overflow-hidden flex-grow flex items-center justify-center py-24">
          <div className="absolute inset-0 -z-10">
             <SplineViewer url="https://prod.spline.design/Y-WtYb237-n9eVJV/scene.splinecode" />
             <div className="absolute inset-0 bg-background/80"></div>
@@ -73,50 +73,52 @@ export default function PlaygroundPage() {
         </div>
       </section>
 
-      <section className="py-24 bg-background z-10">
-        <div className="container mx-auto">
-            {loading && (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {[...Array(3)].map((_, i) => (
-                        <Card key={i} className="animate-pulse">
-                            <CardHeader><div className="h-6 bg-muted rounded w-3/4"></div></CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="h-4 bg-muted rounded w-full"></div>
-                                <div className="h-4 bg-muted rounded w-5/6"></div>
-                                <div className="h-8 bg-muted rounded w-1/2 mt-4"></div>
-                            </CardContent>
+      {(loading || suggestions.length > 0) && (
+        <section className="py-24 bg-background z-10">
+            <div className="container mx-auto">
+                {loading && (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[...Array(3)].map((_, i) => (
+                            <Card key={i} className="animate-pulse">
+                                <CardHeader><div className="h-6 bg-muted rounded w-3/4"></div></CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="h-4 bg-muted rounded w-full"></div>
+                                    <div className="h-4 bg-muted rounded w-5/6"></div>
+                                    <div className="h-8 bg-muted rounded w-1/2 mt-4"></div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+                
+                {suggestions.length > 0 && (
+                <div>
+                    <h2 className="font-headline text-3xl font-bold text-center mb-12">Here are a few ideas to get you started:</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {suggestions.map((idea, index) => (
+                        <Card key={index} className="flex flex-col bg-card/50 border-primary/10 transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl">{idea.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-grow flex flex-col">
+                            <p className="text-muted-foreground mb-4 flex-grow">{idea.description}</p>
+                            <div className="flex flex-wrap gap-2">
+                                {idea.isHardware ? <Cpu className="w-5 h-5 text-primary"/> : <Code className="w-5 h-5 text-primary" />}
+                                {idea.technologies.map(tech => (
+                                <div key={tech} className="text-xs inline-block bg-secondary text-secondary-foreground rounded-full px-3 py-1">
+                                    {tech}
+                                </div>
+                                ))}
+                            </div>
+                        </CardContent>
                         </Card>
                     ))}
+                    </div>
                 </div>
-            )}
-            
-            {suggestions.length > 0 && (
-            <div>
-                <h2 className="font-headline text-3xl font-bold text-center mb-12">Here are a few ideas to get you started:</h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {suggestions.map((idea, index) => (
-                    <Card key={index} className="flex flex-col bg-card/50 border-primary/10 transition-all duration-300 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2">
-                    <CardHeader>
-                        <CardTitle className="font-headline text-2xl">{idea.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex-grow flex flex-col">
-                        <p className="text-muted-foreground mb-4 flex-grow">{idea.description}</p>
-                        <div className="flex flex-wrap gap-2">
-                            {idea.isHardware ? <Cpu className="w-5 h-5 text-primary"/> : <Code className="w-5 h-5 text-primary" />}
-                            {idea.technologies.map(tech => (
-                            <div key={tech} className="text-xs inline-block bg-secondary text-secondary-foreground rounded-full px-3 py-1">
-                                {tech}
-                            </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                    </Card>
-                ))}
-                </div>
+                )}
             </div>
-            )}
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }
