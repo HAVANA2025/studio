@@ -32,6 +32,7 @@ export type ProjectSuggesterOutput = z.infer<typeof ProjectSuggesterOutputSchema
 // Define the Genkit prompt
 const projectSuggesterPrompt = ai.definePrompt({
   name: 'projectSuggesterPrompt',
+  model: 'gemini-1.5-flash',
   input: { schema: ProjectSuggesterInputSchema },
   output: { schema: ProjectSuggesterOutputSchema },
   prompt: `
@@ -40,9 +41,6 @@ const projectSuggesterPrompt = ai.definePrompt({
     For each idea, provide a title, a short description, specify if it's primarily a hardware or software project, and list a few key technologies.
     The user's interests are: {{{interests}}}
   `,
-  config: {
-    model: 'gemini-1.5-flash-latest',
-  },
 });
 
 // Define the Genkit flow
