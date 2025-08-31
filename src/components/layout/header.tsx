@@ -47,7 +47,6 @@ const navLinks = [
   { href: '/community', label: 'Our Team', icon: <Users className="w-4 h-4" /> },
   { href: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
   { href: '/media', label: 'Media', icon: <ImageIcon className="w-4 h-4" /> },
-  { href: '/domains', label: 'Domains', icon: <BookOpen className="w-4 h-4" /> },
   { href: '/contact', label: 'Contact', icon: <Mail className="w-4 h-4" /> },
 ];
 
