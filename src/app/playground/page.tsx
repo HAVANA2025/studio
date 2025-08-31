@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -68,7 +69,7 @@ export default function PlaygroundPage() {
           </form>
         </div>
         <div className="relative w-full h-[400px]">
-           <SplineViewer url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" />
+           <SplineViewer url="https://prod.spline.design/RiP-3wN4pmYBVpMU/scene.splinecode" />
         </div>
       </section>
 
