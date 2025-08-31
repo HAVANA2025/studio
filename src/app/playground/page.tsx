@@ -41,22 +41,21 @@ export default function PlaygroundPage() {
 
   return (
     <div className="container mx-auto py-16 sm:py-24">
-      <section className="relative overflow-hidden rounded-2xl p-8 md:p-12">
+      <section className="relative overflow-hidden rounded-2xl p-8 md:p-12 min-h-[500px] flex items-center justify-center">
          <div className="absolute inset-0 -z-10">
             <SplineViewer url="https://prod.spline.design/picW0uob3wehMDQw/scene.splinecode" />
             <div className="absolute inset-0 bg-background/80"></div>
         </div>
-        <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left">
+        <div className="relative z-10 text-center">
             <div className="inline-block bg-primary/10 text-primary p-3 rounded-full mb-6">
-                    <Wand2 className="w-8 h-8" />
-                </div>
+                <Wand2 className="w-8 h-8" />
+            </div>
             <h1 className="font-headline text-5xl font-bold tracking-tight">AI Project Playground</h1>
-            <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0">
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
                 Unleash your creativity! Describe your interests—anything from "retro games" to "smart gardening"—and our AI will generate unique project ideas for you to build.
             </p>
             
-            <form onSubmit={handleSubmit} className="mt-8 max-w-lg mx-auto lg:mx-0">
+            <form onSubmit={handleSubmit} className="mt-8 max-w-lg mx-auto">
                 <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                     type="text"
@@ -72,9 +71,6 @@ export default function PlaygroundPage() {
                 </div>
                 {error && <p className="text-destructive mt-2 text-sm">{error}</p>}
             </form>
-            </div>
-            {/* This div is intentionally left empty for layout spacing on larger screens */}
-            <div></div>
         </div>
       </section>
 
