@@ -1,6 +1,6 @@
 # G-Electra Hub - Smart Systems Club Website
 
-Welcome to the official repository for the G-Electra Hub website! This project is a Next.js application built with TypeScript, Tailwind CSS, ShadCN UI components, and Firebase.
+Welcome to the official repository for the G-Electra Hub website! This project is a Next.js application built with TypeScript, Tailwind CSS, ShadCN UI components, and Firebase Auth.
 
 ## Project Overview
 
@@ -20,7 +20,6 @@ To run this project on your local machine, please follow these steps.
 ### 1. Prerequisites
 
 - **Node.js:** Make sure you have Node.js (version 18 or later) installed.
-- **Firebase Project:** You will need a Firebase project to connect the application to its backend services. You can create one for free at the [Firebase Console](https://console.firebase.google.com/).
 - **Resend Account:** The contact form uses Resend to send emails. You'll need an API key from [Resend](https://resend.com/).
 
 ### 2. Clone the Repository
