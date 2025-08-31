@@ -40,13 +40,13 @@ export default function PlaygroundPage() {
   };
 
   return (
-    <div className="py-16 sm:py-24">
-      <section className="relative overflow-hidden p-8 md:p-12 min-h-[500px] flex items-center justify-center">
+    <div className="min-h-screen flex flex-col">
+      <section className="relative overflow-hidden flex-grow flex items-center justify-center">
          <div className="absolute inset-0 -z-10">
             <SplineViewer url="https://prod.spline.design/Y-WtYb237-n9eVJV/scene.splinecode" />
             <div className="absolute inset-0 bg-background/80"></div>
         </div>
-        <div className="relative z-10 text-center">
+        <div className="relative z-10 text-center container mx-auto px-4">
             <div className="inline-block bg-primary/10 text-primary p-3 rounded-full mb-6">
                 <Wand2 className="w-8 h-8" />
             </div>
@@ -74,7 +74,7 @@ export default function PlaygroundPage() {
         </div>
       </section>
 
-      <section className="mt-24 container mx-auto">
+      <section className="py-24 container mx-auto">
         {loading && (
              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                  {[...Array(3)].map((_, i) => (
