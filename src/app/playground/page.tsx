@@ -43,7 +43,7 @@ export default function PlaygroundPage() {
     <div className="container mx-auto py-16 sm:py-24">
       <section className="relative overflow-hidden rounded-2xl p-8 md:p-12 min-h-[500px] flex items-center justify-center">
          <div className="absolute inset-0 -z-10">
-            <SplineViewer url="https://prod.spline.design/picW0uob3wehMDQw/scene.splinecode" />
+            <SplineViewer url="https://prod.spline.design/Y-WtYb237-n9eVJV/scene.splinecode" />
             <div className="absolute inset-0 bg-background/80"></div>
         </div>
         <div className="relative z-10 text-center">
