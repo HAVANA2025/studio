@@ -9,6 +9,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { gemini15Flash } from '@genkit-ai/googleai';
 
 // Define Zod schemas for input and output
 const ProjectSuggesterInputSchema = z.object({
@@ -32,7 +33,7 @@ export type ProjectSuggesterOutput = z.infer<typeof ProjectSuggesterOutputSchema
 // Define the Genkit prompt
 const projectSuggesterPrompt = ai.definePrompt({
   name: 'projectSuggesterPrompt',
-  model: 'gemini-1.5-flash',
+  model: gemini15Flash,
   input: { schema: ProjectSuggesterInputSchema },
   output: { schema: ProjectSuggesterOutputSchema },
   prompt: `
@@ -42,6 +43,7 @@ const projectSuggesterPrompt = ai.definePrompt({
     The user's interests are: {{{interests}}}
   `,
 });
+
 
 // Define the Genkit flow
 const suggestProjectFlow = ai.defineFlow(
