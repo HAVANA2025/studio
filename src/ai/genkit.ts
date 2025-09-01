@@ -9,8 +9,6 @@ const ai = genkit({
       apiKey: process.env.GEMINI_API_KEY,
     }),
   ],
-  logSinks: [], // Disable default logging
-  enableTracing: false,
 });
 
 export { ai };
