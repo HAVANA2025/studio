@@ -16,6 +16,24 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EventForm } from '@/components/event-form';
 import type { Event } from '@/lib/types';
 
+// Hardcoded major past events
+const hardcodedPastEvents: Omit<Event, 'id' | 'createdAt'>[] = [
+    {
+        title: 'HAVANA 2.0',
+        details: 'The second edition of our flagship tech fest, featuring international workshops, keynote sessions, and intense competitions. It set a new benchmark for technical festivals on campus.',
+        date: '2024-03-15',
+        location: 'GITAM Hyderabad Campus',
+        imageUrl: 'https://placehold.co/600x400.png',
+    },
+    {
+        title: 'HAVANA 1.0',
+        details: 'The inaugural edition of HAVANA, which brought together bright minds for a two-day celebration of technology and innovation, sparking a new wave of creativity at GITAM.',
+        date: '2023-03-20',
+        location: 'GITAM Hyderabad Campus',
+        imageUrl: 'https://placehold.co/600x400.png',
+    },
+];
+
 export default function RegistrationsPage() {
   const { user, isAdmin } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
@@ -56,10 +74,14 @@ export default function RegistrationsPage() {
   };
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set time to midnight to compare dates accurately
+  today.setHours(0, 0, 0, 0);
 
   const upcomingEvents = events.filter(event => new Date(event.date) >= today);
-  const pastEvents = events.filter(event => new Date(event.date) < today);
+  
+  // Combine dynamic past events with the hardcoded ones
+  const dynamicPastEvents = events.filter(event => new Date(event.date) < today);
+  const allPastEvents = [...dynamicPastEvents, ...hardcodedPastEvents.map((e, i) => ({...e, id: `hardcoded-${i}`, createdAt: new Timestamp(0,0)}))];
+
 
   return (
     <div className="container mx-auto py-16 sm:py-24">
@@ -91,7 +113,7 @@ export default function RegistrationsPage() {
       <section>
         <h2 className="font-headline text-3xl font-bold mb-8">Upcoming Events</h2>
         {isLoading ? (
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Skeleton className="h-96 w-full" />
             <Skeleton className="h-96 w-full" />
           </div>
@@ -157,14 +179,14 @@ export default function RegistrationsPage() {
       {/* Past Events Section */}
       <section className="mt-24">
         <h2 className="font-headline text-3xl font-bold mb-8 text-center">A Look Back at Our Past Events</h2>
-        {isLoading ? (
-          <div className="space-y-12">
+        {isLoading && !allPastEvents.length ? (
+          <div className="space-y-12 max-w-4xl mx-auto">
             <Skeleton className="h-96 w-full" />
             <Skeleton className="h-96 w-full" />
           </div>
-        ) : pastEvents.length > 0 ? (
+        ) : allPastEvents.length > 0 ? (
           <div className="max-w-4xl mx-auto space-y-12">
-            {pastEvents.map((event) => (
+            {allPastEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10 relative">
                 {event.imageUrl ? (
                     <div className="relative aspect-[3/2]">
@@ -185,7 +207,7 @@ export default function RegistrationsPage() {
                         <p className="text-muted-foreground text-lg">{event.details}</p>
                     </CardContent>
                  </div>
-                 {isAdmin && (
+                 {isAdmin && !event.id.startsWith('hardcoded-') && (
                     <div className="absolute top-4 right-4 z-10 flex gap-2">
                       <Button variant="secondary" size="icon" onClick={() => handleEdit(event as Event)}><Edit className="h-4 w-4" /></Button>
                       <AlertDialog>
@@ -209,7 +231,7 @@ export default function RegistrationsPage() {
             ))}
           </div>
         ) : (
-           !isLoading && <div className="text-center py-16 border-2 border-dashed border-muted-foreground/20 rounded-lg max-w-4xl mx-auto">
+           <div className="text-center py-16 border-2 border-dashed border-muted-foreground/20 rounded-lg max-w-4xl mx-auto">
              <h3 className="font-headline text-2xl">No Past Events Yet</h3>
              <p className="text-muted-foreground mt-2">Our event history will appear here.</p>
           </div>
