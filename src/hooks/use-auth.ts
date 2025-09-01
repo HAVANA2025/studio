@@ -6,7 +6,7 @@ import { onAuthStateChanged, User, getRedirectResult, signOut, AuthError } from 
 import { auth, db, adminEmails } from '@/lib/firebase';
 import { useToast } from './use-toast';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 
 type AuthState = {
@@ -39,12 +39,12 @@ export function useAuth(): AuthState {
   const checkAdminRole = useCallback(async (user: User) => {
     if (!db) {
         setIsAdmin(false);
-        return;
+        return false;
     }
     // Check hardcoded list first
     if (user.email && adminEmails.includes(user.email)) {
         setIsAdmin(true);
-        return;
+        return true;
     }
 
     // Then check firestore
@@ -53,13 +53,41 @@ export function useAuth(): AuthState {
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists() && userDoc.data().role === 'Executive Board') {
             setIsAdmin(true);
+            return true;
         } else {
             setIsAdmin(false);
+            return false;
         }
     } catch(e) {
         console.error("Could not check admin role from firestore", e);
         setIsAdmin(false);
+        return false;
     }
+  }, []);
+
+  const createUserDocument = useCallback(async (user: User) => {
+      if (!db) return;
+
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      // Only create document if it doesn't exist
+      if (!userDoc.exists()) {
+          const isHardcodedAdmin = user.email && adminEmails.includes(user.email);
+          const role = isHardcodedAdmin ? 'Executive Board' : 'Student';
+          
+          try {
+              await setDoc(userDocRef, {
+                  uid: user.uid,
+                  email: user.email,
+                  displayName: user.displayName,
+                  role: role,
+                  createdAt: serverTimestamp(),
+              });
+          } catch(e) {
+              console.error("Error creating user document", e);
+          }
+      }
   }, []);
 
 
@@ -74,9 +102,11 @@ export function useAuth(): AuthState {
         if (result) {
           // User has successfully signed in via redirect.
           // onAuthStateChanged will handle setting the user state.
-          // We can navigate them to a protected route.
           toast({ title: 'Login Successful', description: `Welcome, ${result.user.email}!` });
-          router.push('/announcements');
+          // Create user document right after redirect success
+          createUserDocument(result.user).then(() => {
+              router.push('/announcements');
+          });
         }
       })
       .catch((error: AuthError) => {
@@ -94,6 +124,7 @@ export function useAuth(): AuthState {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
           if (user) {
             setUser(user);
+            await createUserDocument(user); // Also check/create doc for persistent sessions
             await checkAdminRole(user);
           } else {
             setUser(null);
@@ -107,7 +138,7 @@ export function useAuth(): AuthState {
         return () => unsubscribe();
       });
   // The dependency array is empty, so this effect runs once on mount.
-  }, [router, toast, checkAdminRole]);
+  }, [router, toast, checkAdminRole, createUserDocument]);
 
   return { user, isAdmin, loading, handleSignOut };
 }
