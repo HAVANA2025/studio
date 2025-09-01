@@ -59,7 +59,7 @@ export default function RegistrationsPage() {
   today.setHours(0, 0, 0, 0); // Set time to midnight to compare dates accurately
 
   const upcomingEvents = events.filter(event => new Date(event.date) >= today);
-  const allPastEvents = events.filter(event => new Date(event.date) < today);
+  const pastEvents = events.filter(event => new Date(event.date) < today);
 
   return (
     <div className="container mx-auto py-16 sm:py-24">
@@ -99,8 +99,8 @@ export default function RegistrationsPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {upcomingEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 flex flex-col">
-                <CardHeader>
-                  <CardTitle className="font-headline text-2xl mb-2">{event.title}</CardTitle>
+                <CardHeader className="relative p-6">
+                   <CardTitle className="font-headline text-2xl mb-2">{event.title}</CardTitle>
                    <CardDescription className="flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> {new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</CardDescription>
                    <CardDescription className="flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> {event.location}</CardDescription>
                    {isAdmin && (
@@ -162,10 +162,10 @@ export default function RegistrationsPage() {
             <Skeleton className="h-96 w-full" />
             <Skeleton className="h-96 w-full" />
           </div>
-        ) : allPastEvents.length > 0 ? (
+        ) : pastEvents.length > 0 ? (
           <div className="max-w-4xl mx-auto space-y-12">
-            {allPastEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10">
+            {pastEvents.map((event) => (
+              <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10 relative">
                 {event.imageUrl ? (
                     <div className="relative aspect-[3/2]">
                       <Image src={event.imageUrl} alt={event.title} fill className="object-cover" data-ai-hint="tech conference students" />
@@ -209,7 +209,7 @@ export default function RegistrationsPage() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 border-2 border-dashed border-muted-foreground/20 rounded-lg">
+           !isLoading && <div className="text-center py-16 border-2 border-dashed border-muted-foreground/20 rounded-lg max-w-4xl mx-auto">
              <h3 className="font-headline text-2xl">No Past Events Yet</h3>
              <p className="text-muted-foreground mt-2">Our event history will appear here.</p>
           </div>
