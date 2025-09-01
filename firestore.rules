@@ -4,48 +4,35 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Helper function to check if a user is an admin
-    function isAdmin(userId) {
-      // Admins can be hardcoded or managed in a 'users' collection
-      let hardcodedAdmins = [
-        'mtatinen@gitam.edu',
-        'nmenmula@gitam.edu',
-        'adid@gitam.edu',
-        'gelectra@gitam.edu',
-        'webdevlopment0210@gmail.com',
-        'premkumarjanumula@gmail.com'
-      ];
-      // Check if the user's email is in the hardcoded list
-      let isHardcodedAdmin = request.auth.token.email in hardcodedAdmins;
-      
-      // Check if user has 'Executive Board' role in the 'users' collection
-      let isRoleAdmin = exists(/databases/$(database)/documents/users/$(userId)) &&
-                        get(/databases/$(database)/documents/users/$(userId)).data.role == 'Executive Board';
-                        
-      return isHardcodedAdmin || isRoleAdmin;
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Executive Board';
     }
 
-    // Rules for the 'announcements' collection
-    match /announcements/{announcementId} {
-      // Anyone can read announcements
-      allow read: if true;
-      // Only admins can create, update, or delete announcements
-      allow write: if request.auth != null && isAdmin(request.auth.uid);
-    }
-
-    // Rules for the 'events' collection
-    match /events/{eventId} {
-      // Anyone can read events
-      allow read: if true;
-      // Only admins can create, update, or delete events
-      allow write: if request.auth != null && isAdmin(request.auth.uid);
+    // Default deny all reads and writes to all collections
+    match /{document=**} {
+      allow read, write: if false;
     }
     
+    // Allow public read for events
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin();
+    }
+    
+    // Allow public read for announcements
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin();
+    }
+
     // Rules for the 'users' collection
     match /users/{userId} {
-      // Users can only read/write their own document
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      // Admins can read any user document
-      allow read: if request.auth != null && isAdmin(request.auth.uid);
+      // Allow a user to create their own document
+      allow create: if request.auth != null && request.auth.uid == userId;
+      // Allow a user to read their own document
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // An admin can update any user's document
+      allow update: if request.auth != null && isAdmin();
     }
   }
 }
