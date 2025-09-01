@@ -59,26 +59,7 @@ export default function RegistrationsPage() {
   today.setHours(0, 0, 0, 0); // Set time to midnight to compare dates accurately
 
   const upcomingEvents = events.filter(event => new Date(event.date) >= today);
-
-  // A mock list of past events to demonstrate the new design.
-  const allPastEvents: Omit<Event, 'createdAt'>[] = [
-      {
-          id: '2',
-          title: "HAVANA'25",
-          details: "HAVANA 25 brought together brilliant minds, bold ideas, and groundbreaking innovations in a thrilling celebration of technology and creativity at GITAM. The fest featured a wide range of software and hardware competitions, engaging tech exhibitions, and high-energy challenges that pushed the boundaries of innovation.",
-          date: '2025-03-15',
-          location: 'GITAM Hyderabad',
-          imageUrl: '/images/havana25.jpg',
-      },
-      {
-          id: '3',
-          title: "HAVANA'24",
-          details: "HAVANA'24 set a new benchmark for technical festivals, with international workshops and inspiring keynote sessions that brought together students and professionals from around the globe to explore the future of technology.",
-          date: '2024-03-15',
-          location: 'GITAM Hyderabad',
-          imageUrl: '/images/havana24.jpg',
-      }
-  ];
+  const allPastEvents = events.filter(event => new Date(event.date) < today);
 
   return (
     <div className="container mx-auto py-16 sm:py-24">
