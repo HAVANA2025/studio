@@ -10,7 +10,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { cn } from '@/lib/utils';
-import { collection, query, orderBy, where, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, where, limit, onSnapshot, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Event } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -114,10 +114,14 @@ export default function Home() {
         setUpcomingEvent(null);
         return;
     }
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to the beginning of the day
+
+    const todayString = today.toISOString().split('T')[0];
+
     const q = query(
       collection(db, 'events'),
-      where('date', '>=', today),
+      where('date', '>=', todayString),
       orderBy('date', 'asc'),
       limit(1)
     );
@@ -213,7 +217,7 @@ export default function Home() {
                            <div className="p-8 flex flex-col justify-center">
                              <CardHeader className="p-0">
                                 <CardTitle className="font-headline text-3xl mb-2">{upcomingEvent.title}</CardTitle>
-                                <p className="text-muted-foreground flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> {new Date(upcomingEvent.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                <p className="text-muted-foreground flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> {new Date(upcomingEvent.date).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                                 <p className="text-muted-foreground flex items-center gap-2"><MapPin className="w-4 h-4 text-primary" /> {upcomingEvent.location}</p>
                             </CardHeader>
                             <CardContent className="p-0 pt-4">
