@@ -36,14 +36,11 @@ export function useAuth(): AuthState {
     }
   }, [router, toast]);
 
-  const checkAdminRole = useCallback(async (user: User) => {
-    if (!db) {
-        setIsAdmin(false);
-        return false;
-    }
+  const checkAdminRole = useCallback(async (user: User): Promise<boolean> => {
+    if (!db) return false;
+    
     // Check hardcoded list first
     if (user.email && adminEmails.includes(user.email)) {
-        setIsAdmin(true);
         return true;
     }
 
@@ -51,16 +48,9 @@ export function useAuth(): AuthState {
     const userDocRef = doc(db, 'users', user.uid);
     try {
         const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists() && userDoc.data().role === 'Executive Board') {
-            setIsAdmin(true);
-            return true;
-        } else {
-            setIsAdmin(false);
-            return false;
-        }
+        return userDoc.exists() && userDoc.data().role === 'Executive Board';
     } catch(e) {
         console.error("Could not check admin role from firestore", e);
-        setIsAdmin(false);
         return false;
     }
   }, []);
@@ -81,14 +71,20 @@ export function useAuth(): AuthState {
                   uid: user.uid,
                   email: user.email,
                   displayName: user.displayName,
+                  photoURL: user.photoURL,
                   role: role,
                   createdAt: serverTimestamp(),
               });
           } catch(e) {
               console.error("Error creating user document", e);
+               toast({
+                title: 'Setup Error',
+                description: 'Could not create user profile. Some features may not work.',
+                variant: 'destructive',
+              });
           }
       }
-  }, []);
+  }, [toast]);
 
 
   useEffect(() => {
@@ -96,21 +92,31 @@ export function useAuth(): AuthState {
         setLoading(false);
         return;
     }
+
+    const processUser = async (user: User | null) => {
+      if (user) {
+        // This is the critical change: wait for the document to be created/verified
+        await createUserDocument(user); 
+        const isAdmin = await checkAdminRole(user);
+        
+        setUser(user);
+        setIsAdmin(isAdmin);
+      } else {
+        setUser(null);
+        setIsAdmin(false);
+      }
+      setLoading(false);
+    };
+
     // First, check if we are returning from a redirect login flow
     getRedirectResult(auth)
       .then((result) => {
         if (result) {
-          // User has successfully signed in via redirect.
-          // onAuthStateChanged will handle setting the user state.
           toast({ title: 'Login Successful', description: `Welcome, ${result.user.email}!` });
-          // Create user document right after redirect success
-          createUserDocument(result.user).then(() => {
-              router.push('/announcements');
-          });
+          // processUser will handle setting state and creating docs
         }
       })
       .catch((error: AuthError) => {
-        // Handle Errors here.
         console.error("Redirect result error:", error);
         toast({
           title: 'Login Failed',
@@ -119,26 +125,11 @@ export function useAuth(): AuthState {
         });
       })
       .finally(() => {
-         // Now, set up the normal auth state listener.
-         // This will catch the user from the redirect, or any existing session.
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            setUser(user);
-            await createUserDocument(user); // Also check/create doc for persistent sessions
-            await checkAdminRole(user);
-          } else {
-            setUser(null);
-            setIsAdmin(false);
-          }
-          // Whether there is a user or not, the check is complete.
-          setLoading(false);
-        });
-        
-        // Cleanup the listener on component unmount
-        return () => unsubscribe();
+         const unsubscribe = onAuthStateChanged(auth, processUser);
+         return () => unsubscribe();
       });
-  // The dependency array is empty, so this effect runs once on mount.
-  }, [router, toast, checkAdminRole, createUserDocument]);
+
+  }, [toast, checkAdminRole, createUserDocument]);
 
   return { user, isAdmin, loading, handleSignOut };
 }
