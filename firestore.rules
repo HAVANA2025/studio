@@ -4,8 +4,8 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Helper function to check if a user is an admin
-    function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Executive Board';
+    function isAdmin(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data.role == 'Executive Board';
     }
 
     // Default deny all reads and writes to all collections
@@ -16,23 +16,29 @@ service cloud.firestore {
     // Allow public read for events
     match /events/{eventId} {
       allow read: if true;
-      allow write: if request.auth != null && isAdmin();
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
     
     // Allow public read for announcements
     match /announcements/{announcementId} {
       allow read: if true;
-      allow write: if request.auth != null && isAdmin();
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
 
     // Rules for the 'users' collection
     match /users/{userId} {
-      // Allow a user to create their own document
-      allow create: if request.auth != null && request.auth.uid == userId;
-      // Allow a user to read their own document
+      // Any authenticated user can read their own user document
       allow read: if request.auth != null && request.auth.uid == userId;
-      // An admin can update any user's document
-      allow update: if request.auth != null && isAdmin();
+      // Allow a user to create their OWN document, but not update it.
+      allow create: if request.auth != null && request.auth.uid == userId;
+      // Only admins can update user documents (e.g., to change a role)
+      allow update: if request.auth != null && isAdmin(request.auth.uid);
+    }
+
+    // Rules for the 'userCreationRequests' collection
+    match /userCreationRequests/{requestId} {
+      // Only admins can read, create, or delete requests
+      allow read, create, delete: if request.auth != null && isAdmin(request.auth.uid);
     }
   }
 }
