@@ -116,7 +116,7 @@ export default function Home() {
         return;
     }
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to the beginning of the day
+    today.setHours(0, 0, 0, 0); // Set to the beginning of the day to include today's events
 
     const todayString = today.toISOString().split('T')[0];
 
@@ -394,5 +394,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
