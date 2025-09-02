@@ -1,4 +1,3 @@
-
 import type { Timestamp } from 'firebase/firestore';
 
 export interface Announcement {
@@ -25,3 +24,12 @@ export type Event = {
   imageUrl?: string;
   createdAt: Timestamp;
 };
+
+export interface Message {
+  id: string;
+  text: string;
+  createdAt: Timestamp;
+  uid: string;
+  displayName: string | null;
+  photoURL: string | null;
+}

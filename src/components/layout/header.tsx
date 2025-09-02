@@ -21,7 +21,7 @@ import {
   LogOut,
   UserCircle,
   Shield,
-  BookOpen,
+  MessageSquare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -46,6 +46,7 @@ const navLinks = [
   { href: '/projects', label: 'Projects', icon: <Rocket className="w-4 h-4" /> },
   { href: '/community', label: 'Our Team', icon: <Users className="w-4 h-4" /> },
   { href: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
+  { href: '/discussion', label: 'Discussion', icon: <MessageSquare className="w-4 h-4" /> },
   { href: '/media', label: 'Media', icon: <ImageIcon className="w-4 h-4" /> },
   { href: '/contact', label: 'Contact', icon: <Mail className="w-4 h-4" /> },
 ];
