@@ -34,7 +34,7 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '../logo';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, limit, onSnapshot, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Announcement } from '@/lib/types';
 
@@ -46,7 +46,6 @@ const navLinks = [
   { href: '/projects', label: 'Projects', icon: <Rocket className="w-4 h-4" /> },
   { href: '/community', label: 'Our Team', icon: <Users className="w-4 h-4" /> },
   { href: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
-  { href: '/discussion', label: 'Discussion', icon: <MessageSquare className="w-4 h-4" /> },
   { href: '/media', label: 'Media', icon: <ImageIcon className="w-4 h-4" /> },
   { href: '/contact', label: 'Contact', icon: <Mail className="w-4 h-4" /> },
 ];
@@ -56,40 +55,73 @@ export function Header() {
   const pathname = usePathname();
   const { user, isAdmin, loading, handleSignOut } = useAuth();
   const [hasNewAnnouncements, setHasNewAnnouncements] = useState(false);
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
+  // Effect to check for new announcements
   useEffect(() => {
-    const checkAnnouncements = async () => {
-      if (!user) {
-        setHasNewAnnouncements(false);
-        return;
-      }
+    if (!user || !db) return;
       
-      const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'), limit(1));
-      
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        if (!snapshot.empty) {
-          const latestAnnouncement = snapshot.docs[0].data() as Announcement;
-          const lastSeenTimestamp = localStorage.getItem('lastSeenAnnouncementTimestamp');
-          
-          if (!lastSeenTimestamp || (latestAnnouncement.createdAt.seconds > parseInt(lastSeenTimestamp, 10))) {
-            setHasNewAnnouncements(true);
-          } else {
-            setHasNewAnnouncements(false);
-          }
+    const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'), limit(1));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const latestAnnouncement = snapshot.docs[0].data() as Announcement;
+        const lastSeenTimestamp = localStorage.getItem('lastSeenAnnouncementTimestamp');
+        
+        if (!lastSeenTimestamp || (latestAnnouncement.createdAt.seconds > parseInt(lastSeenTimestamp, 10))) {
+          setHasNewAnnouncements(true);
         } else {
-            setHasNewAnnouncements(false);
+          setHasNewAnnouncements(false);
         }
-      }, (error) => {
-        console.error("Failed to check for new announcements:", error);
-      });
+      } else {
+          setHasNewAnnouncements(false);
+      }
+    }, (error) => {
+      console.error("Failed to check for new announcements:", error);
+    });
 
-      return () => unsubscribe();
+    return () => unsubscribe();
+  }, [user]);
+
+  // Effect to check for unread messages
+  useEffect(() => {
+    if (!user || !db) return;
+
+    const checkMessages = () => {
+        const lastSeenTimestamp = parseInt(localStorage.getItem('lastSeenMessageTimestamp') || '0', 10);
+        const q = query(
+            collection(db, 'discussion'), 
+            where('createdAt', '>', Timestamp.fromMillis(lastSeenTimestamp * 1000))
+        );
+        
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            let count = 0;
+            snapshot.forEach(doc => {
+              // Ensure we don't count the user's own messages as "unread"
+              if (doc.data().uid !== user.uid) {
+                count++;
+              }
+            });
+            setUnreadMessages(count);
+        }, (error) => {
+            console.error("Failed to check for unread messages:", error);
+        });
+
+        return unsubscribe;
+    }
+    
+    const unsubscribe = checkMessages();
+
+    // Listen for custom storage event from discussion page to re-check
+    window.addEventListener('storage', checkMessages);
+    
+    return () => {
+        unsubscribe();
+        window.removeEventListener('storage', checkMessages);
     };
 
-    if (user && db) {
-        checkAnnouncements();
-    }
   }, [user]);
+
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -130,6 +162,16 @@ export function Header() {
         <div className="hidden items-center gap-2 md:flex">
           {!loading && user ? (
              <div className="flex items-center gap-2">
+                <Link href="/discussion" passHref>
+                    <Button variant="ghost" size="icon" aria-label="Discussion">
+                        <MessageSquare />
+                        {unreadMessages > 0 && (
+                            <span className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                {unreadMessages}
+                            </span>
+                        )}
+                    </Button>
+                </Link>
                 <Link href="/announcements" passHref>
                     <Button variant="ghost" size="icon" aria-label="Announcements">
                         <Bell />
@@ -163,6 +205,12 @@ export function Header() {
                                 <span>Announcements</span>
                            </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                           <Link href="/discussion">
+                                <MessageSquare className="mr-2 h-4 w-4" />
+                                <span>Discussion</span>
+                           </Link>
+                        </DropdownMenuItem>
                         {isAdmin && (
                             <DropdownMenuItem asChild className="cursor-pointer">
                                 <Link href="/admin">
@@ -189,17 +237,29 @@ export function Header() {
 
         <div className="flex items-center gap-2 md:hidden">
             {!loading && user && (
-              <Link href="/announcements" passHref>
-                  <Button variant="ghost" size="icon" aria-label="Announcements">
-                      <Bell />
-                      {hasNewAnnouncements && (
-                          <span className="absolute top-2 right-2 flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                          </span>
-                      )}
-                  </Button>
-              </Link>
+              <>
+                 <Link href="/discussion" passHref>
+                    <Button variant="ghost" size="icon" aria-label="Discussion">
+                        <MessageSquare />
+                        {unreadMessages > 0 && (
+                             <span className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                                {unreadMessages}
+                            </span>
+                        )}
+                    </Button>
+                </Link>
+                <Link href="/announcements" passHref>
+                    <Button variant="ghost" size="icon" aria-label="Announcements">
+                        <Bell />
+                        {hasNewAnnouncements && (
+                            <span className="absolute top-2 right-2 flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
+                        )}
+                    </Button>
+                </Link>
+              </>
             )}
             <button
                 onClick={() => setIsOpen(!isOpen)}
