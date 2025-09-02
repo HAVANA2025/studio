@@ -108,25 +108,17 @@ export function useAuth(): AuthState {
       setLoading(false);
     };
 
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          toast({ title: 'Login Successful', description: `Welcome, ${result.user.email}!` });
-        }
-      })
-      .catch((error: AuthError) => {
-        console.error("Redirect result error:", error);
+    const unsubscribe = onAuthStateChanged(auth, processUser, (error) => {
+        console.error('onAuthStateChanged error:', error);
         toast({
-          title: 'Login Failed',
-          description: `An error occurred during sign-in: ${error.message}`,
-          variant: 'destructive',
+            title: 'Authentication Error',
+            description: 'There was a problem verifying your session.',
+            variant: 'destructive',
         });
-      })
-      .finally(() => {
-         const unsubscribe = onAuthStateChanged(auth, processUser);
-         return () => unsubscribe();
-      });
+        setLoading(false);
+    });
 
+    return () => unsubscribe();
   }, [toast, checkAdminRole, createUserDocument]);
 
   return { user, isAdmin, loading, handleSignOut };
