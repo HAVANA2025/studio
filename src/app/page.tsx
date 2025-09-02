@@ -116,24 +116,25 @@ export default function Home() {
         return;
     }
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to the beginning of the day to include today's events
-
-    const todayString = today.toISOString().split('T')[0];
+    today.setHours(0, 0, 0, 0);
 
     const q = query(
       collection(db, 'events'),
-      where('date', '>=', todayString),
-      orderBy('date', 'asc'),
-      limit(1)
+      orderBy('date', 'asc')
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (snapshot.empty) {
-        setUpcomingEvent(null); // No upcoming events
-      } else {
-        const eventData = snapshot.docs[0].data() as Omit<Event, 'id'>;
-        setUpcomingEvent({ id: snapshot.docs[0].id, ...eventData });
-      }
+      const allEvents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
+      
+      const nextEvent = allEvents.find(event => {
+          const eventDate = new Date(event.date);
+          // Adjust for timezone differences by comparing dates without time
+          eventDate.setMinutes(eventDate.getMinutes() + eventDate.getTimezoneOffset());
+          return eventDate >= today;
+      });
+
+      setUpcomingEvent(nextEvent || null);
+
     }, (error) => {
       console.error("Error fetching upcoming event: ", error);
       setUpcomingEvent(null);
@@ -394,7 +395,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
