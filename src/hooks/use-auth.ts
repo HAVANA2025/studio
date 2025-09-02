@@ -88,14 +88,14 @@ export function useAuth(): AuthState {
 
 
   useEffect(() => {
-    if (!auth) {
-        setLoading(false);
-        return;
+    // This check ensures that Firebase logic only runs on the client side.
+    if (typeof window === 'undefined') {
+      setLoading(false);
+      return;
     }
 
     const processUser = async (user: User | null) => {
       if (user) {
-        // This is the critical change: wait for the document to be created/verified
         await createUserDocument(user); 
         const isAdmin = await checkAdminRole(user);
         
@@ -108,12 +108,10 @@ export function useAuth(): AuthState {
       setLoading(false);
     };
 
-    // First, check if we are returning from a redirect login flow
     getRedirectResult(auth)
       .then((result) => {
         if (result) {
           toast({ title: 'Login Successful', description: `Welcome, ${result.user.email}!` });
-          // processUser will handle setting state and creating docs
         }
       })
       .catch((error: AuthError) => {
