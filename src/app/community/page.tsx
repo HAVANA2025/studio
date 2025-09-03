@@ -95,7 +95,6 @@ const lastMinuteTaglines = [
     "Welcoming fresh energy, ideas, and leadership!",
     "The Future is Now — Congratulations EB 2025–2026!",
     "A new journey starts, with brighter horizons ahead.",
-    "Together we grow, together we shine.",
 ];
 
 const FinalMessage = () => (
@@ -123,7 +122,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:52:00`);
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:00:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -179,11 +178,12 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
             return <h3 className="font-headline text-3xl animate-pulse text-primary min-h-[40px]">The Future is Loading...</h3>;
         }
 
-        // In the last 6 seconds (taglineIndex 9 is from 6s to 0s)
-        if (taglineIndex >= 9) {
+        if (taglineIndex >= lastMinuteTaglines.length) {
              return (
-                <div className="transition-opacity duration-500 text-center animate-pulse">
-                    <FinalMessage />
+                <div className="transition-opacity duration-500 text-center">
+                    <p className="font-headline text-2xl text-primary min-h-[40px]">
+                        With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.
+                    </p>
                 </div>
             )
         }
@@ -216,7 +216,9 @@ export default function CommunityPage() {
   
   const [isClient, setIsClient] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
-  const [startRevealAnimation, setStartRevealAnimation] = useState(false);
+  const [showSignOff, setShowSignOff] = useState(false);
+  const [startSignOffAnimation, setStartSignOffAnimation] = useState(false);
+  const [startBoardFadeIn, setStartBoardFadeIn] = useState(false);
   
   useEffect(() => {
     setIsClient(true);
@@ -224,18 +226,31 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:52:00`);
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:00:00`);
     if (new Date() >= revealDate) {
         setIsRevealed(true);
-        setStartRevealAnimation(true);
+        setStartBoardFadeIn(true);
     }
   }, []);
 
   const handleReveal = () => {
     setIsRevealed(true);
+    setShowSignOff(true);
+    
+    // Start the sign-off message zoom animation
     setTimeout(() => {
-        setStartRevealAnimation(true);
+      setStartSignOffAnimation(true);
     }, 100);
+
+    // Fade out the sign-off message after it has been displayed
+    setTimeout(() => {
+      setShowSignOff(false);
+    }, 2500);
+
+    // Fade in the new board after the sign-off message has faded out
+    setTimeout(() => {
+      setStartBoardFadeIn(true);
+    }, 3000);
   };
   
   const renderBoardContent = () => {
@@ -249,11 +264,25 @@ export default function CommunityPage() {
             </Card>
           );
       }
+
+      if (activeBoard.phase === '2025 - 2026' && isClient && isRevealed && !startBoardFadeIn) {
+          return (
+              <div 
+                className={cn(
+                  'text-center py-12 transition-all duration-1000',
+                  showSignOff ? 'opacity-100' : 'opacity-0',
+                  startSignOffAnimation ? 'scale-110' : 'scale-100'
+                )}
+              >
+                  <h2 className="font-headline text-4xl text-primary">Signing off EB 2024-2025...</h2>
+              </div>
+          );
+      }
       
       return (
          <div className={cn(
              'transition-opacity duration-1000',
-             (activeBoard.phase === '2025 - 2026' && startRevealAnimation) || activeBoard.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
+             startBoardFadeIn ? 'opacity-100' : 'opacity-0'
          )}>
             <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
             <div className="flex flex-wrap justify-center gap-8">
@@ -323,7 +352,9 @@ export default function CommunityPage() {
             </div>
           </div>
           
-          {renderBoardContent()}
+          <div className="min-h-[400px] flex items-center justify-center">
+            {renderBoardContent()}
+          </div>
           
       </section>
     </div>
