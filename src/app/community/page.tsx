@@ -98,13 +98,11 @@ const lastMinuteTaglines = [
 ];
 
 const FinalMessage = () => (
-    <div className="text-lg text-muted-foreground whitespace-pre-wrap text-center">
+    <div className="text-sm text-muted-foreground whitespace-pre-wrap text-center">
         <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
         <br />
         Wishing you success, growth, and innovation ahead.
         <br /><br />
-        Signing off EB 2024-2025....
-        <br />
         Thank You and Best Regards,
         <br />
         Team G-Electra & Team Web Development
@@ -113,7 +111,7 @@ const FinalMessage = () => (
 
 const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-    const [taglineIndex, setTaglineIndex] = useState(0);
+    const [tagline, setTagline] = useState("The Future is Loading...");
     const [isLastMinute, setIsLastMinute] = useState(false);
     const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -122,14 +120,14 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:00:00`);
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:15:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
             const difference = revealDate.getTime() - now.getTime();
+            const totalSeconds = Math.floor(difference / 1000);
 
-            if (difference > 0) {
-                const totalSeconds = Math.floor(difference / 1000);
+            if (totalSeconds > 0) {
                 const days = Math.floor(totalSeconds / 86400);
                 const hours = Math.floor((totalSeconds % 86400) / 3600);
                 const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -159,45 +157,27 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
 
     useEffect(() => {
         if (isLastMinute) {
+            let index = 0;
             taglineIntervalRef.current = setInterval(() => {
-                setTaglineIndex(prev => (prev < lastMinuteTaglines.length ? prev + 1 : prev));
-            }, 6000); // 6 seconds per tagline
-        }
-        if (taglineIndex >= lastMinuteTaglines.length && taglineIntervalRef.current) {
-             clearInterval(taglineIntervalRef.current);
+                 if (index < lastMinuteTaglines.length) {
+                    setTagline(lastMinuteTaglines[index]);
+                    index++;
+                } else {
+                    setTagline(""); // Clear the tagline before showing the final message
+                    if(taglineIntervalRef.current) clearInterval(taglineIntervalRef.current);
+                }
+            }, 6000);
         }
         return () => {
           if (taglineIntervalRef.current) {
             clearInterval(taglineIntervalRef.current);
           }
         };
-    }, [isLastMinute, taglineIndex]);
-    
-    const renderTagline = () => {
-        if (!isLastMinute) {
-            return <h3 className="font-headline text-3xl animate-pulse text-primary min-h-[40px]">The Future is Loading...</h3>;
-        }
-
-        if (taglineIndex >= lastMinuteTaglines.length) {
-             return (
-                <div className="transition-opacity duration-500 text-center">
-                    <p className="font-headline text-2xl text-primary min-h-[40px]">
-                        With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.
-                    </p>
-                </div>
-            )
-        }
-
-        return (
-            <h3 className="font-headline text-3xl text-primary min-h-[40px] transition-opacity duration-500">
-                {lastMinuteTaglines[taglineIndex]}
-            </h3>
-        );
-    };
+    }, [isLastMinute]);
 
     return (
         <div className="text-center my-8">
-            <div className="flex justify-center gap-4 sm:gap-8 my-8 font-headline">
+             <div className="flex justify-center gap-4 sm:gap-8 my-8 font-headline">
                 {Object.entries(timeLeft).map(([unit, value]) => (
                     <div key={unit} className="text-center bg-secondary/50 p-4 rounded-lg w-24">
                         <div className="text-4xl sm:text-5xl font-bold text-primary">{String(value).padStart(2, '0')}</div>
@@ -205,10 +185,21 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
                     </div>
                 ))}
             </div>
-            {renderTagline()}
+            <div className="min-h-[60px] flex items-center justify-center">
+                 {timeLeft.seconds <= 6 && timeLeft.minutes === 0 ? (
+                    <div className="transition-opacity duration-500 text-center text-primary font-headline text-lg">
+                       <FinalMessage/>
+                    </div>
+                ) : (
+                    <h3 className="font-headline text-3xl text-primary min-h-[40px] transition-opacity duration-500">
+                        {tagline}
+                    </h3>
+                )}
+            </div>
         </div>
     );
 };
+
 
 export default function CommunityPage() {
   const [activePhase, setActivePhase] = useState(boardPhases[0]);
@@ -226,7 +217,7 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:00:00`);
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:15:00`);
     if (new Date() >= revealDate) {
         setIsRevealed(true);
         setStartBoardFadeIn(true);
@@ -234,20 +225,17 @@ export default function CommunityPage() {
   }, []);
 
   const handleReveal = () => {
-    setIsRevealed(true);
     setShowSignOff(true);
     
-    // Start the sign-off message zoom animation
     setTimeout(() => {
       setStartSignOffAnimation(true);
     }, 100);
 
-    // Fade out the sign-off message after it has been displayed
     setTimeout(() => {
       setShowSignOff(false);
+      setIsRevealed(true);
     }, 2500);
 
-    // Fade in the new board after the sign-off message has faded out
     setTimeout(() => {
       setStartBoardFadeIn(true);
     }, 3000);
@@ -257,6 +245,18 @@ export default function CommunityPage() {
       if (!activeBoard) return null;
       
       if (activeBoard.phase === '2025 - 2026' && isClient && !isRevealed) {
+           if (showSignOff) {
+             return (
+                <div 
+                    className={cn(
+                    'text-center py-12 transition-all duration-1000',
+                    startSignOffAnimation ? 'opacity-100 scale-110' : 'opacity-0 scale-100'
+                    )}
+                >
+                    <h2 className="font-headline text-4xl text-primary">Signing off EB 2024-2025...</h2>
+                </div>
+             )
+           }
           return (
              <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
                 <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
@@ -264,25 +264,11 @@ export default function CommunityPage() {
             </Card>
           );
       }
-
-      if (activeBoard.phase === '2025 - 2026' && isClient && isRevealed && !startBoardFadeIn) {
-          return (
-              <div 
-                className={cn(
-                  'text-center py-12 transition-all duration-1000',
-                  showSignOff ? 'opacity-100' : 'opacity-0',
-                  startSignOffAnimation ? 'scale-110' : 'scale-100'
-                )}
-              >
-                  <h2 className="font-headline text-4xl text-primary">Signing off EB 2024-2025...</h2>
-              </div>
-          );
-      }
       
       return (
          <div className={cn(
              'transition-opacity duration-1000',
-             startBoardFadeIn ? 'opacity-100' : 'opacity-0'
+             (isRevealed && startBoardFadeIn) ? 'opacity-100' : 'opacity-0'
          )}>
             <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
             <div className="flex flex-wrap justify-center gap-8">
