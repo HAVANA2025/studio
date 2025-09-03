@@ -94,7 +94,12 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     });
 
     useEffect(() => {
-        const revealDate = new Date('2025-09-15T09:00:00');
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1; // getMonth() is zero-based
+        const day = today.getDate();
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T21:20:00`);
+
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -133,17 +138,21 @@ export default function CommunityPage() {
   const activeBoard = executiveBoard.find(board => board.phase === activePhase);
   const { width, height } = useWindowSize();
 
-  const revealDate = new Date('2025-09-15T09:00:00');
   const [isClient, setIsClient] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   
   useEffect(() => {
     setIsClient(true);
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const day = today.getDate();
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T21:20:00`);
     if (new Date() > revealDate) {
         setIsRevealed(true);
     }
-  }, [revealDate]);
+  }, []);
 
   const handleReveal = () => {
     setIsRevealed(true);
