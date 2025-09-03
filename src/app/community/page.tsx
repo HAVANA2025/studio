@@ -1,12 +1,15 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import Confetti from 'react-confetti';
+import { useWindowSize } from '@/hooks/use-window-size';
+
 
 const mentors = [
     { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
@@ -85,12 +88,106 @@ const executiveBoard = [
 
 const boardPhases = ['2025 - 2026', '2024 - 2025', '2023 - 2024', '2022 - 2023'];
 
+const Countdown = ({ onFinished }: { onFinished: () => void }) => {
+    const [timeLeft, setTimeLeft] = useState({
+        days: 0, hours: 0, minutes: 0, seconds: 0
+    });
+
+    useEffect(() => {
+        const revealDate = new Date('2025-09-15T09:00:00');
+
+        const timer = setInterval(() => {
+            const now = new Date();
+            const difference = revealDate.getTime() - now.getTime();
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((difference / 1000 / 60) % 60);
+                const seconds = Math.floor((difference / 1000) % 60);
+                setTimeLeft({ days, hours, minutes, seconds });
+            } else {
+                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                clearInterval(timer);
+                onFinished();
+            }
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [onFinished]);
+
+    return (
+        <div className="flex justify-center gap-4 sm:gap-8 my-8 font-headline">
+            {Object.entries(timeLeft).map(([unit, value]) => (
+                <div key={unit} className="text-center bg-secondary/50 p-4 rounded-lg w-24">
+                    <div className="text-4xl sm:text-5xl font-bold text-primary">{String(value).padStart(2, '0')}</div>
+                    <div className="text-sm uppercase text-muted-foreground mt-1">{unit}</div>
+                </div>
+            ))}
+        </div>
+    );
+};
+
 export default function CommunityPage() {
   const [activePhase, setActivePhase] = useState(boardPhases[0]);
   const activeBoard = executiveBoard.find(board => board.phase === activePhase);
+  const { width, height } = useWindowSize();
+
+  const revealDate = new Date('2025-09-15T09:00:00');
+  const [isClient, setIsClient] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+    if (new Date() > revealDate) {
+        setIsRevealed(true);
+    }
+  }, [revealDate]);
+
+  const handleReveal = () => {
+    setIsRevealed(true);
+    setShowConfetti(true);
+    // Stop confetti after a few seconds
+    setTimeout(() => setShowConfetti(false), 8000);
+  };
+  
+  const renderBoardContent = () => {
+      if (!activeBoard) return null;
+      
+      if (activeBoard.phase === '2025 - 2026' && isClient && !isRevealed) {
+          return (
+             <Card className="text-center py-24 border-2 border-dashed border-muted-foreground/20 bg-card/50">
+                <h3 className="font-headline text-3xl animate-pulse">The Future is Loading...</h3>
+                <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
+                <Countdown onFinished={handleReveal} />
+            </Card>
+          );
+      }
+      
+      return (
+         <div>
+            <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
+            <div className="flex flex-wrap justify-center gap-8">
+            {activeBoard.members.map(member => (
+                <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
+                <div className="relative h-48">
+                    <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
+                </div>
+                <CardHeader>
+                    <CardTitle className="font-headline">{member.name}</CardTitle>
+                    <p className="text-primary">{member.designation}</p>
+                </CardHeader>
+                </Card>
+            ))}
+            </div>
+        </div>
+      );
+  }
 
   return (
     <div className="container mx-auto py-16 sm:py-24 space-y-24">
+       {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={500} />}
       <div className="text-center">
         <h1 className="font-headline text-5xl font-bold tracking-tight">Our Team</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -138,31 +235,12 @@ export default function CommunityPage() {
               ))}
             </div>
           </div>
-
-          {activeBoard ? (
-             <div>
-                <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
-                <div className="flex flex-wrap justify-center gap-8">
-                {activeBoard.members.map(member => (
-                    <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
-                    <div className="relative h-48">
-                        <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
-                    </div>
-                    <CardHeader>
-                        <CardTitle className="font-headline">{member.name}</CardTitle>
-                        <p className="text-primary">{member.designation}</p>
-                    </CardHeader>
-                    </Card>
-                ))}
-                </div>
-            </div>
-          ) : (
-            <Card className="text-center py-24 border-2 border-dashed border-muted-foreground/20">
-                <h3 className="font-headline text-3xl">The Future is Loading...</h3>
-                <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
-            </Card>
-          )}
+          
+          {renderBoardContent()}
+          
       </section>
     </div>
   );
 }
+
+    
