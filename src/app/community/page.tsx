@@ -99,6 +99,8 @@ const lastMinuteTaglines = [
 
 const FinalMessage = () => (
     <div className="text-sm text-muted-foreground whitespace-pre-wrap text-center">
+        Signing off EB 2024-2025....
+        <br/><br/>
         <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
         <br />
         Wishing you success, growth, and innovation ahead.
@@ -112,6 +114,7 @@ const FinalMessage = () => (
 const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [tagline, setTagline] = useState("The Future is Loading...");
+    const [taglineOpacity, setTaglineOpacity] = useState(1);
     const [isLastMinute, setIsLastMinute] = useState(false);
     const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -120,7 +123,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:32:00`);
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:45:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -158,15 +161,23 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     useEffect(() => {
         if (isLastMinute) {
             let index = 0;
-            taglineIntervalRef.current = setInterval(() => {
-                 if (index < lastMinuteTaglines.length) {
-                    setTagline(lastMinuteTaglines[index]);
-                    index++;
-                } else {
-                    setTagline(""); // Clear the tagline before showing the final message
-                    if(taglineIntervalRef.current) clearInterval(taglineIntervalRef.current);
-                }
-            }, 6000);
+            const updateTagline = () => {
+                setTaglineOpacity(0); // Start fade out
+                setTimeout(() => {
+                    if (index < lastMinuteTaglines.length) {
+                        setTagline(lastMinuteTaglines[index]);
+                        index++;
+                    } else {
+                         // This is the final message before reveal
+                        setTagline("Together we grow, together we shine.");
+                        if(taglineIntervalRef.current) clearInterval(taglineIntervalRef.current);
+                    }
+                    setTaglineOpacity(1); // Start fade in
+                }, 500); // Wait for fade out to complete
+            };
+
+            updateTagline(); // Initial call
+            taglineIntervalRef.current = setInterval(updateTagline, 6000);
         }
         return () => {
           if (taglineIntervalRef.current) {
@@ -174,6 +185,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
           }
         };
     }, [isLastMinute]);
+
 
     return (
         <div className="text-center my-8">
@@ -187,11 +199,14 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
             </div>
             <div className="min-h-[60px] flex items-center justify-center">
                  {timeLeft.seconds <= 6 && timeLeft.minutes === 0 ? (
-                    <div className="transition-opacity duration-500 text-center text-primary font-headline text-lg">
+                    <div className="transition-opacity duration-500 text-center text-primary font-headline text-base">
                        <FinalMessage/>
                     </div>
                 ) : (
-                    <h3 className="font-headline text-3xl text-primary min-h-[40px] transition-opacity duration-500">
+                    <h3 
+                        className="font-headline text-3xl text-primary min-h-[40px] transition-opacity duration-500"
+                        style={{ opacity: taglineOpacity }}
+                    >
                         {tagline}
                     </h3>
                 )}
@@ -217,7 +232,7 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:32:00`);
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:45:00`);
     if (new Date() >= revealDate) {
         setIsRevealed(true);
         setStartBoardFadeIn(true);
