@@ -120,7 +120,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:15:00`);
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:32:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -217,7 +217,7 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:15:00`);
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:32:00`);
     if (new Date() >= revealDate) {
         setIsRevealed(true);
         setStartBoardFadeIn(true);
