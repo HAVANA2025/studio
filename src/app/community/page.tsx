@@ -98,7 +98,7 @@ const lastMinuteTaglines = [
 ];
 
 const FinalMessage = () => (
-    <div className="text-sm text-muted-foreground whitespace-pre-wrap text-center">
+    <div className="text-xs sm:text-sm text-muted-foreground whitespace-pre-wrap text-center">
         Signing off EB 2024-2025....
         <br/><br/>
         <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
@@ -119,11 +119,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth() + 1;
-        const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:45:00`);
+        const revealDate = new Date(`2025-09-15T09:00:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -199,7 +195,10 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
             </div>
             <div className="min-h-[60px] flex items-center justify-center">
                  {timeLeft.seconds <= 6 && timeLeft.minutes === 0 ? (
-                    <div className="transition-opacity duration-500 text-center text-primary font-headline text-base">
+                    <div 
+                        className="transition-opacity duration-500 text-center text-primary font-headline"
+                        style={{ opacity: taglineOpacity }}
+                    >
                        <FinalMessage/>
                     </div>
                 ) : (
@@ -227,12 +226,9 @@ export default function CommunityPage() {
   const [startBoardFadeIn, setStartBoardFadeIn] = useState(false);
   
   useEffect(() => {
+    // This effect runs only on the client side
     setIsClient(true);
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:45:00`);
+    const revealDate = new Date('2025-09-15T09:00:00');
     if (new Date() >= revealDate) {
         setIsRevealed(true);
         setStartBoardFadeIn(true);
