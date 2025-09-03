@@ -15,6 +15,22 @@ const mentors = [
 
 const executiveBoard = [
   {
+    phase: '2025 - 2026',
+    title: 'The Apex Phase',
+    members: [
+        { name: 'Modugula Gowri Shankar Royal', designation: 'President', image: 'https://placehold.co/400x400.png', hint: 'man portrait' },
+        { name: 'Alla Venu Gopala Reddy', designation: 'Vice-President', image: 'https://placehold.co/400x400.png', hint: 'man portrait' },
+        { name: 'Nagireddi Aditya', designation: 'Secretary', image: 'https://placehold.co/400x400.png', hint: 'man portrait' },
+        { name: 'K. Sravya', designation: 'Joint-Secretary', image: 'https://placehold.co/400x400.png', hint: 'woman portrait' },
+        { name: 'Ediga Harsha Vardhan', designation: 'Joint-Secretary', image: 'https://placehold.co/400x400.png', hint: 'man portrait' },
+        { name: 'J M Sai Sathvik', designation: 'Innovatech Hardware Co-Lead', image: 'https://placehold.co/400x400.png', hint: 'man portrait' },
+        { name: 'Raghava', designation: 'Innovatech Software Lead', image: 'https://placehold.co/400x400.png', hint: 'man portrait' },
+        { name: 'P. Varshith Reddy', designation: 'Marketing Lead', image: 'https://placehold.co/400x400.png', hint: 'man portrait' },
+        { name: 'Bavana', designation: 'Content Craft Lead', image: 'https://placehold.co/400x400.png', hint: 'woman portrait' },
+        { name: 'Sai Manish Reddy', designation: 'Web Development Lead', image: 'https://placehold.co/400x400.png', hint: 'man portrait' },
+    ],
+  },
+  {
     phase: '2024 - 2025',
     title: 'The Synergy Phase',
     members: [
