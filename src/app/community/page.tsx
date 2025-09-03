@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -105,7 +106,7 @@ export default function CommunityPage() {
                 {mentors.map(member => (
                     <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
                     <div className="relative h-48">
-                        <Image src={member.image} alt={member.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300" data-ai-hint={member.hint} />
+                        <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
                     </div>
                     <CardHeader>
                         <CardTitle className="font-headline">{member.name}</CardTitle>
@@ -145,7 +146,7 @@ export default function CommunityPage() {
                 {activeBoard.members.map(member => (
                     <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
                     <div className="relative h-48">
-                        <Image src={member.image} alt={member.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-300" data-ai-hint={member.hint} />
+                        <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
                     </div>
                     <CardHeader>
                         <CardTitle className="font-headline">{member.name}</CardTitle>
