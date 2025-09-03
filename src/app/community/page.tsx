@@ -7,9 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Users, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import Confetti from 'react-confetti';
-import { useWindowSize } from '@/hooks/use-window-size';
-
 
 const mentors = [
     { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
@@ -101,6 +98,20 @@ const lastMinuteTaglines = [
     "Together we grow, together we shine.",
 ];
 
+const FinalMessage = () => (
+    <Card className="text-center p-8 bg-secondary/30 border-primary/20 animate-pulse">
+        <p className="text-lg text-muted-foreground whitespace-pre-wrap">
+            <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
+            <br />
+            Wishing you success, growth, and innovation ahead.
+            <br /><br />
+            Thank You and Best Regards,
+            <br />
+            Team G-Electra & Team Web Development
+        </p>
+    </Card>
+);
+
 const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [taglineIndex, setTaglineIndex] = useState(0);
@@ -112,7 +123,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:00:00`);
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:20:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -150,10 +161,10 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     useEffect(() => {
         if (isLastMinute) {
             taglineIntervalRef.current = setInterval(() => {
-                setTaglineIndex(prev => prev + 1);
-            }, 6000);
+                setTaglineIndex(prev => (prev < lastMinuteTaglines.length ? prev + 1 : prev));
+            }, 6000); // 6 seconds per tagline
         }
-        if (taglineIndex >= lastMinuteTaglines.length -1 && taglineIntervalRef.current) {
+        if (taglineIndex >= lastMinuteTaglines.length && taglineIntervalRef.current) {
              clearInterval(taglineIntervalRef.current);
         }
         return () => {
@@ -162,6 +173,28 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
           }
         };
     }, [isLastMinute, taglineIndex]);
+
+    const renderTagline = () => {
+        const remainingSeconds = timeLeft.minutes * 60 + timeLeft.seconds;
+        if (!isLastMinute || remainingSeconds > 60) {
+            return <h3 className="font-headline text-3xl animate-pulse text-primary min-h-[40px]">The Future is Loading...</h3>;
+        }
+
+        // In the last 6 seconds (taglineIndex 9 would be for 6s to 0s)
+        if (taglineIndex >= 9) {
+            return (
+                 <div className="scale-110 transition-transform duration-500">
+                    <FinalMessage />
+                 </div>
+            )
+        }
+
+        return (
+            <h3 className="font-headline text-3xl text-primary min-h-[40px] transition-opacity duration-500">
+                {lastMinuteTaglines[taglineIndex]}
+            </h3>
+        );
+    };
 
     return (
         <div className="text-center my-8">
@@ -173,11 +206,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
                     </div>
                 ))}
             </div>
-            {isLastMinute && (
-                 <h3 className="font-headline text-3xl animate-pulse text-primary min-h-[40px]">
-                    {lastMinuteTaglines[taglineIndex]}
-                </h3>
-            )}
+            {renderTagline()}
         </div>
     );
 };
@@ -196,7 +225,7 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:00:00`);
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:20:00`);
     if (new Date() >= revealDate) {
         setIsRevealed(true);
         setStartRevealAnimation(true);
@@ -205,7 +234,6 @@ export default function CommunityPage() {
 
   const handleReveal = () => {
     setIsRevealed(true);
-    // Use a short timeout to allow the DOM to update before starting the animation
     setTimeout(() => {
         setStartRevealAnimation(true);
     }, 100);
@@ -216,8 +244,7 @@ export default function CommunityPage() {
       
       if (activeBoard.phase === '2025 - 2026' && isClient && !isRevealed) {
           return (
-             <Card className="text-center py-24 border-2 border-dashed border-muted-foreground/20 bg-card/50">
-                <h3 className="font-headline text-3xl animate-pulse">The Future is Loading...</h3>
+             <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
                 <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
                 <Countdown onFinished={handleReveal} />
             </Card>
@@ -227,21 +254,13 @@ export default function CommunityPage() {
       return (
          <div className={cn(
              'transition-opacity duration-1000',
-             activeBoard.phase === '2025 - 2026' && startRevealAnimation ? 'opacity-100' : 'opacity-0'
+             (activeBoard.phase === '2025 - 2026' && startRevealAnimation) || activeBoard.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
          )}>
             <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
             {activeBoard.phase === '2025 - 2026' && isRevealed && (
-                 <Card className="text-center p-8 mb-12 bg-secondary/30 border-primary/20">
-                    <p className="text-lg text-muted-foreground whitespace-pre-wrap">
-                        <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
-                        <br />
-                        Wishing you success, growth, and innovation ahead.
-                        <br /><br />
-                        Thank You and Best Regards,
-                        <br />
-                        Team G-Electra & Team Web Development
-                    </p>
-                </Card>
+                 <div className="mb-12">
+                    <FinalMessage />
+                 </div>
             )}
             <div className="flex flex-wrap justify-center gap-8">
             {activeBoard.members.map(member => (
@@ -316,5 +335,3 @@ export default function CommunityPage() {
     </div>
   );
 }
-
-    
