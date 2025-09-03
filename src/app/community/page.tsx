@@ -99,17 +99,17 @@ const lastMinuteTaglines = [
 ];
 
 const FinalMessage = () => (
-    <Card className="text-center p-8 bg-secondary/30 border-primary/20 animate-pulse">
-        <p className="text-lg text-muted-foreground whitespace-pre-wrap">
-            <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
-            <br />
-            Wishing you success, growth, and innovation ahead.
-            <br /><br />
-            Thank You and Best Regards,
-            <br />
-            Team G-Electra & Team Web Development
-        </p>
-    </Card>
+    <p className="text-lg text-muted-foreground whitespace-pre-wrap">
+        <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
+        <br />
+        Wishing you success, growth, and innovation ahead.
+        <br /><br />
+        Signing off EB 2024-2025....
+        <br />
+        Thank You and Best Regards,
+        <br />
+        Team G-Electra & Team Web Development
+    </p>
 );
 
 const Countdown = ({ onFinished }: { onFinished: () => void }) => {
@@ -123,7 +123,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:20:00`);
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:40:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -173,19 +173,18 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
           }
         };
     }, [isLastMinute, taglineIndex]);
-
+    
     const renderTagline = () => {
-        const remainingSeconds = timeLeft.minutes * 60 + timeLeft.seconds;
-        if (!isLastMinute || remainingSeconds > 60) {
+        if (!isLastMinute) {
             return <h3 className="font-headline text-3xl animate-pulse text-primary min-h-[40px]">The Future is Loading...</h3>;
         }
 
-        // In the last 6 seconds (taglineIndex 9 would be for 6s to 0s)
+        // In the last 6 seconds (taglineIndex 9 is from 6s to 0s)
         if (taglineIndex >= 9) {
-            return (
-                 <div className="scale-110 transition-transform duration-500">
+             return (
+                <div className="transition-opacity duration-500 text-center">
                     <FinalMessage />
-                 </div>
+                </div>
             )
         }
 
@@ -225,7 +224,7 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:20:00`);
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:40:00`);
     if (new Date() >= revealDate) {
         setIsRevealed(true);
         setStartRevealAnimation(true);
@@ -257,11 +256,6 @@ export default function CommunityPage() {
              (activeBoard.phase === '2025 - 2026' && startRevealAnimation) || activeBoard.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
          )}>
             <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
-            {activeBoard.phase === '2025 - 2026' && isRevealed && (
-                 <div className="mb-12">
-                    <FinalMessage />
-                 </div>
-            )}
             <div className="flex flex-wrap justify-center gap-8">
             {activeBoard.members.map(member => (
                 <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
