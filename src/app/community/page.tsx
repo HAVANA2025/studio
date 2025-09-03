@@ -93,14 +93,16 @@ const lastMinuteTaglines = [
     "Every ending opens the door to a new beginning.",
     "Thank you to our leaders who guided us this far.",
     "Here’s to the memories we created together.",
+    "Your efforts shaped today, your vision built tomorrow.",
+    "With pride, we pass the torch to new hands.",
     "Welcoming fresh energy, ideas, and leadership!",
     "The Future is Now — Congratulations EB 2025–2026!",
+    "A new journey starts, with brighter horizons ahead.",
+    "Together we grow, together we shine.",
 ];
 
 const Countdown = ({ onFinished }: { onFinished: () => void }) => {
-    const [timeLeft, setTimeLeft] = useState({
-        days: 0, hours: 0, minutes: 0, seconds: 0
-    });
+    const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [taglineIndex, setTaglineIndex] = useState(0);
     const [isLastMinute, setIsLastMinute] = useState(false);
     const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -110,7 +112,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T21:40:00`);
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:00:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -123,15 +125,10 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
                 const minutes = Math.floor((totalSeconds % 3600) / 60);
                 const seconds = totalSeconds % 60;
                 setTimeLeft({ days, hours, minutes, seconds });
-                
+
                 if (totalSeconds <= 60 && !isLastMinute) {
                     setIsLastMinute(true);
-                    setTaglineIndex(0);
-                    taglineIntervalRef.current = setInterval(() => {
-                      setTaglineIndex(prev => (prev + 1) % lastMinuteTaglines.length);
-                    }, 10000);
                 }
-
             } else {
                 setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
                 clearInterval(timer);
@@ -141,7 +138,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
                 onFinished();
             }
         }, 1000);
-
+        
         return () => {
           clearInterval(timer);
           if (taglineIntervalRef.current) {
@@ -150,22 +147,37 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         };
     }, [onFinished, isLastMinute]);
 
-    if (isLastMinute) {
-        return (
-            <div className="text-center my-8 font-headline">
-                <h3 className="text-3xl animate-pulse text-primary">{lastMinuteTaglines[taglineIndex]}</h3>
-            </div>
-        )
-    }
+    useEffect(() => {
+        if (isLastMinute) {
+            taglineIntervalRef.current = setInterval(() => {
+                setTaglineIndex(prev => prev + 1);
+            }, 6000);
+        }
+        if (taglineIndex >= lastMinuteTaglines.length -1 && taglineIntervalRef.current) {
+             clearInterval(taglineIntervalRef.current);
+        }
+        return () => {
+          if (taglineIntervalRef.current) {
+            clearInterval(taglineIntervalRef.current);
+          }
+        };
+    }, [isLastMinute, taglineIndex]);
 
     return (
-        <div className="flex justify-center gap-4 sm:gap-8 my-8 font-headline">
-            {Object.entries(timeLeft).map(([unit, value]) => (
-                <div key={unit} className="text-center bg-secondary/50 p-4 rounded-lg w-24">
-                    <div className="text-4xl sm:text-5xl font-bold text-primary">{String(value).padStart(2, '0')}</div>
-                    <div className="text-sm uppercase text-muted-foreground mt-1">{unit}</div>
-                </div>
-            ))}
+        <div className="text-center my-8">
+            <div className="flex justify-center gap-4 sm:gap-8 my-8 font-headline">
+                {Object.entries(timeLeft).map(([unit, value]) => (
+                    <div key={unit} className="text-center bg-secondary/50 p-4 rounded-lg w-24">
+                        <div className="text-4xl sm:text-5xl font-bold text-primary">{String(value).padStart(2, '0')}</div>
+                        <div className="text-sm uppercase text-muted-foreground mt-1">{unit}</div>
+                    </div>
+                ))}
+            </div>
+            {isLastMinute && (
+                 <h3 className="font-headline text-3xl animate-pulse text-primary min-h-[40px]">
+                    {lastMinuteTaglines[taglineIndex]}
+                </h3>
+            )}
         </div>
     );
 };
@@ -173,11 +185,10 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
 export default function CommunityPage() {
   const [activePhase, setActivePhase] = useState(boardPhases[0]);
   const activeBoard = executiveBoard.find(board => board.phase === activePhase);
-  const { width, height } = useWindowSize();
-
+  
   const [isClient, setIsClient] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [startRevealAnimation, setStartRevealAnimation] = useState(false);
   
   useEffect(() => {
     setIsClient(true);
@@ -185,20 +196,19 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T21:40:00`);
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:00:00`);
     if (new Date() >= revealDate) {
         setIsRevealed(true);
+        setStartRevealAnimation(true);
     }
   }, []);
 
   const handleReveal = () => {
-    setShowConfetti(true);
-    // Set revealed to true after a short delay to let confetti start
+    setIsRevealed(true);
+    // Use a short timeout to allow the DOM to update before starting the animation
     setTimeout(() => {
-        setIsRevealed(true);
-    }, 500); 
-    // Stop confetti after a few seconds
-    setTimeout(() => setShowConfetti(false), 8000);
+        setStartRevealAnimation(true);
+    }, 100);
   };
   
   const renderBoardContent = () => {
@@ -215,7 +225,10 @@ export default function CommunityPage() {
       }
       
       return (
-         <div>
+         <div className={cn(
+             'transition-opacity duration-1000',
+             activeBoard.phase === '2025 - 2026' && startRevealAnimation ? 'opacity-100' : 'opacity-0'
+         )}>
             <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
             {activeBoard.phase === '2025 - 2026' && isRevealed && (
                  <Card className="text-center p-8 mb-12 bg-secondary/30 border-primary/20">
@@ -249,7 +262,6 @@ export default function CommunityPage() {
 
   return (
     <div className="container mx-auto py-16 sm:py-24 space-y-24">
-       {showConfetti && width && height && <Confetti width={width} height={height} recycle={false} numberOfPieces={500} />}
       <div className="text-center">
         <h1 className="font-headline text-5xl font-bold tracking-tight">Our Team</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -304,3 +316,5 @@ export default function CommunityPage() {
     </div>
   );
 }
+
+    
