@@ -88,38 +88,75 @@ const executiveBoard = [
 
 const boardPhases = ['2025 - 2026', '2024 - 2025', '2023 - 2024', '2022 - 2023'];
 
+const lastMinuteTaglines = [
+    "The journey of 2024–2025 EB comes to a close…",
+    "Every ending opens the door to a new beginning.",
+    "Thank you to our leaders who guided us this far.",
+    "Here’s to the memories we created together.",
+    "Welcoming fresh energy, ideas, and leadership!",
+    "The Future is Now — Congratulations EB 2025–2026!",
+];
+
 const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const [timeLeft, setTimeLeft] = useState({
         days: 0, hours: 0, minutes: 0, seconds: 0
     });
+    const [taglineIndex, setTaglineIndex] = useState(0);
+    const [isLastMinute, setIsLastMinute] = useState(false);
+    const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const today = new Date();
         const year = today.getFullYear();
-        const month = today.getMonth() + 1; // getMonth() is zero-based
+        const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T21:20:00`);
-
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T21:40:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
             const difference = revealDate.getTime() - now.getTime();
 
             if (difference > 0) {
-                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-                const minutes = Math.floor((difference / 1000 / 60) % 60);
-                const seconds = Math.floor((difference / 1000) % 60);
+                const totalSeconds = Math.floor(difference / 1000);
+                const days = Math.floor(totalSeconds / 86400);
+                const hours = Math.floor((totalSeconds % 86400) / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
                 setTimeLeft({ days, hours, minutes, seconds });
+                
+                if (totalSeconds <= 60 && !isLastMinute) {
+                    setIsLastMinute(true);
+                    setTaglineIndex(0);
+                    taglineIntervalRef.current = setInterval(() => {
+                      setTaglineIndex(prev => (prev + 1) % lastMinuteTaglines.length);
+                    }, 10000);
+                }
+
             } else {
                 setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
                 clearInterval(timer);
+                if (taglineIntervalRef.current) {
+                    clearInterval(taglineIntervalRef.current);
+                }
                 onFinished();
             }
         }, 1000);
 
-        return () => clearInterval(timer);
-    }, [onFinished]);
+        return () => {
+          clearInterval(timer);
+          if (taglineIntervalRef.current) {
+            clearInterval(taglineIntervalRef.current);
+          }
+        };
+    }, [onFinished, isLastMinute]);
+
+    if (isLastMinute) {
+        return (
+            <div className="text-center my-8 font-headline">
+                <h3 className="text-3xl animate-pulse text-primary">{lastMinuteTaglines[taglineIndex]}</h3>
+            </div>
+        )
+    }
 
     return (
         <div className="flex justify-center gap-4 sm:gap-8 my-8 font-headline">
@@ -148,15 +185,18 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T21:20:00`);
-    if (new Date() > revealDate) {
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T21:40:00`);
+    if (new Date() >= revealDate) {
         setIsRevealed(true);
     }
   }, []);
 
   const handleReveal = () => {
-    setIsRevealed(true);
     setShowConfetti(true);
+    // Set revealed to true after a short delay to let confetti start
+    setTimeout(() => {
+        setIsRevealed(true);
+    }, 500); 
     // Stop confetti after a few seconds
     setTimeout(() => setShowConfetti(false), 8000);
   };
@@ -177,6 +217,19 @@ export default function CommunityPage() {
       return (
          <div>
             <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
+            {activeBoard.phase === '2025 - 2026' && isRevealed && (
+                 <Card className="text-center p-8 mb-12 bg-secondary/30 border-primary/20">
+                    <p className="text-lg text-muted-foreground whitespace-pre-wrap">
+                        <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
+                        <br />
+                        Wishing you success, growth, and innovation ahead.
+                        <br /><br />
+                        Thank You and Best Regards,
+                        <br />
+                        Team G-Electra & Team Web Development
+                    </p>
+                </Card>
+            )}
             <div className="flex flex-wrap justify-center gap-8">
             {activeBoard.members.map(member => (
                 <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
@@ -196,7 +249,7 @@ export default function CommunityPage() {
 
   return (
     <div className="container mx-auto py-16 sm:py-24 space-y-24">
-       {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={500} />}
+       {showConfetti && width && height && <Confetti width={width} height={height} recycle={false} numberOfPieces={500} />}
       <div className="text-center">
         <h1 className="font-headline text-5xl font-bold tracking-tight">Our Team</h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -251,5 +304,3 @@ export default function CommunityPage() {
     </div>
   );
 }
-
-    
