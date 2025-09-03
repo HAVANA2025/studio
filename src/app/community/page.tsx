@@ -23,7 +23,7 @@ const executiveBoard = [
         { name: 'Nagireddi Aditya', designation: 'Secretary', image: '/images/nagireddiaditya.jpg', hint: 'man portrait' },
         { name: 'K. Sravya', designation: 'Joint-Secretary', image: '/images/ksravya.jpg', hint: 'woman portrait' },
         { name: 'Ediga Harsha Vardhan', designation: 'Joint-Secretary', image: '/images/edigaharshavardhan.jpg', hint: 'man portrait' },
-        { name: 'J M Sai Sathvik', designation: 'Hardware Lead', image: '/images/jmsaisathvik.jpg', hint: 'man portrait' },
+        { name: 'J M Sai Sathvik', designation: 'Innovatech Hardware Lead', image: '/images/jmsaisathvik.jpg', hint: 'man portrait' },
         { name: 'Raghava', designation: 'Innovatech Software Lead', image: '/images/raghava.jpg', hint: 'man portrait' },
         { name: 'P. Varshith Reddy', designation: 'Marketing Lead', image: '/images/pvarshithreddy.jpg', hint: 'man portrait' },
         { name: 'Bavana', designation: 'Content Craft Lead', image: '/images/bavana.jpg', hint: 'woman portrait' },
