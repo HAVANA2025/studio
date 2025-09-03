@@ -32,19 +32,19 @@ const hardwareProjects = [
   {
     title: 'Self-Guided Aid Rover',
     description: 'An autonomous rover designed for search and rescue missions, equipped with advanced navigation and obstacle avoidance systems.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-aid-rover.jpg',
     imageHint: 'robotics rover',
   },
   {
     title: 'Human Fall Detector',
     description: 'A wearable device that uses sensors and machine learning to detect falls and automatically alert emergency contacts.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-fall-detector.jpg',
     imageHint: 'wearable technology',
   },
   {
     title: 'Fire Extinguisher Robot',
     description: 'An autonomous robot capable of detecting fires and navigating to them to deploy an extinguisher, enhancing safety in homes.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-fire-robot.jpg',
     imageHint: 'firefighter robot',
   },
 ];
@@ -53,13 +53,13 @@ const softwareProjects = [
     {
         title: 'G-Electra Hub Website',
         description: 'The official website for the G-Electra club, built with Next.js, TypeScript, and Firebase for a seamless user experience.',
-        image: 'https://placehold.co/600x400.png',
+        image: '/images/project-club-website.jpg',
         imageHint: 'modern website design',
     },
     {
         title: 'Event Registration System',
         description: 'A dynamic event management and registration system integrated into the club website, handling user sign-ups and event details.',
-        image: 'https://placehold.co/600x400.png',
+        image: '/images/project-event-system.jpg',
         imageHint: 'online registration form',
     }
 ]

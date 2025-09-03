@@ -23,14 +23,14 @@ const hardcodedPastEvents: Omit<Event, 'id' | 'createdAt'>[] = [
         details: 'The second edition of our flagship tech fest, featuring international workshops, keynote sessions, and intense competitions. It set a new benchmark for technical festivals on campus.',
         date: '2024-03-15',
         location: 'GITAM Hyderabad Campus',
-        imageUrl: 'https://placehold.co/600x400.png',
+        imageUrl: '/images/havana-2.jpg',
     },
     {
         title: 'HAVANA 1.0',
         details: 'The inaugural edition of HAVANA, which brought together bright minds for a two-day celebration of technology and innovation, sparking a new wave of creativity at GITAM.',
         date: '2023-03-20',
         location: 'GITAM Hyderabad Campus',
-        imageUrl: 'https://placehold.co/600x400.png',
+        imageUrl: '/images/havana-1.jpg',
     },
 ];
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -11,42 +12,42 @@ const hardwareProjects = [
   {
     title: 'Self-Guided Aid Rover',
     description: 'An autonomous rover for search and rescue, featuring advanced navigation and awarded 1st prize at Smart India Hackathon (SIH) 2024.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-aid-rover.jpg',
     imageHint: 'autonomous rover',
     tags: ['Robotics', 'AI', 'SIH Winner'],
   },
   {
     title: 'Human Fall Detector',
     description: 'A wearable device using sensor technology to detect falls and send alerts, securing 2nd prize at SIH 2024 and 1st at VISHESH-2024.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-fall-detector.jpg',
     imageHint: 'health tech device',
     tags: ['IoT', 'Healthcare', 'Award Winning'],
   },
   {
     title: 'Fire Extinguisher Robot',
     description: 'An autonomous robot that detects and extinguishes fires, winning 2nd prize at MICROCOSM 24 for its innovation in safety.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-fire-robot.jpg',
     imageHint: 'safety robot',
     tags: ['Robotics', 'Automation', 'Safety'],
   },
   {
     title: 'Home Automation System',
     description: 'A comprehensive system for controlling home appliances remotely, recognized at IIT Bombay Techfest \'23 and ATOMS-22.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-home-automation.jpg',
     imageHint: 'smart home dashboard',
     tags: ['IoT', 'Smart Home', 'Embedded Systems'],
   },
   {
     title: 'Blended Vision',
     description: 'An innovative project combining multiple sensor inputs to create a comprehensive environmental view, awarded at ATOMS-22.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-blended-vision.jpg',
     imageHint: 'sensor fusion technology',
     tags: ['AI', 'Sensors', 'Innovation'],
   },
   {
     title: 'Techkriti Innovation Challenge Projects',
     description: 'Our projects "Manoeuvre" and "Hovermanis" were top 10 finalists at Techkriti \'24, showcasing advanced engineering.',
-    image: 'https://placehold.co/600x400.png',
+    image: '/images/project-techkriti.jpg',
     imageHint: 'engineering prototype',
     tags: ['Engineering', 'Competition', 'IIT Kanpur'],
   },
@@ -56,21 +57,21 @@ const softwareProjects = [
     {
         title: 'G-Electra Hub Website',
         description: 'The official website for the G-Electra club, built with Next.js, TypeScript, and Firebase for a seamless user experience.',
-        image: 'https://placehold.co/600x400.png',
+        image: '/images/project-club-website.jpg',
         imageHint: 'modern website design',
         tags: ['Next.js', 'Firebase', 'Web Dev'],
     },
     {
         title: 'Event Registration System',
         description: 'A dynamic event management and registration system integrated into the club website, handling user sign-ups and event details.',
-        image: 'https://placehold.co/600x400.png',
+        image: '/images/project-event-system.jpg',
         imageHint: 'online registration form',
         tags: ['Firestore', 'Next.js', 'Full-stack'],
     },
     {
         title: 'AI Project Suggester',
         description: 'An intelligent tool on the club\'s "Playground" page that uses AI to generate project ideas based on user interests.',
-        image: 'https://placehold.co/600x400.png',
+        image: '/images/project-ai-suggester.jpg',
         imageHint: 'artificial intelligence concept',
         tags: ['AI', 'Genkit', 'Web App'],
     }
