@@ -99,7 +99,7 @@ const lastMinuteTaglines = [
 ];
 
 const FinalMessage = () => (
-    <p className="text-lg text-muted-foreground whitespace-pre-wrap">
+    <div className="text-lg text-muted-foreground whitespace-pre-wrap text-center">
         <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
         <br />
         Wishing you success, growth, and innovation ahead.
@@ -109,7 +109,7 @@ const FinalMessage = () => (
         Thank You and Best Regards,
         <br />
         Team G-Electra & Team Web Development
-    </p>
+    </div>
 );
 
 const Countdown = ({ onFinished }: { onFinished: () => void }) => {
@@ -123,7 +123,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         const year = today.getFullYear();
         const month = today.getMonth() + 1;
         const day = today.getDate();
-        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:40:00`);
+        const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:52:00`);
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -182,7 +182,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         // In the last 6 seconds (taglineIndex 9 is from 6s to 0s)
         if (taglineIndex >= 9) {
              return (
-                <div className="transition-opacity duration-500 text-center">
+                <div className="transition-opacity duration-500 text-center animate-pulse">
                     <FinalMessage />
                 </div>
             )
@@ -224,7 +224,7 @@ export default function CommunityPage() {
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const day = today.getDate();
-    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:40:00`);
+    const revealDate = new Date(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T22:52:00`);
     if (new Date() >= revealDate) {
         setIsRevealed(true);
         setStartRevealAnimation(true);
