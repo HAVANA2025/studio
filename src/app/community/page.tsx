@@ -9,7 +9,6 @@ import { Users, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import React from 'react';
-import { useWindowSize } from '@/hooks/use-window-size';
 
 
 const mentors = [
@@ -121,7 +120,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
 
     useEffect(() => {
         const revealDate = new Date();
-        revealDate.setHours(22, 48, 0, 0); // 10:48 PM today
+        revealDate.setHours(23, 0, 0, 0); // 11:00 PM today
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -229,7 +228,7 @@ export default function CommunityPage() {
     // Function to check if reveal time is past
     const checkDate = () => {
         const revealDate = new Date();
-        revealDate.setHours(22, 48, 0, 0); // 10:48 PM today
+        revealDate.setHours(23, 0, 0, 0); // 11:00 PM today
         if (new Date() >= revealDate) {
             handleReveal(true); // Directly reveal if date is past
             return true;
@@ -314,9 +313,13 @@ export default function CommunityPage() {
       
       if (!boardToShow) return null;
 
-      // Determine animation and visibility
-      const shouldAnimateIn = boardToShow.phase === '2025 - 2026' && isRevealed && startBoardFadeIn;
-      const isVisible = boardToShow.phase !== '2025 - 2026' || isRevealed;
+      // Determine animation and visibility for the new board
+      const isNewBoard = boardToShow.phase === '2025 - 2026';
+      const shouldAnimateIn = isNewBoard && isRevealed && startBoardFadeIn;
+      
+      // Only the new board depends on the isRevealed state.
+      // Past boards should always be visible.
+      const isVisible = !isNewBoard || isRevealed;
 
       if (!isVisible) return null;
 
@@ -324,7 +327,7 @@ export default function CommunityPage() {
       return (
           <div className={cn(
               'transition-opacity duration-1000 w-full',
-               shouldAnimateIn || boardToShow.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
+               shouldAnimateIn || !isNewBoard ? 'opacity-100' : 'opacity-0'
           )}>
               <h3 className="text-center font-headline text-2xl mb-12 text-primary">{boardToShow.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
@@ -384,7 +387,10 @@ export default function CommunityPage() {
                         key={phase}
                         onClick={() => setActivePhase(phase)}
                         variant={activePhase === phase ? 'default' : 'ghost'}
-                        className="rounded-md px-4 sm:px-6 py-2 text-sm font-medium transition-colors relative"
+                        className={cn(
+                            "rounded-md px-4 sm:px-6 py-2 text-sm font-medium transition-colors relative",
+                            activePhase === phase ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/20'
+                        )}
                     >
                         {phase}
                     </Button>
@@ -400,5 +406,3 @@ export default function CommunityPage() {
     </div>
   );
 }
-
-    
