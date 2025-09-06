@@ -164,8 +164,12 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
                     if (index < lastMinuteTaglines.length) {
                         setTagline(lastMinuteTaglines[index]);
                         index++;
+                    } else if (index === lastMinuteTaglines.length) {
+                         // Final message display
+                        setTagline("Together we grow, together we shine.");
+                        index++;
                     } else {
-                        if(taglineIntervalRef.current) clearInterval(taglineIntervalRef.current);
+                         if(taglineIntervalRef.current) clearInterval(taglineIntervalRef.current);
                     }
                     setTaglineOpacity(1);
                 }, 500);
@@ -217,13 +221,12 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
 
 export default function CommunityPage() {
   const [activePhase, setActivePhase] = useState(boardPhases[0]);
-  const activeBoard = executiveBoard.find(board => board.phase === activePhase);
-  
   const [isClient, setIsClient] = useState(false);
   const [isRevealed, setIsRevealed] = useState(false);
   const [showSignOff, setShowSignOff] = useState(false);
   const [startSignOffAnimation, setStartSignOffAnimation] = useState(false);
   const [startBoardFadeIn, setStartBoardFadeIn] = useState(false);
+  const activeBoard = executiveBoard.find(board => board.phase === activePhase);
   
   useEffect(() => {
     setIsClient(true);
@@ -357,16 +360,22 @@ export default function CommunityPage() {
           <div className="flex justify-center mb-12">
             <div className="flex flex-wrap justify-center items-center gap-2 rounded-full bg-secondary p-1.5 border border-border">
               {boardPhases.map(phase => (
-                <Button 
+                <button 
                   key={phase}
                   onClick={() => setActivePhase(phase)}
                   className={cn(
-                      'rounded-full px-4 sm:px-6 py-2 text-sm font-medium transition-colors',
-                      activePhase === phase ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
+                      'rounded-full px-4 sm:px-6 py-2 text-sm font-medium transition-colors relative',
+                      'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                      activePhase !== phase && 'text-muted-foreground hover:text-foreground'
                   )}
                 >
-                  {phase}
-                </Button>
+                  {activePhase === phase && (
+                     <span
+                        className="absolute inset-0 bg-primary text-primary-foreground rounded-full shadow z-0"
+                     />
+                  )}
+                  <span className="relative z-10">{phase}</span>
+                </button>
               ))}
             </div>
           </div>
@@ -379,5 +388,3 @@ export default function CommunityPage() {
     </div>
   );
 }
-
-    
