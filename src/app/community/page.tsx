@@ -8,6 +8,9 @@ import { Users, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import React from 'react';
+import Confetti from 'react-confetti';
+import { useWindowSize } from '@/hooks/use-window-size';
+
 
 const mentors = [
     { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
@@ -165,7 +168,6 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
                         setTagline(lastMinuteTaglines[index]);
                         index++;
                     } else if (index === lastMinuteTaglines.length) {
-                         // Final message display
                         setTagline("Together we grow, together we shine.");
                         index++;
                     } else {
@@ -226,16 +228,36 @@ export default function CommunityPage() {
   const [showSignOff, setShowSignOff] = useState(false);
   const [startSignOffAnimation, setStartSignOffAnimation] = useState(false);
   const [startBoardFadeIn, setStartBoardFadeIn] = useState(false);
+  const { width } = useWindowSize();
+  
   const activeBoard = executiveBoard.find(board => board.phase === activePhase);
+  
+  // Logic for the animated tab underline
+  const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const [tabUnderline, setTabUnderline] = useState({ width: 0, left: 0 });
   
   useEffect(() => {
     setIsClient(true);
-    const revealDate = new Date('2025-09-15T09:00:00');
-    if (new Date() >= revealDate) {
+    const checkDate = () => {
+      const revealDate = new Date('2025-09-15T09:00:00');
+      if (new Date() >= revealDate) {
         setIsRevealed(true);
         setStartBoardFadeIn(true);
+      }
     }
+    checkDate();
   }, []);
+  
+  useEffect(() => {
+    const activeTabIndex = boardPhases.indexOf(activePhase);
+    const activeTab = tabsRef.current[activeTabIndex];
+    if (activeTab) {
+      setTabUnderline({
+        width: activeTab.offsetWidth,
+        left: activeTab.offsetLeft,
+      });
+    }
+  }, [activePhase, width]);
 
   const handleReveal = () => {
     setShowSignOff(true);
@@ -257,11 +279,12 @@ export default function CommunityPage() {
   const renderBoardContent = () => {
       if (!activeBoard) return null;
 
-      if (activeBoard.phase === '2025 - 2026') {
-          if (isClient && !isRevealed) {
-              if (showSignOff) {
-                  return (
-                      <div 
+      // Special handling for the 2025-2026 board before it's revealed
+      if (activeBoard.phase === '2025 - 2026' && isClient && !isRevealed) {
+           return (
+              <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
+                  {showSignOff ? (
+                       <div 
                           className={cn(
                               'text-center py-12 transition-all duration-1000',
                               startSignOffAnimation ? 'opacity-100 scale-110' : 'opacity-0 scale-100'
@@ -269,43 +292,22 @@ export default function CommunityPage() {
                       >
                           <h2 className="font-headline text-4xl text-primary">Signing off EB 2024-2025...</h2>
                       </div>
-                  );
-              }
-              return (
-                  <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
-                      <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
-                      <Countdown onFinished={handleReveal} />
-                  </Card>
-              );
-          }
-          
-          if(!isRevealed && !isClient) return null;
-
-          return (
-              <div className={cn(
-                  'transition-opacity duration-1000 w-full',
-                  (isRevealed && startBoardFadeIn) ? 'opacity-100' : 'opacity-0'
-              )}>
-                  <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
-                  <div className="flex flex-wrap justify-center gap-8">
-                      {activeBoard.members.map(member => (
-                          <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
-                              <div className="relative h-48">
-                                  <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
-                              </div>
-                              <CardHeader>
-                                  <CardTitle className="font-headline">{member.name}</CardTitle>
-                                  <p className="text-primary">{member.designation}</p>
-                              </CardHeader>
-                          </Card>
-                      ))}
-                  </div>
-              </div>
+                  ) : (
+                      <>
+                        <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
+                        <Countdown onFinished={handleReveal} />
+                      </>
+                  )}
+              </Card>
           );
       }
-
+      
+      // Render the board members
       return (
-          <div className="w-full">
+          <div className={cn(
+              'transition-opacity duration-1000 w-full',
+              (activeBoard.phase === '2025 - 2026' && isRevealed && startBoardFadeIn) || activeBoard.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
+          )}>
               <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
                   {activeBoard.members.map(member => (
@@ -358,26 +360,32 @@ export default function CommunityPage() {
           </h2>
 
           <div className="flex justify-center mb-12">
-            <div className="flex flex-wrap justify-center items-center gap-2 rounded-full bg-secondary p-1.5 border border-border">
-              {boardPhases.map(phase => (
-                <button 
-                  key={phase}
-                  onClick={() => setActivePhase(phase)}
-                  className={cn(
-                      'rounded-full px-4 sm:px-6 py-2 text-sm font-medium transition-colors relative',
-                      'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                      activePhase !== phase && 'text-muted-foreground hover:text-foreground'
-                  )}
-                >
-                  {activePhase === phase && (
-                     <span
-                        className="absolute inset-0 bg-primary text-primary-foreground rounded-full shadow z-0"
-                     />
-                  )}
-                  <span className="relative z-10">{phase}</span>
-                </button>
-              ))}
-            </div>
+              <div className="relative border-b-2 border-border/20">
+                <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4">
+                  {boardPhases.map((phase, index) => (
+                    <button
+                      key={phase}
+                      ref={(el) => (tabsRef.current[index] = el)}
+                      onClick={() => setActivePhase(phase)}
+                      className={cn(
+                        'px-3 sm:px-6 py-3 text-sm sm:text-base font-medium transition-colors relative z-10',
+                        activePhase === phase
+                          ? 'text-primary'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      {phase}
+                    </button>
+                  ))}
+                </div>
+                <div
+                  className="absolute bottom-[-2px] h-0.5 bg-primary rounded-full transition-all duration-300 ease-in-out"
+                  style={{
+                    left: tabUnderline.left,
+                    width: tabUnderline.width,
+                  }}
+                />
+              </div>
           </div>
           
           <div className="min-h-[400px] flex items-center justify-center">
@@ -388,3 +396,5 @@ export default function CommunityPage() {
     </div>
   );
 }
+
+    
