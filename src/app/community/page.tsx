@@ -120,7 +120,8 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        const revealDate = new Date('2024-11-27T22:17:00');
+        const revealDate = new Date();
+        revealDate.setHours(22, 48, 0, 0); // 10:48 PM today
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -224,14 +225,29 @@ export default function CommunityPage() {
   
   useEffect(() => {
     setIsClient(true);
+    
+    // Function to check if reveal time is past
     const checkDate = () => {
-      const revealDate = new Date('2024-11-27T22:17:00');
-      if (new Date() >= revealDate) {
-        handleReveal(true); // Directly reveal if date is past
-      }
+        const revealDate = new Date();
+        revealDate.setHours(22, 48, 0, 0); // 10:48 PM today
+        if (new Date() >= revealDate) {
+            handleReveal(true); // Directly reveal if date is past
+            return true;
+        }
+        return false;
     };
-    checkDate();
-  }, []);
+    
+    // Check immediately on mount, and if it's already past, don't set interval
+    if (!checkDate()) {
+        const interval = setInterval(() => {
+            if (checkDate()) {
+                clearInterval(interval);
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }
+}, []);
+
 
   const handleReveal = (immediate = false) => {
     if (immediate) {
@@ -273,6 +289,7 @@ export default function CommunityPage() {
 
       const boardToShow = executiveBoard.find(board => board.phase === activePhase);
       
+      // The countdown logic only applies to the 2025-2026 board
       if (activePhase === '2025 - 2026' && !isRevealed) {
            return (
               <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
@@ -288,7 +305,7 @@ export default function CommunityPage() {
                   ) : (
                       <>
                         <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
-                        <Countdown onFinished={handleReveal} />
+                        <Countdown onFinished={() => handleReveal(false)} />
                       </>
                   )}
               </Card>
@@ -297,7 +314,8 @@ export default function CommunityPage() {
       
       if (!boardToShow) return null;
 
-      const shouldAnimate = boardToShow.phase === '2025 - 2026' && isRevealed && startBoardFadeIn;
+      // Determine animation and visibility
+      const shouldAnimateIn = boardToShow.phase === '2025 - 2026' && isRevealed && startBoardFadeIn;
       const isVisible = boardToShow.phase !== '2025 - 2026' || isRevealed;
 
       if (!isVisible) return null;
@@ -306,7 +324,7 @@ export default function CommunityPage() {
       return (
           <div className={cn(
               'transition-opacity duration-1000 w-full',
-               shouldAnimate || boardToShow.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
+               shouldAnimateIn || boardToShow.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
           )}>
               <h3 className="text-center font-headline text-2xl mb-12 text-primary">{boardToShow.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
@@ -360,18 +378,16 @@ export default function CommunityPage() {
           </h2>
           
           <div className="flex justify-center mb-12">
-             <div className="relative flex flex-wrap justify-center gap-2 bg-secondary/50 p-2 rounded-lg border border-border">
+             <div className="flex flex-wrap justify-center gap-2 bg-secondary/50 p-2 rounded-lg border border-border">
                 {boardPhases.map((phase) => (
-                    <button
+                    <Button
                         key={phase}
                         onClick={() => setActivePhase(phase)}
-                        className={cn(
-                            'rounded-md px-4 sm:px-6 py-2 text-sm font-medium transition-colors relative z-10',
-                             activePhase === phase ? 'bg-primary text-primary-foreground' : 'bg-transparent text-muted-foreground hover:text-foreground'
-                        )}
+                        variant={activePhase === phase ? 'default' : 'ghost'}
+                        className="rounded-md px-4 sm:px-6 py-2 text-sm font-medium transition-colors relative"
                     >
                         {phase}
-                    </button>
+                    </Button>
                 ))}
             </div>
           </div>
