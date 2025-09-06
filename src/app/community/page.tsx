@@ -91,7 +91,6 @@ const executiveBoard = [
 const boardPhases = ['2025 - 2026', '2024 - 2025', '2023 - 2024', '2022 - 2023'];
 
 const lastMinuteTaglines = [
-    "The journey of 2024–2025 EB comes to a close…",
     "Every ending opens the door to a new beginning.",
     "Thank you to our leaders who guided us this far.",
     "Here’s to the memories we created together.",
@@ -170,7 +169,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
                          if(taglineIntervalRef.current) clearInterval(taglineIntervalRef.current);
                     }
                     setTaglineOpacity(1);
-                }, 500);
+                }, 500); // fade in duration
             };
 
             updateTagline(); 
@@ -223,11 +222,9 @@ export default function CommunityPage() {
   const [showSignOff, setShowSignOff] = useState(false);
   const [startSignOffAnimation, setStartSignOffAnimation] = useState(false);
   const [startBoardFadeIn, setStartBoardFadeIn] = useState(false);
-  const { width } = useWindowSize();
   
-  
-  // Logic for the animated tab underline
-  const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const [indicatorStyle, setIndicatorStyle] = useState({});
   
   useEffect(() => {
     // This ensures the component only renders the countdown logic on the client
@@ -242,32 +239,39 @@ export default function CommunityPage() {
     checkDate();
   }, []);
 
+  useEffect(() => {
+    const activeTabIndex = boardPhases.indexOf(activePhase);
+    const activeTab = tabsRef.current[activeTabIndex];
+    if (activeTab) {
+      setIndicatorStyle({
+        width: activeTab.offsetWidth,
+        left: activeTab.offsetLeft,
+      });
+    }
+  }, [activePhase]);
+
   const handleReveal = () => {
     setShowSignOff(true);
     
     setTimeout(() => {
       setStartSignOffAnimation(true);
-    }, 100); // Small delay to trigger transition
+    }, 100); 
 
-    // Main fade-out for the sign-off message
     setTimeout(() => {
       setStartSignOffAnimation(false);
-    }, 2500); // Starts fading out after 2.5s
+    }, 2500); 
 
-    // Hide the sign-off message and reveal the board
     setTimeout(() => {
       setShowSignOff(false);
       setIsRevealed(true);
-    }, 3000); // Fully faded out by 3s
+    }, 3000); 
 
-    // Start the board fade-in animation
     setTimeout(() => {
       setStartBoardFadeIn(true);
-    }, 3100); // A slight delay for a smoother transition
+    }, 3100); 
   };
   
   const renderBoardContent = () => {
-      // Don't render anything server-side or if client state isn't ready
       if (!isClient) {
            return (
              <div className="min-h-[400px] flex items-center justify-center w-full">
@@ -284,7 +288,7 @@ export default function CommunityPage() {
                   {showSignOff ? (
                        <div 
                           className={cn(
-                              'text-center py-12 transition-all duration-500',
+                              'text-center py-12 transition-all duration-500 ease-in-out',
                               startSignOffAnimation ? 'opacity-100 scale-110' : 'opacity-0 scale-90'
                           )}
                       >
@@ -361,13 +365,14 @@ export default function CommunityPage() {
           </h2>
           
           <div className="flex justify-center mb-12">
-            <div className="relative flex flex-wrap justify-center gap-2 rounded-full bg-secondary/50 p-1.5 border border-border">
-                {boardPhases.map((phase) => (
+            <div className="relative flex flex-wrap justify-center gap-2 rounded-lg bg-secondary/50 p-1.5 border border-border">
+                {boardPhases.map((phase, index) => (
                     <button
+                        ref={(el) => (tabsRef.current[index] = el)}
                         key={phase}
                         onClick={() => setActivePhase(phase)}
                         className={cn(
-                            'relative z-10 rounded-full px-4 sm:px-6 py-2 text-sm font-medium transition-colors',
+                            'relative z-10 rounded-md px-4 sm:px-6 py-2 text-sm font-medium transition-colors',
                             activePhase === phase ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
                         )}
                     >
@@ -375,11 +380,8 @@ export default function CommunityPage() {
                     </button>
                 ))}
                 <div 
-                    className="absolute z-0 h-full rounded-full bg-primary shadow-lg shadow-primary/40 transition-all duration-300 ease-in-out"
-                    style={{
-                        width: tabsRef.current.find(el => el?.textContent === activePhase)?.offsetWidth,
-                        left: tabsRef.current.find(el => el?.textContent === activePhase)?.offsetLeft
-                    }}
+                    className="absolute top-1.5 bottom-1.5 z-0 rounded-md bg-primary shadow-lg shadow-primary/40 transition-all duration-300 ease-in-out"
+                    style={indicatorStyle}
                 ></div>
             </div>
           </div>
