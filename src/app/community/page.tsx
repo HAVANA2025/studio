@@ -9,7 +9,6 @@ import { Users, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import React from 'react';
-import Confetti from 'react-confetti';
 import { useWindowSize } from '@/hooks/use-window-size';
 
 
@@ -121,7 +120,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        const revealDate = new Date('2025-09-15T09:00:00');
+        const revealDate = new Date('2024-11-27T22:17:00');
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -223,36 +222,24 @@ export default function CommunityPage() {
   const [startSignOffAnimation, setStartSignOffAnimation] = useState(false);
   const [startBoardFadeIn, setStartBoardFadeIn] = useState(false);
   
-  const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
-  const [indicatorStyle, setIndicatorStyle] = useState({});
-  
   useEffect(() => {
-    // This ensures the component only renders the countdown logic on the client
     setIsClient(true);
     const checkDate = () => {
-      const revealDate = new Date('2025-09-15T09:00:00');
+      const revealDate = new Date('2024-11-27T22:17:00');
       if (new Date() >= revealDate) {
-        setIsRevealed(true);
-        setStartBoardFadeIn(true);
+        handleReveal(true); // Directly reveal if date is past
       }
-    }
+    };
     checkDate();
   }, []);
 
-  useEffect(() => {
-    const activeTabIndex = boardPhases.indexOf(activePhase);
-    const activeTab = tabsRef.current[activeTabIndex];
-    if (activeTab) {
-      setIndicatorStyle({
-        width: activeTab.offsetWidth,
-        left: activeTab.offsetLeft,
-        top: activeTab.offsetTop,
-        height: activeTab.offsetHeight,
-      });
+  const handleReveal = (immediate = false) => {
+    if (immediate) {
+        setIsRevealed(true);
+        setStartBoardFadeIn(true);
+        return;
     }
-  }, [activePhase]);
 
-  const handleReveal = () => {
     setShowSignOff(true);
     
     setTimeout(() => {
@@ -284,6 +271,8 @@ export default function CommunityPage() {
           )
       }
 
+      const boardToShow = executiveBoard.find(board => board.phase === activePhase);
+      
       if (activePhase === '2025 - 2026' && !isRevealed) {
            return (
               <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
@@ -306,14 +295,18 @@ export default function CommunityPage() {
           );
       }
       
-      const boardToShow = executiveBoard.find(board => board.phase === activePhase);
       if (!boardToShow) return null;
+
+      const shouldAnimate = boardToShow.phase === '2025 - 2026' && isRevealed && startBoardFadeIn;
+      const isVisible = boardToShow.phase !== '2025 - 2026' || isRevealed;
+
+      if (!isVisible) return null;
 
       // Render the board members
       return (
           <div className={cn(
               'transition-opacity duration-1000 w-full',
-              (boardToShow.phase === '2025 - 2026' && isRevealed && startBoardFadeIn) || boardToShow.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
+               shouldAnimate || boardToShow.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
           )}>
               <h3 className="text-center font-headline text-2xl mb-12 text-primary">{boardToShow.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
@@ -367,26 +360,19 @@ export default function CommunityPage() {
           </h2>
           
           <div className="flex justify-center mb-12">
-            <div className="relative flex flex-wrap justify-center gap-x-2 sm:gap-x-4 gap-y-2 bg-secondary/50 p-2 rounded-lg border border-border">
-                {boardPhases.map((phase, index) => (
+             <div className="relative flex flex-wrap justify-center gap-2 bg-secondary/50 p-2 rounded-lg border border-border">
+                {boardPhases.map((phase) => (
                     <button
-                        ref={(el) => (tabsRef.current[index] = el)}
                         key={phase}
                         onClick={() => setActivePhase(phase)}
                         className={cn(
-                            'relative z-10 rounded-md px-4 sm:px-6 py-2 text-sm font-medium transition-colors',
-                            activePhase === phase ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                            'rounded-md px-4 sm:px-6 py-2 text-sm font-medium transition-colors relative z-10',
+                             activePhase === phase ? 'bg-primary text-primary-foreground' : 'bg-transparent text-muted-foreground hover:text-foreground'
                         )}
                     >
                         {phase}
                     </button>
                 ))}
-                 {Object.keys(indicatorStyle).length > 0 && (
-                    <div 
-                        className="absolute z-0 rounded-md bg-primary shadow-lg shadow-primary/40 transition-all duration-300 ease-in-out"
-                        style={indicatorStyle}
-                    ></div>
-                 )}
             </div>
           </div>
           
@@ -398,3 +384,5 @@ export default function CommunityPage() {
     </div>
   );
 }
+
+    
