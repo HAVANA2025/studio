@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Users, Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import React from 'react';
 
 const mentors = [
     { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
@@ -119,7 +120,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        const revealDate = new Date(`2025-09-15T09:00:00`);
+        const revealDate = new Date('2025-09-15T09:00:00');
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -158,21 +159,19 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
         if (isLastMinute) {
             let index = 0;
             const updateTagline = () => {
-                setTaglineOpacity(0); // Start fade out
+                setTaglineOpacity(0);
                 setTimeout(() => {
                     if (index < lastMinuteTaglines.length) {
                         setTagline(lastMinuteTaglines[index]);
                         index++;
                     } else {
-                         // This is the final message before reveal
-                        setTagline("Together we grow, together we shine.");
                         if(taglineIntervalRef.current) clearInterval(taglineIntervalRef.current);
                     }
-                    setTaglineOpacity(1); // Start fade in
-                }, 500); // Wait for fade out to complete
+                    setTaglineOpacity(1);
+                }, 500);
             };
 
-            updateTagline(); // Initial call
+            updateTagline(); 
             taglineIntervalRef.current = setInterval(updateTagline, 6000);
         }
         return () => {
@@ -185,25 +184,26 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
 
     return (
         <div className="text-center my-8">
-             <div className="flex justify-center gap-4 sm:gap-8 my-8 font-headline">
-                {Object.entries(timeLeft).map(([unit, value]) => (
-                    <div key={unit} className="text-center bg-secondary/50 p-4 rounded-lg w-24">
-                        <div className="text-4xl sm:text-5xl font-bold text-primary">{String(value).padStart(2, '0')}</div>
-                        <div className="text-sm uppercase text-muted-foreground mt-1">{unit}</div>
-                    </div>
-                ))}
-            </div>
-            <div className="min-h-[60px] flex items-center justify-center">
-                 {timeLeft.seconds <= 6 && timeLeft.minutes === 0 ? (
+            { (timeLeft.minutes > 0 || timeLeft.seconds > 6) && (
+              <div className="flex justify-center gap-2 sm:gap-4 my-8 font-headline">
+                  {Object.entries(timeLeft).map(([unit, value]) => (
+                      <div key={unit} className="text-center bg-secondary/50 p-3 sm:p-4 rounded-lg w-20 sm:w-24">
+                          <div className="text-3xl sm:text-5xl font-bold text-primary">{String(value).padStart(2, '0')}</div>
+                          <div className="text-xs sm:text-sm uppercase text-muted-foreground mt-1">{unit}</div>
+                      </div>
+                  ))}
+              </div>
+            )}
+             <div className="min-h-[60px] flex items-center justify-center">
+                 {timeLeft.minutes === 0 && timeLeft.seconds <= 6 ? (
                     <div 
-                        className="transition-opacity duration-500 text-center text-primary font-headline"
-                        style={{ opacity: taglineOpacity }}
+                        className="transition-opacity duration-500 text-center font-headline text-sm text-primary/80"
                     >
                        <FinalMessage/>
                     </div>
                 ) : (
                     <h3 
-                        className="font-headline text-3xl text-primary min-h-[40px] transition-opacity duration-500"
+                        className="font-headline text-2xl sm:text-3xl text-primary min-h-[40px] transition-opacity duration-500"
                         style={{ opacity: taglineOpacity }}
                     >
                         {tagline}
@@ -226,7 +226,6 @@ export default function CommunityPage() {
   const [startBoardFadeIn, setStartBoardFadeIn] = useState(false);
   
   useEffect(() => {
-    // This effect runs only on the client side
     setIsClient(true);
     const revealDate = new Date('2025-09-15T09:00:00');
     if (new Date() >= revealDate) {
@@ -255,7 +254,6 @@ export default function CommunityPage() {
   const renderBoardContent = () => {
       if (!activeBoard) return null;
 
-      // Logic for the new board (2025-2026), which has a countdown
       if (activeBoard.phase === '2025 - 2026') {
           if (isClient && !isRevealed) {
               if (showSignOff) {
@@ -278,10 +276,11 @@ export default function CommunityPage() {
               );
           }
           
-          // Render the new board after it has been revealed
+          if(!isRevealed && !isClient) return null;
+
           return (
               <div className={cn(
-                  'transition-opacity duration-1000',
+                  'transition-opacity duration-1000 w-full',
                   (isRevealed && startBoardFadeIn) ? 'opacity-100' : 'opacity-0'
               )}>
                   <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
@@ -302,9 +301,8 @@ export default function CommunityPage() {
           );
       }
 
-      // Logic for all other past boards, which should be displayed immediately
       return (
-          <div>
+          <div className="w-full">
               <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
                   {activeBoard.members.map(member => (
@@ -357,13 +355,13 @@ export default function CommunityPage() {
           </h2>
 
           <div className="flex justify-center mb-12">
-            <div className="flex items-center gap-2 rounded-full bg-secondary p-1.5 border border-border">
+            <div className="flex flex-wrap justify-center items-center gap-2 rounded-full bg-secondary p-1.5 border border-border">
               {boardPhases.map(phase => (
                 <Button 
                   key={phase}
                   onClick={() => setActivePhase(phase)}
                   className={cn(
-                      'rounded-full px-6 py-2 text-sm font-medium transition-colors',
+                      'rounded-full px-4 sm:px-6 py-2 text-sm font-medium transition-colors',
                       activePhase === phase ? 'bg-primary text-primary-foreground shadow' : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
@@ -381,3 +379,5 @@ export default function CommunityPage() {
     </div>
   );
 }
+
+    
