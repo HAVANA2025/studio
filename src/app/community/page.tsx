@@ -254,48 +254,72 @@ export default function CommunityPage() {
   
   const renderBoardContent = () => {
       if (!activeBoard) return null;
-      
-      if (activeBoard.phase === '2025 - 2026' && isClient && !isRevealed) {
-           if (showSignOff) {
-             return (
-                <div 
-                    className={cn(
-                    'text-center py-12 transition-all duration-1000',
-                    startSignOffAnimation ? 'opacity-100 scale-110' : 'opacity-0 scale-100'
-                    )}
-                >
-                    <h2 className="font-headline text-4xl text-primary">Signing off EB 2024-2025...</h2>
-                </div>
-             )
-           }
+
+      // Logic for the new board (2025-2026), which has a countdown
+      if (activeBoard.phase === '2025 - 2026') {
+          if (isClient && !isRevealed) {
+              if (showSignOff) {
+                  return (
+                      <div 
+                          className={cn(
+                              'text-center py-12 transition-all duration-1000',
+                              startSignOffAnimation ? 'opacity-100 scale-110' : 'opacity-0 scale-100'
+                          )}
+                      >
+                          <h2 className="font-headline text-4xl text-primary">Signing off EB 2024-2025...</h2>
+                      </div>
+                  );
+              }
+              return (
+                  <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
+                      <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
+                      <Countdown onFinished={handleReveal} />
+                  </Card>
+              );
+          }
+          
+          // Render the new board after it has been revealed
           return (
-             <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
-                <p className="text-muted-foreground mt-4 text-lg">The Executive Board for 2025-2026 will be revealed soon. Get ready to meet the next generation of innovators!</p>
-                <Countdown onFinished={handleReveal} />
-            </Card>
+              <div className={cn(
+                  'transition-opacity duration-1000',
+                  (isRevealed && startBoardFadeIn) ? 'opacity-100' : 'opacity-0'
+              )}>
+                  <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
+                  <div className="flex flex-wrap justify-center gap-8">
+                      {activeBoard.members.map(member => (
+                          <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
+                              <div className="relative h-48">
+                                  <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
+                              </div>
+                              <CardHeader>
+                                  <CardTitle className="font-headline">{member.name}</CardTitle>
+                                  <p className="text-primary">{member.designation}</p>
+                              </CardHeader>
+                          </Card>
+                      ))}
+                  </div>
+              </div>
           );
       }
-      
+
+      // Logic for all other past boards, which should be displayed immediately
       return (
-         <div className={cn(
-             'transition-opacity duration-1000',
-             (isRevealed && startBoardFadeIn) ? 'opacity-100' : 'opacity-0'
-         )}>
-            <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
-            <div className="flex flex-wrap justify-center gap-8">
-            {activeBoard.members.map(member => (
-                <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
-                <div className="relative h-48">
-                    <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
-                </div>
-                <CardHeader>
-                    <CardTitle className="font-headline">{member.name}</CardTitle>
-                    <p className="text-primary">{member.designation}</p>
-                </CardHeader>
-                </Card>
-            ))}
-            </div>
-        </div>
+          <div>
+              <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
+              <div className="flex flex-wrap justify-center gap-8">
+                  {activeBoard.members.map(member => (
+                      <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
+                          <div className="relative h-48">
+                              <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
+                          </div>
+                          <CardHeader>
+                              <CardTitle className="font-headline">{member.name}</CardTitle>
+                              <p className="text-primary">{member.designation}</p>
+                          </CardHeader>
+                      </Card>
+                  ))}
+              </div>
+          </div>
       );
   }
 
