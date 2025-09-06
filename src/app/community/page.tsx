@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -103,9 +104,7 @@ const lastMinuteTaglines = [
 
 const FinalMessage = () => (
     <div className="text-xs sm:text-sm text-muted-foreground whitespace-pre-wrap text-center">
-        Signing off EB 2024-2025....
-        <br/><br/>
-        <strong>With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.</strong>
+        With gratitude, we bid farewell to EB 2024–2025 and warmly welcome EB 2025–2026.
         <br />
         Wishing you success, growth, and innovation ahead.
         <br /><br />
@@ -198,7 +197,8 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
              <div className="min-h-[60px] flex items-center justify-center">
                 {timeLeft.minutes === 0 && timeLeft.seconds <= 6 ? (
                     <div 
-                        className="transition-opacity duration-500 text-center font-headline text-sm text-primary/80"
+                         className="transition-opacity duration-500 text-center font-sans text-sm text-primary/80"
+                         style={{ opacity: taglineOpacity }}
                     >
                        <FinalMessage/>
                     </div>
@@ -225,7 +225,6 @@ export default function CommunityPage() {
   const [startBoardFadeIn, setStartBoardFadeIn] = useState(false);
   const { width } = useWindowSize();
   
-  const activeBoard = executiveBoard.find(board => board.phase === activePhase);
   
   // Logic for the animated tab underline
   const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
@@ -270,7 +269,7 @@ export default function CommunityPage() {
   const renderBoardContent = () => {
       // Don't render anything server-side or if client state isn't ready
       if (!isClient) {
-          return (
+           return (
              <div className="min-h-[400px] flex items-center justify-center w-full">
                 <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
                     <p className="text-muted-foreground text-lg">Loading Board...</p>
@@ -313,7 +312,7 @@ export default function CommunityPage() {
               <h3 className="text-center font-headline text-2xl mb-12 text-primary">{boardToShow.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
                   {boardToShow.members.map(member => (
-                      <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
+                      <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px] sm:w-[calc(50%-1rem)] md:w-[calc(33.33%-1.5rem)] lg:max-w-[250px]">
                           <div className="relative h-48">
                               <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
                           </div>
@@ -343,7 +342,7 @@ export default function CommunityPage() {
             </h2>
             <div className="flex justify-center gap-8 flex-wrap">
                 {mentors.map(member => (
-                    <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
+                    <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px] sm:w-[calc(50%-1rem)] md:w-[calc(33.33%-1.5rem)] lg:max-w-[250px]">
                     <div className="relative h-48">
                         <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
                     </div>
@@ -360,24 +359,29 @@ export default function CommunityPage() {
           <h2 className="font-headline text-4xl font-bold text-center mb-12 flex items-center justify-center gap-4">
               <Users className="text-primary"/> Executive Board
           </h2>
-
+          
           <div className="flex justify-center mb-12">
-              <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-                  {boardPhases.map((phase) => (
+            <div className="relative flex flex-wrap justify-center gap-2 rounded-full bg-secondary/50 p-1.5 border border-border">
+                {boardPhases.map((phase) => (
                     <button
-                      key={phase}
-                      onClick={() => setActivePhase(phase)}
-                      className={cn(
-                        'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-                        activePhase === phase
-                          ? 'bg-background text-foreground shadow-sm'
-                          : 'hover:bg-background/50 hover:text-foreground'
-                      )}
+                        key={phase}
+                        onClick={() => setActivePhase(phase)}
+                        className={cn(
+                            'relative z-10 rounded-full px-4 sm:px-6 py-2 text-sm font-medium transition-colors',
+                            activePhase === phase ? 'text-primary-foreground' : 'text-muted-foreground hover:text-foreground'
+                        )}
                     >
-                      {phase}
+                        {phase}
                     </button>
-                  ))}
-              </div>
+                ))}
+                <div 
+                    className="absolute z-0 h-full rounded-full bg-primary shadow-lg shadow-primary/40 transition-all duration-300 ease-in-out"
+                    style={{
+                        width: tabsRef.current.find(el => el?.textContent === activePhase)?.offsetWidth,
+                        left: tabsRef.current.find(el => el?.textContent === activePhase)?.offsetLeft
+                    }}
+                ></div>
+            </div>
           </div>
           
           <div className="min-h-[400px] flex items-center justify-center">
