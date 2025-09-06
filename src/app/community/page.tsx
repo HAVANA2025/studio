@@ -167,9 +167,6 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
                     if (index < lastMinuteTaglines.length) {
                         setTagline(lastMinuteTaglines[index]);
                         index++;
-                    } else if (index === lastMinuteTaglines.length) {
-                        setTagline("Together we grow, together we shine.");
-                        index++;
                     } else {
                          if(taglineIntervalRef.current) clearInterval(taglineIntervalRef.current);
                     }
@@ -190,18 +187,16 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
 
     return (
         <div className="text-center my-8">
-            { (timeLeft.minutes > 0 || timeLeft.seconds > 6) && (
-              <div className="flex justify-center gap-2 sm:gap-4 my-8 font-headline">
-                  {Object.entries(timeLeft).map(([unit, value]) => (
-                      <div key={unit} className="text-center bg-secondary/50 p-3 sm:p-4 rounded-lg w-20 sm:w-24">
-                          <div className="text-3xl sm:text-5xl font-bold text-primary">{String(value).padStart(2, '0')}</div>
-                          <div className="text-xs sm:text-sm uppercase text-muted-foreground mt-1">{unit}</div>
-                      </div>
-                  ))}
-              </div>
-            )}
+            <div className="flex justify-center gap-2 sm:gap-4 my-8 font-headline">
+                {Object.entries(timeLeft).map(([unit, value]) => (
+                    <div key={unit} className="text-center bg-secondary/50 p-3 sm:p-4 rounded-lg w-20 sm:w-24">
+                        <div className="text-3xl sm:text-5xl font-bold text-primary">{String(value).padStart(2, '0')}</div>
+                        <div className="text-xs sm:text-sm uppercase text-muted-foreground mt-1">{unit}</div>
+                    </div>
+                ))}
+            </div>
              <div className="min-h-[60px] flex items-center justify-center">
-                 {timeLeft.minutes === 0 && timeLeft.seconds <= 6 ? (
+                {timeLeft.minutes === 0 && timeLeft.seconds <= 6 ? (
                     <div 
                         className="transition-opacity duration-500 text-center font-headline text-sm text-primary/80"
                     >
@@ -234,9 +229,9 @@ export default function CommunityPage() {
   
   // Logic for the animated tab underline
   const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
-  const [tabUnderline, setTabUnderline] = useState({ width: 0, left: 0 });
   
   useEffect(() => {
+    // This ensures the component only renders the countdown logic on the client
     setIsClient(true);
     const checkDate = () => {
       const revealDate = new Date('2025-09-15T09:00:00');
@@ -247,47 +242,51 @@ export default function CommunityPage() {
     }
     checkDate();
   }, []);
-  
-  useEffect(() => {
-    const activeTabIndex = boardPhases.indexOf(activePhase);
-    const activeTab = tabsRef.current[activeTabIndex];
-    if (activeTab) {
-      setTabUnderline({
-        width: activeTab.offsetWidth,
-        left: activeTab.offsetLeft,
-      });
-    }
-  }, [activePhase, width]);
 
   const handleReveal = () => {
     setShowSignOff(true);
     
     setTimeout(() => {
       setStartSignOffAnimation(true);
-    }, 100);
+    }, 100); // Small delay to trigger transition
 
+    // Main fade-out for the sign-off message
+    setTimeout(() => {
+      setStartSignOffAnimation(false);
+    }, 2500); // Starts fading out after 2.5s
+
+    // Hide the sign-off message and reveal the board
     setTimeout(() => {
       setShowSignOff(false);
       setIsRevealed(true);
-    }, 2500);
+    }, 3000); // Fully faded out by 3s
 
+    // Start the board fade-in animation
     setTimeout(() => {
       setStartBoardFadeIn(true);
-    }, 3000);
+    }, 3100); // A slight delay for a smoother transition
   };
   
   const renderBoardContent = () => {
-      if (!activeBoard) return null;
+      // Don't render anything server-side or if client state isn't ready
+      if (!isClient) {
+          return (
+             <div className="min-h-[400px] flex items-center justify-center w-full">
+                <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
+                    <p className="text-muted-foreground text-lg">Loading Board...</p>
+                </Card>
+            </div>
+          )
+      }
 
-      // Special handling for the 2025-2026 board before it's revealed
-      if (activeBoard.phase === '2025 - 2026' && isClient && !isRevealed) {
+      if (activePhase === '2025 - 2026' && !isRevealed) {
            return (
               <Card className="text-center py-12 border-2 border-dashed border-muted-foreground/20 bg-card/50">
                   {showSignOff ? (
                        <div 
                           className={cn(
-                              'text-center py-12 transition-all duration-1000',
-                              startSignOffAnimation ? 'opacity-100 scale-110' : 'opacity-0 scale-100'
+                              'text-center py-12 transition-all duration-500',
+                              startSignOffAnimation ? 'opacity-100 scale-110' : 'opacity-0 scale-90'
                           )}
                       >
                           <h2 className="font-headline text-4xl text-primary">Signing off EB 2024-2025...</h2>
@@ -302,15 +301,18 @@ export default function CommunityPage() {
           );
       }
       
+      const boardToShow = executiveBoard.find(board => board.phase === activePhase);
+      if (!boardToShow) return null;
+
       // Render the board members
       return (
           <div className={cn(
               'transition-opacity duration-1000 w-full',
-              (activeBoard.phase === '2025 - 2026' && isRevealed && startBoardFadeIn) || activeBoard.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
+              (boardToShow.phase === '2025 - 2026' && isRevealed && startBoardFadeIn) || boardToShow.phase !== '2025 - 2026' ? 'opacity-100' : 'opacity-0'
           )}>
-              <h3 className="text-center font-headline text-2xl mb-12 text-primary">{activeBoard.title}</h3>
+              <h3 className="text-center font-headline text-2xl mb-12 text-primary">{boardToShow.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
-                  {activeBoard.members.map(member => (
+                  {boardToShow.members.map(member => (
                       <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px]">
                           <div className="relative h-48">
                               <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
@@ -360,31 +362,21 @@ export default function CommunityPage() {
           </h2>
 
           <div className="flex justify-center mb-12">
-              <div className="relative border-b-2 border-border/20">
-                <div className="flex flex-wrap justify-center items-center gap-2 sm:gap-4">
-                  {boardPhases.map((phase, index) => (
+              <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
+                  {boardPhases.map((phase) => (
                     <button
                       key={phase}
-                      ref={(el) => (tabsRef.current[index] = el)}
                       onClick={() => setActivePhase(phase)}
                       className={cn(
-                        'px-3 sm:px-6 py-3 text-sm sm:text-base font-medium transition-colors relative z-10',
+                        'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
                         activePhase === phase
-                          ? 'text-primary'
-                          : 'text-muted-foreground hover:text-foreground'
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'hover:bg-background/50 hover:text-foreground'
                       )}
                     >
                       {phase}
                     </button>
                   ))}
-                </div>
-                <div
-                  className="absolute bottom-[-2px] h-0.5 bg-primary rounded-full transition-all duration-300 ease-in-out"
-                  style={{
-                    left: tabUnderline.left,
-                    width: tabUnderline.width,
-                  }}
-                />
               </div>
           </div>
           
@@ -396,5 +388,3 @@ export default function CommunityPage() {
     </div>
   );
 }
-
-    
