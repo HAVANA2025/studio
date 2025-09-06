@@ -246,6 +246,8 @@ export default function CommunityPage() {
       setIndicatorStyle({
         width: activeTab.offsetWidth,
         left: activeTab.offsetLeft,
+        top: activeTab.offsetTop,
+        height: activeTab.offsetHeight,
       });
     }
   }, [activePhase]);
@@ -365,7 +367,7 @@ export default function CommunityPage() {
           </h2>
           
           <div className="flex justify-center mb-12">
-            <div className="relative flex flex-wrap justify-center gap-2 rounded-lg bg-secondary/50 p-1.5 border border-border">
+            <div className="relative flex flex-wrap justify-center gap-x-2 sm:gap-x-4 gap-y-2 bg-secondary/50 p-2 rounded-lg border border-border">
                 {boardPhases.map((phase, index) => (
                     <button
                         ref={(el) => (tabsRef.current[index] = el)}
@@ -379,10 +381,12 @@ export default function CommunityPage() {
                         {phase}
                     </button>
                 ))}
-                <div 
-                    className="absolute top-1.5 bottom-1.5 z-0 rounded-md bg-primary shadow-lg shadow-primary/40 transition-all duration-300 ease-in-out"
-                    style={indicatorStyle}
-                ></div>
+                 {Object.keys(indicatorStyle).length > 0 && (
+                    <div 
+                        className="absolute z-0 rounded-md bg-primary shadow-lg shadow-primary/40 transition-all duration-300 ease-in-out"
+                        style={indicatorStyle}
+                    ></div>
+                 )}
             </div>
           </div>
           
