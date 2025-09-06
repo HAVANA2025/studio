@@ -188,7 +188,7 @@ export default function RegistrationsPage() {
           <div className="max-w-4xl mx-auto space-y-12">
             {allPastEvents.map((event) => (
               <Card key={event.id} className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 border-border/10 relative">
-                {event.imageUrl ? (
+                {event.imageUrl && !event.imageUrl.includes('youtube.com') ? (
                     <div className="relative aspect-[3/2]">
                       <Image src={event.imageUrl} alt={event.title} fill className="object-cover" data-ai-hint="tech conference students" />
                     </div>
