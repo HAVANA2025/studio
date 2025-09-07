@@ -28,7 +28,7 @@ if (typeof window !== 'undefined') {
     auth = getAuth(app);
     db = getFirestore(app);
     storage = getStorage(app);
-    functions = getFunctions(app);
+    functions = getFunctions(app); // We get the functions instance here for client-side use
 } else {
     // Provide mock instances or null objects for server-side build
     auth = {} as any;

@@ -4,7 +4,8 @@ import { Resend } from "resend";
 
 // Initialize Resend with the API key set in Firebase config
 // `firebase functions:config:set resend.apikey="YOUR_API_KEY"`
-const resend = new Resend(functions.config().resend.apikey);
+const resendApiKey = functions.config().resend.apikey;
+const resend = new Resend(resendApiKey);
 
 /**
  * Sends a welcome email to new users when they sign up.
@@ -44,6 +45,10 @@ export const sendWelcomeEmail = functions.auth.user().onCreate((user) => {
  */
 export const sendContactMessage = functions.https.onCall(async (data, context) => {
     const { name, email, message } = data;
+
+    if (!resendApiKey) {
+        throw new functions.https.HttpsError('failed-precondition', 'The Resend API key is not configured.');
+    }
 
     // Basic validation
     if (!name || !email || !message) {
