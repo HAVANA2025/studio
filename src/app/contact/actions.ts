@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -9,9 +10,19 @@ const contactSchema = z.object({
   message: z.string(),
 });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
+
+if (!resendApiKey) {
+  console.error('Resend API key is not configured. Please set RESEND_API_KEY environment variable.');
+}
+
+const resend = new Resend(resendApiKey);
 
 export async function sendContactEmail(formData: z.infer<typeof contactSchema>) {
+  if (!resendApiKey) {
+    return { success: false, error: 'The contact form is currently disabled. Please contact us directly via email.' };
+  }
+
   try {
     const validatedData = contactSchema.parse(formData);
     const { name, email, message } = validatedData;
