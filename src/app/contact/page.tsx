@@ -45,7 +45,6 @@ export default function ContactPage() {
         });
         form.reset();
       } else {
-        // Use the error message returned from the server action
         throw new Error(result.error || 'An unknown error occurred.');
       }
 

@@ -22,7 +22,6 @@ export async function sendContactEmail(formData: z.infer<typeof contactSchema>) 
   }
 
   try {
-    // This is a client-side SDK call to a backend Firebase Function
     const sendContactMessage = httpsCallable(functions, 'sendContactMessage');
     const result = await sendContactMessage(validatedFields.data);
     
@@ -31,14 +30,11 @@ export async function sendContactEmail(formData: z.infer<typeof contactSchema>) 
     if (resultData.success) {
       return { success: true };
     } else {
-      console.error('Cloud Function Error:', resultData.error);
-      return { success: false, error: resultData.error || 'Failed to send message via cloud function.' };
+      return { success: false, error: resultData.error || 'A server error occurred.' };
     }
 
   } catch (error: any) {
     console.error('Error calling Firebase Function:', error);
-    // Capture specific Firebase error messages if available
-    const errorMessage = error.message || 'An unexpected error occurred while contacting the server.';
-    return { success: false, error: errorMessage };
+    return { success: false, error: error.message || 'An unexpected error occurred.' };
   }
 }
