@@ -119,8 +119,10 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
     const taglineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
+        // Set the reveal date to September 15, 2:00 PM
         const revealDate = new Date();
-        revealDate.setHours(13, 0, 0, 0); // 1:00 PM today
+        revealDate.setFullYear(new Date().getFullYear(), 8, 15); // Month is 0-indexed, so 8 is September
+        revealDate.setHours(14, 0, 0, 0); // 2:00 PM
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -228,7 +230,8 @@ export default function CommunityPage() {
     // Function to check if reveal time is past
     const checkDate = () => {
         const revealDate = new Date();
-        revealDate.setHours(13, 0, 0, 0); // 1:00 PM today
+        revealDate.setFullYear(new Date().getFullYear(), 8, 15); // September 15th
+        revealDate.setHours(14, 0, 0, 0); // 2:00 PM
         if (new Date() >= revealDate) {
             handleReveal(true); // Directly reveal if date is past
             return true;
@@ -325,7 +328,7 @@ export default function CommunityPage() {
       return (
           <div className={cn(
               'transition-opacity duration-1000 w-full',
-               shouldAnimateIn || isVisible ? 'opacity-100' : 'opacity-0'
+               (shouldAnimateIn || isVisible) ? 'opacity-100' : 'opacity-0'
           )}>
               <h3 className="text-center font-headline text-2xl mb-12 text-primary">{boardToShow.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
@@ -387,7 +390,7 @@ export default function CommunityPage() {
                         variant={activePhase === phase ? 'default' : 'ghost'}
                         className={cn(
                             "rounded-md px-4 sm:px-6 py-2 text-sm font-medium transition-colors relative",
-                            activePhase === phase ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/20'
+                             activePhase === phase ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/20'
                         )}
                     >
                         {phase}
