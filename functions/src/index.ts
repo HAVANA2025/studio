@@ -43,7 +43,7 @@ export const sendWelcomeEmail = functions.auth.user().onCreate((user) => {
 /**
  * A callable function to send an email from the contact form.
  */
-export const sendContactMessage = functions.https.onCall(async (data, context) => {
+exports.sendContactMessage = functions.https.onCall(async (data, context) => {
     const { name, email, message } = data;
 
     if (!resendApiKey) {
