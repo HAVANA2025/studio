@@ -134,17 +134,6 @@ export function Footer() {
       </div>
       <div className="container mx-auto border-t border-border/40 py-6 text-center text-sm text-muted-foreground">
         <div>
-            Powered by{' '}
-            <a 
-                href="https://www.gitam.edu/hyderabad/electrical-electronics-communication-engineering" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-primary transition-colors"
-            >
-                Department of EECE
-            </a>
-        </div>
-        <div>
              <a 
                 href="https://www.gitam.edu/hyderabad/gitam-school-of-technology" 
                 target="_blank" 
