@@ -1,3 +1,4 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -17,26 +18,10 @@ const firebaseConfig: FirebaseOptions = {
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-let auth: ReturnType<typeof getAuth>;
-let db: ReturnType<typeof getFirestore>;
-let storage: ReturnType<typeof getStorage>;
-let functions: ReturnType<typeof getFunctions>;
-
-// Safely initialize Firebase services only on the client-side.
-// This prevents build errors when the API key is not available server-side.
-if (typeof window !== 'undefined') {
-    auth = getAuth(app);
-    db = getFirestore(app);
-    storage = getStorage(app);
-    functions = getFunctions(app); // We get the functions instance here for client-side use
-} else {
-    // Provide mock instances or null objects for server-side build
-    auth = {} as any;
-    db = {} as any;
-    storage = {} as any;
-    functions = {} as any;
-}
-
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const functions = getFunctions(app);
 
 // Hardcoded list of admin emails
 const adminEmails = [
