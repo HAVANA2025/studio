@@ -120,7 +120,7 @@ const Countdown = ({ onFinished }: { onFinished: () => void }) => {
 
     useEffect(() => {
         const revealDate = new Date();
-        revealDate.setHours(23, 0, 0, 0); // 11:00 PM today
+        revealDate.setHours(13, 0, 0, 0); // 1:00 PM today
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -228,7 +228,7 @@ export default function CommunityPage() {
     // Function to check if reveal time is past
     const checkDate = () => {
         const revealDate = new Date();
-        revealDate.setHours(23, 0, 0, 0); // 11:00 PM today
+        revealDate.setHours(13, 0, 0, 0); // 1:00 PM today
         if (new Date() >= revealDate) {
             handleReveal(true); // Directly reveal if date is past
             return true;
@@ -313,21 +313,19 @@ export default function CommunityPage() {
       
       if (!boardToShow) return null;
 
-      // Determine animation and visibility for the new board
-      const isNewBoard = boardToShow.phase === '2025 - 2026';
-      const shouldAnimateIn = isNewBoard && isRevealed && startBoardFadeIn;
-      
       // Only the new board depends on the isRevealed state.
       // Past boards should always be visible.
-      const isVisible = !isNewBoard || isRevealed;
+      const isVisible = activePhase !== '2025 - 2026' || isRevealed;
 
       if (!isVisible) return null;
+
+      const shouldAnimateIn = activePhase === '2025 - 2026' && startBoardFadeIn;
 
       // Render the board members
       return (
           <div className={cn(
               'transition-opacity duration-1000 w-full',
-               shouldAnimateIn || !isNewBoard ? 'opacity-100' : 'opacity-0'
+               shouldAnimateIn || isVisible ? 'opacity-100' : 'opacity-0'
           )}>
               <h3 className="text-center font-headline text-2xl mb-12 text-primary">{boardToShow.title}</h3>
               <div className="flex flex-wrap justify-center gap-8">
@@ -380,7 +378,7 @@ export default function CommunityPage() {
               <Users className="text-primary"/> Executive Board
           </h2>
           
-          <div className="flex justify-center mb-12">
+           <div className="flex justify-center mb-12">
              <div className="flex flex-wrap justify-center gap-2 bg-secondary/50 p-2 rounded-lg border border-border">
                 {boardPhases.map((phase) => (
                     <Button
