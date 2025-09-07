@@ -45,14 +45,15 @@ export default function ContactPage() {
         });
         form.reset();
       } else {
-        throw new Error(result.error);
+        // Use the error message returned from the server action
+        throw new Error(result.error || 'An unknown error occurred.');
       }
 
     } catch (error: any) {
       console.error('Error sending contact message:', error);
       toast({
         title: 'Submission Failed',
-        description: `There was an error sending your message: ${error.message}`,
+        description: error.message,
         variant: 'destructive',
       });
     } finally {
