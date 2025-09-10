@@ -65,9 +65,9 @@ const softwareProjects = [
 ]
 
 const mentors = [
+    { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
     { name: 'T Madhavi', designation: 'Mentor (2023-2024)', image: '/images/tmadhavi.jpg', hint: 'woman portrait' },
     { name: 'Naresh Kumar', designation: 'Mentor (2022-2023)', image: '/images/nareshkumar.jpg', hint: 'man portrait' },
-    { name: 'D Anitha', designation: 'Mentor (2024-2025)', image: '/images/danitha.jpg', hint: 'woman portrait' },
 ];
 
 const achievements = [
@@ -148,11 +148,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full h-screen min-h-[800px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 -z-10">
-         <SplineViewer 
-            url="https://prod.spline.design/fXAFIhXMv6YadalH/scene.splinecode"
-            placeholder={<div className="w-full h-full bg-background" />}
-          />
-         <div className="absolute inset-0 bg-background/80"></div>
+          <SplineViewer url="https://prod.spline.design/fXAFIhXMv6YadalH/scene.splinecode" />
+          <div className="absolute inset-0 bg-background/80"></div>
         </div>
         <div className="absolute inset-0 z-10" style={{background: 'radial-gradient(circle at 50% 50%, transparent 0%, hsl(var(--background)) 70%)'}} />
         
@@ -177,10 +174,7 @@ export default function Home() {
             </div>
           </div>
           <div className="relative w-full h-[300px] md:h-[600px]">
-             <SplineViewer 
-                url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" 
-                placeholder={<div className="w-full h-full" />}
-            />
+             <SplineViewer url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" />
           </div>
         </div>
       </section>
@@ -400,3 +394,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

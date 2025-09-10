@@ -63,3 +63,5 @@ export function SplineViewer({ url, className, placeholder }: SplineViewerProps)
     </div>
   );
 }
+
+    
