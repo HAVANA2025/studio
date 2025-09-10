@@ -204,8 +204,94 @@ export default function Home() {
         </div>
       </section>
       
+      {/* Stats Section */}
+      <section id="stats" className="w-full py-16 sm:py-24 bg-background">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-4xl font-bold">
+              <span className="text-primary">LEARN.</span> BUILD. <span className="text-primary">INNOVATE.</span>
+            </h2>
+            <h3 className="font-headline text-3xl font-bold mt-2">ELEVATE YOURSELF.</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <AnimatedStatCard key={index} stat={stat} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+       {/* Mentors Section */}
+      <section id="mentors" className="w-full py-24 sm:py-32 bg-secondary/20">
+        <div className="container mx-auto text-center">
+           <h2 className="font-headline text-4xl font-bold mb-12 flex items-center justify-center gap-4">
+              <Star className="text-primary"/> Our Mentors
+            </h2>
+            <div className="flex justify-center gap-8 flex-wrap">
+                {mentors.map(member => (
+                    <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px] bg-card/50 border-primary/10">
+                    <div className="relative h-48">
+                        <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
+                    </div>
+                    <CardHeader>
+                        <CardTitle className="font-headline">{member.name}</CardTitle>
+                        <p className="text-primary">{member.designation}</p>
+                    </CardHeader>
+                    </Card>
+                ))}
+            </div>
+        </div>
+      </section>
+
+      {/* Achievements Section */}
+      <section id="achievements" className="w-full py-24 sm:py-32 bg-background">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-4xl font-bold">Milestones & Achievements</h2>
+            <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">Our journey is marked by a legacy of innovation, dedication, and success.</p>
+          </div>
+          <Carousel
+            setApi={setApi}
+            opts={{
+              align: "center",
+              loop: true,
+            }}
+            plugins={[
+                autoplayPlugin.current
+            ]}
+            onMouseEnter={autoplayPlugin.current.stop}
+            onMouseLeave={autoplayPlugin.current.play}
+            className="w-full max-w-6xl mx-auto"
+          >
+            <CarouselContent className="-ml-4">
+              {achievements.map((ach, index) => (
+                <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1">
+                        <Card className={cn(
+                            "h-full bg-card/50 border-primary/10 p-6 flex flex-col items-center text-center transition-all duration-300 ease-in-out",
+                             current === index ? 'scale-105 shadow-2xl shadow-primary/20' : 'scale-90 opacity-60'
+                        )}>
+                            <Award className="w-10 h-10 text-primary mb-4" />
+                            <CardTitle className="font-headline text-xl">{ach.event}</CardTitle>
+                            <p className="text-primary font-semibold mt-1">{ach.type}</p>
+                        </Card>
+                    </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+           <div className="text-center mt-12">
+             <Button asChild variant="link" className="text-primary text-lg">
+                <Link href="/achievements">View All Achievements <ArrowRight className="ml-2 h-4 w-4" /></Link>
+             </Button>
+           </div>
+        </div>
+      </section>
+
       {/* Upcoming Event Section */}
-        <section id="upcoming-event" className="w-full py-24 sm:py-32 bg-background">
+        <section id="upcoming-event" className="w-full py-24 sm:py-32 bg-secondary/20">
             <div className="container mx-auto">
                 <div className="text-center mb-12">
                     <h2 className="font-headline text-4xl font-bold">Upcoming Events</h2>
@@ -255,13 +341,13 @@ export default function Home() {
         </section>
 
       {/* Projects Section */}
-      <section id="projects" className="w-full py-24 sm:py-32 bg-secondary/20">
+      <section id="projects" className="w-full py-24 sm:py-32 bg-background">
         <div className="container mx-auto text-center">
           <h2 className="font-headline text-4xl font-bold mb-4">Featured Projects</h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">Here's a glimpse of the innovative solutions our members have built.</p>
           
           <div className="flex justify-center mb-12">
-            <div className="flex items-center gap-2 rounded-full bg-background/50 p-1.5 border border-border">
+            <div className="flex items-center gap-2 rounded-full bg-secondary/50 p-1.5 border border-border">
                 <button
                     onClick={() => setProjectType('hardware')}
                     className={cn(
@@ -305,93 +391,6 @@ export default function Home() {
           </Button>
         </div>
       </section>
-      
-       {/* Mentors Section */}
-      <section id="mentors" className="w-full py-24 sm:py-32 bg-background">
-        <div className="container mx-auto text-center">
-           <h2 className="font-headline text-4xl font-bold mb-12 flex items-center justify-center gap-4">
-              <Star className="text-primary"/> Our Mentors
-            </h2>
-            <div className="flex justify-center gap-8 flex-wrap">
-                {mentors.map(member => (
-                    <Card key={member.name} className="text-center overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2 w-full max-w-[250px] bg-card/50 border-primary/10">
-                    <div className="relative h-48">
-                        <Image src={member.image} alt={member.name} fill className="object-cover transition-all duration-300" data-ai-hint={member.hint} />
-                    </div>
-                    <CardHeader>
-                        <CardTitle className="font-headline">{member.name}</CardTitle>
-                        <p className="text-primary">{member.designation}</p>
-                    </CardHeader>
-                    </Card>
-                ))}
-            </div>
-        </div>
-      </section>
-
-      {/* Achievements Section */}
-      <section id="achievements" className="w-full py-24 sm:py-32 bg-secondary/20">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="font-headline text-4xl font-bold">Milestones & Achievements</h2>
-            <p className="text-lg text-muted-foreground mt-4 max-w-2xl mx-auto">Our journey is marked by a legacy of innovation, dedication, and success.</p>
-          </div>
-          <Carousel
-            setApi={setApi}
-            opts={{
-              align: "center",
-              loop: true,
-            }}
-            plugins={[
-                autoplayPlugin.current
-            ]}
-            onMouseEnter={autoplayPlugin.current.stop}
-            onMouseLeave={autoplayPlugin.current.play}
-            className="w-full max-w-6xl mx-auto"
-          >
-            <CarouselContent className="-ml-4">
-              {achievements.map((ach, index) => (
-                <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                    <div className="p-1">
-                        <Card className={cn(
-                            "h-full bg-card/50 border-primary/10 p-6 flex flex-col items-center text-center transition-all duration-300 ease-in-out",
-                             current === index ? 'scale-105 shadow-2xl shadow-primary/20' : 'scale-90 opacity-60'
-                        )}>
-                            <Award className="w-10 h-10 text-primary mb-4" />
-                            <CardTitle className="font-headline text-xl">{ach.event}</CardTitle>
-                            <p className="text-primary font-semibold mt-1">{ach.type}</p>
-                        </Card>
-                    </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-           <div className="text-center mt-12">
-             <Button asChild variant="link" className="text-primary text-lg">
-                <Link href="/achievements">View All Achievements <ArrowRight className="ml-2 h-4 w-4" /></Link>
-             </Button>
-           </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section id="stats" className="w-full py-16 sm:py-24 bg-background">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="font-headline text-4xl font-bold">
-              <span className="text-primary">LEARN.</span> BUILD. <span className="text-primary">INNOVATE.</span>
-            </h2>
-            <h3 className="font-headline text-3xl font-bold mt-2">ELEVATE YOURSELF.</h3>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <AnimatedStatCard key={index} stat={stat} />
-            ))}
-          </div>
-        </div>
-      </section>
-
     </div>
   );
 }
