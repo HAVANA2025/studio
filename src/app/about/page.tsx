@@ -45,7 +45,7 @@ export default function AboutPage() {
                     {/* GITAM Section */}
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                          <div className="relative w-full min-h-[250px] lg:min-h-[300px] flex items-center justify-center">
-                            <div className="relative w-56 h-56 sm:w-64 sm:h-64 [filter:drop-shadow(0_0_1.5rem_hsl(var(--primary)/0.4))]">
+                            <div className="relative w-48 h-48 sm:w-56 sm:h-56 [filter:drop-shadow(0_0_1.5rem_hsl(var(--primary)/0.4))]">
                                 <Image
                                     src="/images/logo.png"
                                     alt="GITAM Logo"
@@ -64,7 +64,7 @@ export default function AboutPage() {
                      {/* G-Electra Section */}
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
                         <div className="relative w-full min-h-[250px] lg:min-h-[300px] flex items-center justify-center lg:order-last">
-                            <div className="relative w-56 h-56 sm:w-64 sm:h-64 [filter:drop-shadow(0_0_1.5rem_hsl(var(--primary)/0.4))]">
+                            <div className="relative w-48 h-48 sm:w-56 sm:h-56 [filter:drop-shadow(0_0_1.5rem_hsl(var(--primary)/0.4))]">
                                 <Image
                                     src="/images/logo.png"
                                     alt="G-Electra Logo"
@@ -77,6 +77,9 @@ export default function AboutPage() {
                             <h2 className="font-headline text-3xl font-bold text-primary">G-Electra</h2>
                             <p className="text-lg text-muted-foreground">
                                 G-Electra, the Smart Systems Club of GITAM Hyderabad, is a student-driven community under the Department of Electrical, Electronics & Communication Engineering. We focus on innovation, smart systems, and hands-on learning, empowering students to turn ideas into real-world prototypes and solutions.
+                            </p>
+                             <p className="text-lg text-muted-foreground">
+                                Through workshops, projects, and national-level tech fests, G-Electra nurtures creativity, technical skills, and leadership. With strong faculty mentorship and industry exposure, we prepare the next generation of innovators to excel in technology and beyond.
                             </p>
                         </div>
                     </div>
