@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Briefcase, Calendar, Rocket, Shield, Target, Users, Zap, BrainCircuit, Code } from 'lucide-react';
 import Image from 'next/image';
+import { Logo } from '@/components/logo';
 
 const journey = [
     { year: '2022', title: 'A Vision is Born', description: 'G-Electra (Smart Systems Club) was established on September 15, 2022, fostering creativity and hands-on experience in smart systems and emerging technologies.' },
@@ -42,7 +43,10 @@ export default function AboutPage() {
                 {/* GITAM & G-Electra Section */}
                 <section className="space-y-16">
                     <div className="max-w-4xl mx-auto text-center space-y-4">
-                        <h2 className="font-headline text-3xl font-bold text-primary">GITAM</h2>
+                        <div className="flex justify-center items-center gap-4 mb-4">
+                            <Logo className="h-16 w-16" />
+                            <h2 className="font-headline text-3xl font-bold text-primary">GITAM</h2>
+                        </div>
                         <p className="text-lg text-muted-foreground">
                             Founded in 1980 and inspired by the ideals of Mahatma Gandhi, GITAM is committed to nurturing minds in the pursuit of enlightenment. With a focus on sincerity, honesty, and compassion, GITAM strives to make a positive impact on society.
                         </p>
