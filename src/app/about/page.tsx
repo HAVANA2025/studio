@@ -63,13 +63,7 @@ export default function AboutPage() {
                     </div>
                      {/* G-Electra Section */}
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div className="space-y-4 lg:order-last">
-                            <h2 className="font-headline text-3xl font-bold text-primary">G-Electra</h2>
-                            <p className="text-lg text-muted-foreground">
-                                G-Electra, the Smart Systems Club of GITAM Hyderabad, is a student-driven community under the Department of Electrical, Electronics & Communication Engineering. We focus on innovation, smart systems, and hands-on learning, empowering students to turn ideas into real-world prototypes and solutions.
-                            </p>
-                        </div>
-                        <div className="relative w-full min-h-[250px] lg:min-h-[300px] flex items-center justify-center">
+                        <div className="relative w-full min-h-[250px] lg:min-h-[300px] flex items-center justify-center lg:order-last">
                             <div className="relative w-56 h-56 sm:w-64 sm:h-64 [filter:drop-shadow(0_0_1.5rem_hsl(var(--primary)/0.4))]">
                                 <Image
                                     src="/images/logo.png"
@@ -78,6 +72,12 @@ export default function AboutPage() {
                                     className="object-contain"
                                 />
                             </div>
+                        </div>
+                        <div className="space-y-4">
+                            <h2 className="font-headline text-3xl font-bold text-primary">G-Electra</h2>
+                            <p className="text-lg text-muted-foreground">
+                                G-Electra, the Smart Systems Club of GITAM Hyderabad, is a student-driven community under the Department of Electrical, Electronics & Communication Engineering. We focus on innovation, smart systems, and hands-on learning, empowering students to turn ideas into real-world prototypes and solutions.
+                            </p>
                         </div>
                     </div>
                 </section>
