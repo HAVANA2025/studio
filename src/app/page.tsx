@@ -150,7 +150,7 @@ export default function Home() {
         <div className="absolute inset-0 -z-10">
          <SplineViewer 
             url="https://prod.spline.design/fXAFIhXMv6YadalH/scene.splinecode"
-            placeholder={<Skeleton className="w-full h-full" />}
+            placeholder={<div className="w-full h-full bg-background" />}
           />
          <div className="absolute inset-0 bg-background/80"></div>
         </div>
@@ -179,7 +179,7 @@ export default function Home() {
           <div className="relative w-full h-[300px] md:h-[600px]">
              <SplineViewer 
                 url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" 
-                placeholder={<Skeleton className="w-full h-full" />}
+                placeholder={<div className="w-full h-full" />}
             />
           </div>
         </div>
