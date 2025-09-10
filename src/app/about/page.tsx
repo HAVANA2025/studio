@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,9 +7,9 @@ import Image from 'next/image';
 
 const journey = [
     { year: '2022', title: 'A Vision is Born', description: 'G-Electra (Smart Systems Club) was established on September 15, 2022, fostering creativity and hands-on experience in smart systems and emerging technologies.' },
-    { year: '2023', title: 'The Launch of HAVANA', description: 'The first edition of our campus-level technical fest, HAVANA 1.0, sparked innovation and collaboration among students, setting the stage for future growth.' },
-    { year: '2024', title: 'Pioneering Innovation', description: 'HAVANA 2.0 expanded its horizons with international workshops and inspiring keynote sessions, setting a new standard for technical fests at GITAM.' },
-    { year: '2025', title: 'The Tech Revolution', description: 'With HAVANA 3.0, we stepped into the future with 13 competitions and a global reach, pushing technological boundaries to new heights.' },
+    { year: '2023', title: 'The Launch of G-Electra Fest', description: 'The first edition of our campus-level technical fest sparked innovation and collaboration among students, setting the stage for future growth.' },
+    { year: '2024', title: 'Pioneering Innovation', description: 'Our fest expanded its horizons with international workshops and inspiring keynote sessions, setting a new standard for technical fests at GITAM.' },
+    { year: '2025', title: 'The Tech Revolution', description: 'Our flagship event stepped into the future with 13 competitions and a global reach, pushing technological boundaries to new heights.' },
 ];
 
 const values = [
