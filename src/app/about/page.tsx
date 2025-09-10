@@ -40,15 +40,15 @@ export default function AboutPage() {
             <div className="container mx-auto py-16 sm:py-24 space-y-24">
                 
                 {/* GITAM & G-Electra Section */}
-                <section className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-                    <div className="space-y-4">
-                        <h2 className="font-headline text-3xl font-bold text-primary">About GITAM</h2>
+                <section className="space-y-16">
+                    <div className="max-w-4xl mx-auto text-center space-y-4">
+                        <h2 className="font-headline text-3xl font-bold text-primary">GITAM</h2>
                         <p className="text-lg text-muted-foreground">
                             Founded in 1980 and inspired by the ideals of Mahatma Gandhi, GITAM is committed to nurturing minds in the pursuit of enlightenment. With a focus on sincerity, honesty, and compassion, GITAM strives to make a positive impact on society.
                         </p>
                     </div>
-                     <div className="space-y-4">
-                        <h2 className="font-headline text-3xl font-bold text-primary">About G-Electra</h2>
+                     <div className="max-w-4xl mx-auto text-center space-y-4">
+                        <h2 className="font-headline text-3xl font-bold text-primary">G-Electra</h2>
                         <p className="text-lg text-muted-foreground">
                              G-Electra, the Smart Systems Club of GITAM Hyderabad, is a student-driven community under the Department of Electrical, Electronics & Communication Engineering. We focus on innovation, smart systems, and hands-on learning, empowering students to turn ideas into real-world prototypes and solutions.
                         </p>
