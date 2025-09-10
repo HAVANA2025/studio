@@ -22,10 +22,10 @@ const SplineViewer = dynamic(() => import('@/components/spline-viewer').then(mod
 
 
 const stats = [
-  { value: 50, label: 'Members', icon: <Users className="w-8 h-8" /> },
+  { value: 400, label: 'Members', icon: <Users className="w-8 h-8" /> },
   { value: 10, label: 'Domains', icon: <Code className="w-8 h-8" /> },
-  { value: 20, label: 'Workshops', icon: <Zap className="w-8 h-8" /> },
-  { value: 15, label: 'Projects', icon: <Cpu className="w-8 h-8" /> },
+  { value: 40, label: 'Workshops', icon: <Zap className="w-8 h-8" /> },
+  { value: 50, label: 'Projects', icon: <Cpu className="w-8 h-8" /> },
 ];
 
 const hardwareProjects = [
