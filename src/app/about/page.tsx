@@ -1,9 +1,8 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, Calendar, Rocket, Shield, Target, Users, Zap, BrainCircuit, Code } from 'lucide-react';
+import { Calendar, Rocket, Shield, Target, Users, Zap, BrainCircuit } from 'lucide-react';
 import Image from 'next/image';
-import { Logo } from '@/components/logo';
 
 const journey = [
     { year: '2022', title: 'A Vision is Born', description: 'G-Electra (Smart Systems Club) was established on September 15, 2022, fostering creativity and hands-on experience in smart systems and emerging technologies.' },
