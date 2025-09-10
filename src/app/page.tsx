@@ -148,7 +148,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full h-screen min-h-[800px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 -z-10">
-         <SplineViewer url="https://prod.spline.design/fXAFIhXMv6YadalH/scene.splinecode" />
+         <SplineViewer 
+            url="https://prod.spline.design/fXAFIhXMv6YadalH/scene.splinecode"
+            placeholder={<Skeleton className="w-full h-full" />}
+          />
          <div className="absolute inset-0 bg-background/80"></div>
         </div>
         <div className="absolute inset-0 z-10" style={{background: 'radial-gradient(circle at 50% 50%, transparent 0%, hsl(var(--background)) 70%)'}} />
@@ -174,7 +177,10 @@ export default function Home() {
             </div>
           </div>
           <div className="relative w-full h-[300px] md:h-[600px]">
-            <SplineViewer url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" />
+             <SplineViewer 
+                url="https://prod.spline.design/B1sSLt7ME4jRDzNs/scene.splinecode" 
+                placeholder={<Skeleton className="w-full h-full" />}
+            />
           </div>
         </div>
       </section>
