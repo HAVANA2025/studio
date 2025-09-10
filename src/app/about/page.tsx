@@ -26,9 +26,12 @@ export default function AboutPage() {
                 <p className="mt-6 text-lg text-muted-foreground">
                     Founded in 1980, GITAM was inspired by the ideals of Mahatma Gandhi. With 12 schools across four campuses, GITAM is committed to nurturing minds and spirits in the pursuit of educational enlightenment. GITAM strives to advance a culture of sincerity, honesty, and compassion, making a positive impact on society.
                 </p>
-                <h2 className="mt-8 font-headline text-2xl text-primary">HAVANA</h2>
+                <h2 className="mt-8 font-headline text-2xl text-primary">About G-Electra</h2>
                 <p className="mt-6 text-lg text-muted-foreground">
-                    HAVANA is a National-Level Inter-Institutional Technical Fest organized by "G-Electra", the Smart Systems Club of GITAM Hyderabad. It symbolizes a passionate pursuit of knowledge and innovation. Our two-day fest offers workshops, competitions, and project showcases, providing hands-on experience and fostering collaboration. G-Electra drives the event's technical activities, empowering students to explore cutting-edge technologies and create impactful solutions.
+                    G-Electra, the Smart Systems Club of GITAM Hyderabad, is a student-driven community under the Department of Electrical, Electronics & Communication Engineering. We focus on innovation, smart systems, and hands-on learning, empowering students to turn ideas into real-world prototypes and solutions.
+                </p>
+                 <p className="mt-6 text-lg text-muted-foreground">
+                    Through workshops, projects, and national-level tech fests, G-Electra nurtures creativity, technical skills, and leadership. With strong faculty mentorship and industry exposure, we prepare the next generation of innovators to excel in technology and beyond.
                 </p>
             </section>
             
